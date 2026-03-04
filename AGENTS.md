@@ -212,9 +212,10 @@ The goal: Be helpful without being annoying. Check in a few times a day, do usef
 
 ### 1. Plan Mode (Padrão pra tarefas não-triviais)
 - Entrar em plan mode pra QUALQUER tarefa com 3+ passos ou decisões arquiteturais
-- Se algo deu errado, **PARAR e replanejar** — não insistir no caminho errado
-- Escrever specs detalhadas antes de executar pra reduzir ambiguidade
-- Plan mode serve pra verificação também, não só pra building
+- **Para criação de algo novo**: plan mode é obrigatório — escrever spec completa antes de uma linha de código
+- Se algo deu errado, **PARAR imediatamente e replanejar** — não insistir no caminho errado, não tentar corrigir no meio do caminho
+- Plan mode serve pra **verificação também**, não só pra building — antes de dizer "tá pronto", revisar o próprio trabalho em plan mode
+- Perguntar: *"Um staff engineer aprovaria isso?"* (não senior — staff, critério mais alto)
 
 ### 2. Estratégia de Subagents
 - Usar subagents liberalmente pra manter a janela de contexto principal limpa
@@ -223,7 +224,7 @@ The goal: Be helpful without being annoying. Check in a few times a day, do usef
 - **Uma tarefa por subagent** — foco na execução
 
 ### 3. Self-Improvement Loop
-- Após QUALQUER correção do Aragorn: atualizar `tasks/lessons.md`
+- Após QUALQUER correção do Aragorn: atualizar `tasks/lessons.md` — sem exceção, sempre
 - Escrever regras que previnam o mesmo erro
 - Iterar implacavelmente nessas lições até a taxa de erro cair
 - **Revisar lessons no início de cada sessão** pro projeto relevante
