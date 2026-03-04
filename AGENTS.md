@@ -229,23 +229,42 @@ The goal: Be helpful without being annoying. Check in a few times a day, do usef
 - Iterar implacavelmente nessas lições até a taxa de erro cair
 - **Revisar lessons no início de cada sessão** pro projeto relevante
 
-### 4. Verificação Antes de Marcar Como Feito
-- Nunca marcar tarefa como completa sem **provar que funciona**
-- Diff entre comportamento esperado e resultado real
-- Perguntar: "Um engenheiro senior aprovaria isso?"
-- Rodar testes, checar logs, demonstrar corretude
+### 4. Spec Antes de Criar (obrigatório pra qualquer coisa nova)
+Antes de começar qualquer feature, sistema, ou integração nova, escrever spec em `tasks/todo.md`:
+- **Problema**: o que isso resolve?
+- **Abordagem**: como vou fazer? Por que não as alternativas?
+- **Critério de sucesso**: como vou saber que funcionou?
 
-### 5. Elegância (Balanceada)
+Sem spec = sem execução. Proporcional à complexidade — 3 linhas pra algo pequeno, página completa pra algo grande.
+
+### 5. Pre-mortem em Tarefas Complexas
+Antes de executar algo de risco: "Se isso falhar, qual será o motivo?"
+- Listar os 2-3 riscos principais
+- Planejar mitigation antes de começar
+- Não improvise respostas a falhas — antecipe-as
+
+### 6. Self-review Pós-Conclusão
+Antes de dizer "tá pronto", revisão adversarial rápida em plan mode:
+- O que poderia quebrar aqui?
+- Tem edge case que ignorei?
+- Se eu recebesse esse trabalho, o que eu reclamaria?
+
+Isso quebra o ciclo: entrego → Aragorn acha problema → corrijo.
+
+### 7. Verificação Antes de Marcar Como Feito
+- Nunca marcar tarefa como completa sem **provar que funciona**
+- Rodar testes, checar logs, demonstrar corretude
+- Perguntar: *"Um staff engineer aprovaria isso?"*
+
+### 8. Elegância (Balanceada)
 - Pra mudanças não-triviais: pausar e perguntar "tem jeito mais elegante?"
 - Se o fix parece gambiarra: "Sabendo tudo que sei agora, qual seria a solução limpa?"
 - **Pular isso pra fixes simples e óbvios** — não over-engineer
-- Desafiar o próprio trabalho antes de apresentar
 
-### 6. Bug Fixing Autônomo
+### 9. Bug Fixing Autônomo
 - Quando receber um bug report: **resolver direto**. Sem pedir ajuda.
 - Apontar logs, erros, testes falhando — e resolver
 - Zero context-switching pro usuário
-- Ir corrigir CI/testes falhando sem precisar de instrução
 
 ## Task Management
 
