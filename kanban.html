@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kanban ⚔️ Clawdemir</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --background: #1F1F1F;
+  --foreground: #FFFFFF;
+  --primary: #7D39EB;
+  --primary-light: #B080FF;
+  --success: #14CC8F;
+  --destructive: #F87171;
+  --warning: #F97316;
+  --text-heading: #F5F7FA;
+  --text-secondary: #DCDFE5;
+  --text-muted: #B0B5BF;
+  --text-accent: #BF80FF;
+  --card-bg-light: rgba(143, 155, 179, 0.06);
+  --card-bg-medium: rgba(143, 155, 179, 0.12);
+  --card-bg-strong: rgba(143, 155, 179, 0.16);
+  --card-bg-hover: rgba(143, 155, 179, 0.20);
+  --card-bg-dropdown: rgba(31, 31, 35, 0.9);
+  --border: rgba(143, 155, 179, 0.18);
+  --border-hover: rgba(125, 57, 235, 0.5);
+  --ring: #7D39EB;
+  --rounded-card: 20px;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--background);
+  color: var(--foreground);
+  min-height: 100vh;
+  padding: 24px;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-heading);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header h1 .emoji { font-size: 32px; }
+
+/* Switch */
+.switch-container {
+  display: flex;
+  background: var(--card-bg-medium);
+  border-radius: var(--rounded-card);
+  padding: 4px;
+  border: 1px solid var(--border);
+}
+
+.switch-btn {
+  padding: 10px 24px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 200ms ease;
+  white-space: nowrap;
+}
+
+.switch-btn.active {
+  background: var(--primary);
+  color: var(--foreground);
+  box-shadow: 0 4px 12px rgba(125, 57, 235, 0.3);
+}
+
+.switch-btn:not(.active):hover {
+  color: var(--text-secondary);
+  background: var(--card-bg-light);
+}
+
+/* Stats bar */
+.stats {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.stat-card {
+  background: var(--card-bg-light);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border);
+  border-radius: var(--rounded-card);
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 140px;
+}
+
+.stat-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.stat-card .stat-number { font-size: 24px; font-weight: 700; color: var(--text-heading); }
+.stat-card .stat-label { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+
+/* Board */
+.board {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 20px;
+  min-height: 60vh !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+@media (max-width: 1024px) { .board { grid-template-columns: repeat(2, 1fr) !important; } }
+@media (max-width: 640px) { .board { grid-template-columns: 1fr !important; } }
+
+/* Column */
+.column {
+  background: var(--card-bg-light);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border);
+  border-radius: var(--rounded-card);
+  padding: 20px;
+  display: flex !important;
+  flex-direction: column;
+  min-height: 300px !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.column-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.column-title {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.column-title .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.column-count {
+  background: var(--card-bg-strong);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 12px;
+}
+
+.column-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 100px;
+}
+
+.column-body.drag-over {
+  background: rgba(125, 57, 235, 0.05);
+  border-radius: 12px;
+}
+
+/* Cards */
+.task-card {
+  background: var(--card-bg-medium);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  cursor: grab;
+  transition: all 200ms ease;
+  position: relative;
+}
+
+.task-card:hover {
+  border-color: var(--border-hover);
+  background: var(--card-bg-hover);
+  transform: translateY(-1px);
+}
+
+.task-card.dragging {
+  opacity: 0.5;
+  cursor: grabbing;
+}
+
+.task-card .task-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-heading);
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.task-card .task-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.task-card .task-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.task-tag {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.tag-low { background: rgba(20, 204, 143, 0.15); color: var(--success); }
+.tag-medium { background: rgba(249, 115, 22, 0.15); color: var(--warning); }
+.tag-high { background: rgba(248, 113, 113, 0.15); color: var(--destructive); }
+
+.task-date {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Delete btn */
+.task-delete {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 14px;
+  opacity: 0;
+  transition: all 200ms;
+  padding: 4px;
+  border-radius: 6px;
+}
+
+.task-card:hover .task-delete { opacity: 1; }
+.task-delete:hover { color: var(--destructive); background: rgba(248, 113, 113, 0.1); }
+
+/* Add task */
+.add-task-btn {
+  background: none;
+  border: 2px dashed var(--border);
+  border-radius: 16px;
+  padding: 14px;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 200ms ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.add-task-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary-light);
+  background: rgba(125, 57, 235, 0.05);
+}
+
+/* Modal */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--card-bg-dropdown);
+  backdrop-filter: blur(50px);
+  border: 1px solid var(--border);
+  border-radius: var(--rounded-card);
+  padding: 32px;
+  width: 90%;
+  max-width: 440px;
+  box-shadow: 0 24px 48px rgba(0,0,0,0.4);
+}
+
+.modal h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-heading);
+  margin-bottom: 24px;
+}
+
+.modal label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.modal input, .modal textarea, .modal select {
+  width: 100%;
+  padding: 10px 14px;
+  background: rgba(143, 155, 179, 0.08);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--foreground);
+  font-family: inherit;
+  font-size: 14px;
+  margin-bottom: 16px;
+  outline: none;
+  transition: all 200ms;
+}
+
+.modal input:focus, .modal textarea:focus, .modal select:focus {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 2px rgba(125, 57, 235, 0.2);
+}
+
+.modal textarea { resize: vertical; min-height: 70px; }
+.modal select option { background: #1F1F23; }
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.btn-cancel {
+  padding: 10px 20px;
+  background: var(--card-bg-strong);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 200ms;
+}
+
+.btn-cancel:hover { background: var(--card-bg-hover); color: var(--text-secondary); }
+
+.btn-save {
+  padding: 10px 24px;
+  background: var(--primary);
+  border: none;
+  border-radius: 14px;
+  color: var(--foreground);
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 200ms;
+  box-shadow: 0 4px 12px rgba(125, 57, 235, 0.3);
+}
+
+.btn-save:hover { background: #6B2FD6; }
+
+/* Empty state */
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0.6;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1><span class="emoji">⚔️</span> Kanban</h1>
+  <div class="switch-container">
+    <button class="switch-btn active" data-board="aragorn">🗡️ Aragorn</button>
+    <button class="switch-btn" data-board="clawdemir">🤖 Clawdemir</button>
+  </div>
+</div>
+
+<div class="stats" id="stats">
+  <div class="stat-card">
+    <div class="stat-dot" style="background:#B0B5BF"></div>
+    <div><div class="stat-number">0</div><div class="stat-label">Total</div></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-dot" style="background:#7D39EB"></div>
+    <div><div class="stat-number">0</div><div class="stat-label">Em Progresso</div></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-dot" style="background:#F97316"></div>
+    <div><div class="stat-number">0</div><div class="stat-label">Em Validação</div></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-dot" style="background:#14CC8F"></div>
+    <div><div class="stat-number">0</div><div class="stat-label">Concluído</div></div>
+  </div>
+</div>
+
+<div class="board" id="board">
+  <div class="column">
+    <div class="column-header">
+      <div class="column-title"><span class="dot" style="background:#B0B5BF"></span>Backlog</div>
+      <span class="column-count">0</span>
+    </div>
+    <div class="column-body" data-column="backlog">
+      <div class="empty-state">Nenhuma tarefa</div>
+    </div>
+    <button class="add-task-btn" >+ Nova tarefa</button>
+  </div>
+  <div class="column">
+    <div class="column-header">
+      <div class="column-title"><span class="dot" style="background:#7D39EB"></span>Em Progresso</div>
+      <span class="column-count">0</span>
+    </div>
+    <div class="column-body" data-column="progress">
+      <div class="empty-state">Nenhuma tarefa</div>
+    </div>
+    <button class="add-task-btn" >+ Nova tarefa</button>
+  </div>
+  <div class="column">
+    <div class="column-header">
+      <div class="column-title"><span class="dot" style="background:#F97316"></span>Em Validação</div>
+      <span class="column-count">0</span>
+    </div>
+    <div class="column-body" data-column="validation">
+      <div class="empty-state">Nenhuma tarefa</div>
+    </div>
+    <button class="add-task-btn" >+ Nova tarefa</button>
+  </div>
+  <div class="column">
+    <div class="column-header">
+      <div class="column-title"><span class="dot" style="background:#14CC8F"></span>Concluído</div>
+      <span class="column-count">0</span>
+    </div>
+    <div class="column-body" data-column="done">
+      <div class="empty-state">Nenhuma tarefa</div>
+    </div>
+    <button class="add-task-btn" >+ Nova tarefa</button>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h2>Nova Tarefa</h2>
+    <label>Título</label>
+    <input type="text" id="taskTitle" placeholder="Ex: Configurar deploy...">
+    <label>Descrição</label>
+    <textarea id="taskDesc" placeholder="Detalhes da tarefa..."></textarea>
+    <label>Prioridade</label>
+    <select id="taskPriority">
+      <option value="low">🟢 Baixa</option>
+      <option value="medium" selected>🟡 Média</option>
+      <option value="high">🔴 Alta</option>
+    </select>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-save" onclick="saveTask()">Criar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const COLUMNS = [
+  { id: 'backlog', title: 'Backlog', color: '#B0B5BF' },
+  { id: 'progress', title: 'Em Progresso', color: '#7D39EB' },
+  { id: 'validation', title: 'Em Validação', color: '#F97316' },
+  { id: 'done', title: 'Concluído', color: '#14CC8F' }
+];
+
+const STORAGE_KEY = 'kanban_data_v1';
+
+let currentBoard = 'aragorn';
+let addingToColumn = null;
+
+function loadData() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (raw) return JSON.parse(raw);
+  return {
+    aragorn: { backlog: [], progress: [], validation: [], done: [] },
+    clawdemir: { backlog: [], progress: [], validation: [], done: [] }
+  };
+}
+
+function saveData(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+function today() {
+  return new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+}
+
+function render() {
+  const data = loadData();
+  const board = data[currentBoard];
+
+  // Stats
+  const statsEl = document.getElementById('stats');
+  const total = Object.values(board).flat().length;
+  const inProgress = board.progress.length;
+  const inValidation = board.validation.length;
+  const done = board.done.length;
+
+  statsEl.innerHTML = `
+    <div class="stat-card">
+      <div class="stat-dot" style="background:var(--text-muted)"></div>
+      <div><div class="stat-number">${total}</div><div class="stat-label">Total</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-dot" style="background:var(--primary)"></div>
+      <div><div class="stat-number">${inProgress}</div><div class="stat-label">Em Progresso</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-dot" style="background:var(--warning)"></div>
+      <div><div class="stat-number">${inValidation}</div><div class="stat-label">Em Validação</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-dot" style="background:var(--success)"></div>
+      <div><div class="stat-number">${done}</div><div class="stat-label">Concluído</div></div>
+    </div>
+  `;
+
+  // Board
+  const boardEl = document.getElementById('board');
+  boardEl.innerHTML = COLUMNS.map(col => {
+    const tasks = board[col.id] || [];
+    return `
+      <div class="column">
+        <div class="column-header">
+          <div class="column-title">
+            <span class="dot" style="background:${col.color}"></span>
+            ${col.title}
+          </div>
+          <span class="column-count">${tasks.length}</span>
+        </div>
+        <div class="column-body" data-column="${col.id}"
+            >
+          ${tasks.length === 0 ? '<div class="empty-state">Nenhuma tarefa</div>' :
+            tasks.map((t, i) => `
+              <div class="task-card" draggable="true" ondragstart="onDragStart(event, '${col.id}', ${i})">
+              <button class="task-delete" data-col="${col.id}" data-idx="${i}" title="Remover">✕</button>
+                <div class="task-title">${esc(t.title)}</div>
+                ${t.desc ? `<div class="task-desc">${esc(t.desc)}</div>` : ''}
+                <div class="task-footer">
+                  <span class="task-tag tag-${t.priority}">${t.priority === 'high' ? 'Alta' : t.priority === 'medium' ? 'Média' : 'Baixa'}</span>
+                  <span class="task-date">${t.date}</span>
+                </div>
+              </div>
+            `).join('')}
+        </div>
+        <button class="add-task-btn">+ Nova tarefa</button>
+      </div>
+    `;
+  }).join('');
+}
+
+function esc(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function switchBoard(board) {
+  currentBoard = board;
+  document.querySelectorAll('.switch-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.board === board);
+  });
+  render();
+}
+
+function openModal(colId) {
+  addingToColumn = colId;
+  document.getElementById('taskTitle').value = '';
+  document.getElementById('taskDesc').value = '';
+  document.getElementById('taskPriority').value = 'medium';
+  document.getElementById('modal').classList.add('open');
+  setTimeout(() => document.getElementById('taskTitle').focus(), 100);
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  addingToColumn = null;
+}
+
+function saveTask() {
+  const title = document.getElementById('taskTitle').value.trim();
+  if (!title) return;
+  const desc = document.getElementById('taskDesc').value.trim();
+  const priority = document.getElementById('taskPriority').value;
+  const data = loadData();
+  data[currentBoard][addingToColumn].push({ title, desc, priority, date: today() });
+  saveData(data);
+  closeModal();
+  render();
+}
+
+function deleteTask(colId, idx) {
+  const data = loadData();
+  data[currentBoard][colId].splice(idx, 1);
+  saveData(data);
+  render();
+}
+
+// Drag & Drop
+let dragSource = null;
+
+function onDragStart(e, colId, idx) {
+  dragSource = { colId, idx };
+  e.target.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+}
+
+function onDragOver(e) {
+  e.preventDefault();
+  e.currentTarget.classList.add('drag-over');
+}
+
+function onDragLeave(e) {
+  e.currentTarget.classList.remove('drag-over');
+}
+
+function onDrop(e, targetCol) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if (!dragSource) return;
+  const data = loadData();
+  const [task] = data[currentBoard][dragSource.colId].splice(dragSource.idx, 1);
+  data[currentBoard][targetCol].push(task);
+  saveData(data);
+  dragSource = null;
+  render();
+}
+
+// Keyboard
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeModal();
+  if (e.key === 'Enter' && document.getElementById('modal').classList.contains('open')) {
+    var active = document.activeElement;
+    if (active.tagName !== 'TEXTAREA') saveTask();
+  }
+});
+
+// Event delegation (no inline handlers - CSP safe)
+document.addEventListener('click', function(e) {
+  var btn = e.target.closest('.switch-btn');
+  if (btn) { switchBoard(btn.dataset.board); return; }
+
+  var addBtn = e.target.closest('.add-task-btn');
+  if (addBtn) {
+    var col = addBtn.parentElement.querySelector('.column-body');
+    if (col) openModal(col.dataset.column);
+    return;
+  }
+
+  var delBtn = e.target.closest('.task-delete');
+  if (delBtn) {
+    deleteTask(delBtn.dataset.col, parseInt(delBtn.dataset.idx));
+    return;
+  }
+
+  var cancelBtn = e.target.closest('.btn-cancel');
+  if (cancelBtn) { closeModal(); return; }
+
+  var saveBtn = e.target.closest('.btn-save');
+  if (saveBtn) { saveTask(); return; }
+});
+
+// Drag & drop delegation
+document.addEventListener('dragstart', function(e) {
+  var card = e.target.closest('.task-card');
+  if (!card) return;
+  var body = card.parentElement;
+  var colId = body.dataset.column;
+  var cards = Array.from(body.querySelectorAll('.task-card'));
+  var idx = cards.indexOf(card);
+  dragSource = { colId: colId, idx: idx };
+  card.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+});
+
+document.addEventListener('dragover', function(e) {
+  var body = e.target.closest('.column-body');
+  if (body) { e.preventDefault(); body.classList.add('drag-over'); }
+});
+
+document.addEventListener('dragleave', function(e) {
+  var body = e.target.closest('.column-body');
+  if (body) body.classList.remove('drag-over');
+});
+
+document.addEventListener('drop', function(e) {
+  var body = e.target.closest('.column-body');
+  if (!body || !dragSource) return;
+  e.preventDefault();
+  body.classList.remove('drag-over');
+  var targetCol = body.dataset.column;
+  var data = loadData();
+  var task = data[currentBoard][dragSource.colId].splice(dragSource.idx, 1)[0];
+  data[currentBoard][targetCol].push(task);
+  saveData(data);
+  dragSource = null;
+  render();
+});
+
+try {
+  render();
+} catch(e) {
+  document.getElementById('board').innerHTML = '<p style="color:red;padding:20px">Erro: ' + e.message + '</p>';
+  console.error(e);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+# Environment Variables for Blog Feature
+
+SUPABASE_URL=https://xxx.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=eyJ...
+BLOG_API_TOKEN=generate-a-secure-random-token
+NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
+
+# Optional: used for internal revalidation calls
+NEXT_PUBLIC_SITE_URL=https://qinv.com
+
+# Required npm packages:
+# npm install @supabase/supabase-js next-mdx-remote remark-gfm rehype-highlight rehype-slug

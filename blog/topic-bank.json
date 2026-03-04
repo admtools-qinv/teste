@@ -1,0 +1,807 @@
+[
+  {
+    "id": 1,
+    "title": "What Is DeFi? A Beginner's Guide to Decentralized Finance in 2026",
+    "slug": "what-is-defi-beginners-guide",
+    "type": "educational",
+    "primaryKeyword": "what is DeFi",
+    "secondaryKeywords": [
+      "decentralized finance explained",
+      "DeFi for beginners",
+      "how DeFi works"
+    ],
+    "excerpt": "Learn what decentralized finance (DeFi) is, how it works, and why it's reshaping the financial landscape. A complete beginner's guide to DeFi protocols, risks, and opportunities.",
+    "qinvAngle": "QINV operates as a DeFi-native index fund, giving users managed exposure to the DeFi ecosystem.",
+    "searchIntent": "informational",
+    "estimatedVolume": "high",
+    "priority": 1,
+    "status": "published",
+    "category": "defi",
+    "apiCategory": "Guide",
+    "publishedDate": "2026-02-24"
+  },
+  {
+    "id": 2,
+    "title": "Dollar-Cost Averaging (DCA) in Crypto: Strategy Guide for 2026",
+    "slug": "dollar-cost-averaging-crypto-strategy",
+    "type": "how-to",
+    "primaryKeyword": "dollar cost averaging crypto",
+    "secondaryKeywords": [
+      "DCA crypto strategy",
+      "how to DCA Bitcoin",
+      "crypto investing strategy"
+    ],
+    "excerpt": "Discover how dollar-cost averaging reduces risk in volatile crypto markets. Learn how to set up a DCA strategy and why it outperforms lump-sum investing for most people.",
+    "qinvAngle": "QINV's index fund model pairs naturally with DCA, letting investors systematically build diversified crypto exposure.",
+    "searchIntent": "informational",
+    "estimatedVolume": "high",
+    "priority": 2,
+    "status": "published",
+    "category": "strategy",
+    "apiCategory": "Guide",
+    "publishedDate": "2026-03-04",
+    "publishedSlug": "dollar-cost-averaging-dca-crypto-guide"
+  },
+  {
+    "id": 3,
+    "title": "What Is Total Value Locked (TVL) and Why Does It Matter?",
+    "slug": "what-is-tvl-total-value-locked",
+    "type": "educational",
+    "primaryKeyword": "total value locked TVL",
+    "secondaryKeywords": [
+      "TVL meaning crypto",
+      "how to check TVL",
+      "TVL DeFi metric"
+    ],
+    "excerpt": "Total Value Locked (TVL) is the most important metric in DeFi. Learn what TVL measures, how to interpret it, and how to use it to evaluate protocols.",
+    "qinvAngle": "QINV's AI considers TVL among key metrics when selecting and weighting assets in its index.",
+    "searchIntent": "informational",
+    "estimatedVolume": "high",
+    "priority": 3,
+    "status": "published",
+    "publishedDate": "2026-03-04",
+    "publishedSlug": "o-que-e-tvl-total-value-locked",
+    "category": "defi",
+    "apiCategory": "Guide"
+  },
+  {
+    "id": 4,
+    "title": "Crypto Portfolio Diversification: How to Reduce Risk in 2026",
+    "slug": "crypto-portfolio-diversification-guide",
+    "type": "how-to",
+    "primaryKeyword": "crypto portfolio diversification",
+    "secondaryKeywords": [
+      "diversify crypto portfolio",
+      "crypto asset allocation",
+      "reduce crypto risk"
+    ],
+    "excerpt": "Learn why diversification is essential for crypto investors and how to build a balanced portfolio across sectors, market caps, and risk levels.",
+    "qinvAngle": "QINV automates diversification through AI-managed index funds, removing the guesswork from portfolio construction.",
+    "searchIntent": "informational",
+    "estimatedVolume": "high",
+    "priority": 4,
+    "status": "pending",
+    "category": "strategy",
+    "apiCategory": "Guide"
+  },
+  {
+    "id": 5,
+    "title": "What Are Smart Contracts? How They Power DeFi",
+    "slug": "what-are-smart-contracts-defi",
+    "type": "educational",
+    "primaryKeyword": "what are smart contracts",
+    "secondaryKeywords": [
+      "smart contracts explained",
+      "how smart contracts work",
+      "smart contracts DeFi"
+    ],
+    "excerpt": "Smart contracts are the building blocks of DeFi. Learn how they work, why they matter, and how platforms like QINV use them to automate fund management.",
+    "qinvAngle": "QINV's index funds are managed through smart contracts on Base, ensuring transparency and trustless execution.",
+    "searchIntent": "informational",
+    "estimatedVolume": "high",
+    "priority": 5,
+    "status": "pending",
+    "category": "technology",
+    "apiCategory": "Guide"
+  },
+  {
+    "id": 6,
+    "title": "QINV vs Index Coop: Which Crypto Index Fund Is Right for You?",
+    "slug": "qinv-vs-index-coop-comparison",
+    "type": "comparison",
+    "primaryKeyword": "Index Coop review",
+    "secondaryKeywords": [
+      "Index Coop vs alternatives",
+      "best crypto index fund",
+      "DPI token review"
+    ],
+    "excerpt": "Compare QINV and Index Coop across fees, strategy, automation, and performance. Find out which crypto index fund platform fits your investment goals.",
+    "qinvAngle": "Highlights QINV's AI-driven rebalancing and Base network advantages versus Index Coop's governance-based approach.",
+    "searchIntent": "commercial",
+    "estimatedVolume": "medium",
+    "priority": 6,
+    "status": "pending",
+    "category": "comparison",
+    "apiCategory": "Comparison"
+  },
+  {
+    "id": 7,
+    "title": "What Is Yield Farming? Complete Guide for Beginners",
+    "slug": "what-is-yield-farming-guide",
+    "type": "educational",
+    "primaryKeyword": "yield farming crypto",
+    "secondaryKeywords": [
+      "yield farming explained",
+      "how to yield farm",
+      "DeFi yield farming"
+    ],
+    "excerpt": "Yield farming lets you earn returns on crypto assets by providing liquidity to DeFi protocols. Learn how it works, the risks involved, and how to get started.",
+    "qinvAngle": "QINV's AI can allocate to yield-generating strategies, offering passive yield farming exposure without manual effort.",
+    "searchIntent": "informational",
+    "estimatedVolume": "high",
+    "priority": 7,
+    "status": "pending",
+    "category": "defi",
+    "apiCategory": "Guide"
+  },
+  {
+    "id": 8,
+    "title": "What Is an Automated Market Maker (AMM)? How DEXs Work",
+    "slug": "what-is-automated-market-maker-amm",
+    "type": "educational",
+    "primaryKeyword": "automated market maker",
+    "secondaryKeywords": [
+      "AMM explained",
+      "how AMM works",
+      "Uniswap AMM"
+    ],
+    "excerpt": "Automated Market Makers power decentralized exchanges. Learn how AMMs work, the role of liquidity pools, and why they're fundamental to DeFi.",
+    "qinvAngle": "QINV executes trades through AMMs on Base, leveraging deep liquidity for efficient index rebalancing.",
+    "searchIntent": "informational",
+    "estimatedVolume": "medium",
+    "priority": 8,
+    "status": "pending",
+    "category": "defi",
+    "apiCategory": "Guide"
+  },
+  {
+    "id": 9,
+    "title": "What Is Impermanent Loss? A Simple Explanation",
+    "slug": "what-is-impermanent-loss-explained",
+    "type": "educational",
+    "primaryKeyword": "impermanent loss",
+    "secondaryKeywords": [
+      "impermanent loss explained",
+      "impermanent loss calculator",
+      "how to avoid impermanent loss"
+    ],
+    "excerpt": "Impermanent loss is the hidden cost of providing liquidity in DeFi. Learn what causes it, how to calculate it, and strategies to minimize its impact.",
+    "qinvAngle": "QINV's index fund approach avoids impermanent loss entirely since users hold fund shares rather than LP positions.",
+    "searchIntent": "informational",
+    "estimatedVolume": "medium",
+    "priority": 9,
+    "status": "pending",
+    "category": "defi",
+    "apiCategory": "Guide"
+  },
+  {
+    "id": 10,
+    "title": "How to Bridge Crypto to Base Network: Step-by-Step Guide",
+    "slug": "how-to-bridge-crypto-to-base-network",
+    "type": "how-to",
+    "primaryKeyword": "bridge to Base network",
+    "secondaryKeywords": [
+      "Base bridge tutorial",
+      "how to move crypto to Base",
+      "Base network bridge"
+    ],
+    "excerpt": "Learn how to bridge your crypto assets from Ethereum or other chains to Base network. Step-by-step instructions with screenshots for beginners.",
+    "qinvAngle": "Bridging to Base is the first step to investing in QINV's index funds — this guide removes the friction.",
+    "searchIntent": "informational",
+    "estimatedVolume": "medium",
+    "priority": 10,
+    "status": "pending",
+    "category": "technology",
+    "apiCategory": "Guide"
+  },
+  {
+    "id": 11,
+    "title": "QINV vs Enzyme Finance: AI-Managed vs User-Managed Funds",
+    "slug": "qinv-vs-enzyme-finance-comparison",
+    "type": "comparison",
+    "primaryKeyword": "Enzyme Finance review",
+    "secondaryKeywords": [
+      "Enzyme Finance alternatives",
+      "on-chain asset management",
+      "Enzyme vs alternatives"
+    ],
+    "excerpt": "Compare QINV's AI-managed index funds with Enzyme Finance's user-managed vaults. Discover key differences in strategy, fees, and ease of use.",
+    "qinvAngle": "Demonstrates how QINV's AI automation eliminates the need for active fund management expertise required by Enzyme.",
+    "searchIntent": "commercial",
+    "estimatedVolume": "medium",
+    "priority": 11,
+    "status": "pending",
+    "category": "comparison",
+    "apiCategory": "Comparison"
+  },
+  {
+    "id": 12,
+    "title": "What Is Portfolio Rebalancing? Why It Matters in Crypto",
+    "slug": "crypto-portfolio-rebalancing-guide",
+    "type": "educational",
+    "primaryKeyword": "crypto portfolio rebalancing",
+    "secondaryKeywords": [
+      "rebalancing strategy crypto",
+      "how to rebalance portfolio",
+      "automated rebalancing"
+    ],
+    "excerpt": "Portfolio rebalancing keeps your crypto investments aligned with your strategy. Learn when and how to rebalance, and why automation beats manual management.",
+    "qinvAngle": "QINV's AI handles rebalancing automatically, adjusting allocations based on market conditions without user intervention.",
+    "searchIntent": "informational",
+    "estimatedVolume": "medium",
+    "priority": 12,
+    "status": "pending",
+    "category": "strategy",
+    "apiCategory": "Guide"
+  },
+  {
+    "id": 13,
+    "title": "What Is a Layer 2 (L2)? Scaling Solutions Explained",
+    "slug": "what-is-layer-2-scaling-explained",
+    "type": "educational",
+    "primaryKeyword": "what is Layer 2 crypto",
+    "secondaryKeywords": [
+      "L2 scaling solutions",
+      "Layer 2 explained",
+      "Ethereum L2"
+    ],
+    "excerpt": "Layer 2 solutions make blockchain faster and cheaper. Learn how L2s like Base, Arbitrum, and Optimism work and why they matter for DeFi users.",
+    "qinvAngle": "QINV is built on Base (an L2), giving users low fees and fast transactions for index fund operations.",
+    "searchIntent": "informational",
+    "estimatedVolume": "high",
+    "priority": 13,
+    "status": "pending",
+    "category": "technology",
+    "apiCategory": "Guide"
+  },
+  {
+    "id": 14,
+    "title": "10 Best DeFi Projects to Watch in 2026",
+    "slug": "best-defi-projects-2026",
+    "type": "listicle",
+    "primaryKeyword": "best DeFi projects 2026",
+    "secondaryKeywords": [
+      "top DeFi protocols",
+      "DeFi projects to invest in",
+      "promising DeFi tokens"
+    ],
+    "excerpt": "Discover the top DeFi projects shaping the industry in 2026. From lending protocols to index funds, here are the platforms worth watching.",
+    "qinvAngle": "QINV is featured as a leading AI-managed index fund platform, showcasing its unique position in the DeFi landscape.",
+    "searchIntent": "commercial",
+    "estimatedVolume": "high",
+    "priority": 14,
+    "status": "pending",
+    "category": "defi",
+    "apiCategory": "Investments"
+  },
+  {
+    "id": 15,
+    "title": "How to Read On-Chain Data: A Beginner's Guide to Blockchain Explorers",
+    "slug": "how-to-read-on-chain-data-blockchain-explorers",
+    "type": "how-to",
+    "primaryKeyword": "how to read on-chain data",
+    "secondaryKeywords": [
+      "blockchain explorer tutorial",
+      "Etherscan guide",
+      "BaseScan tutorial"
+    ],
+    "excerpt": "Learn how to use blockchain explorers like Etherscan and BaseScan to verify transactions, check smart contracts, and do your own research on-chain.",
+    "qinvAngle": "Users can verify QINV's smart contracts and fund holdings transparently on BaseScan — this guide shows how.",
+    "searchIntent": "informational",
+    "estimatedVolume": "medium",
+    "priority": 15,
+    "status": "pending",
+    "category": "technology",
+    "apiCategory": "Guide"
+  },
+  {
+    "id": 16,
+    "title": "Crypto Risk Management: How to Protect Your Portfolio",
+    "slug": "crypto-risk-management-guide",
+    "type": "how-to",
+    "primaryKeyword": "crypto risk management",
+    "secondaryKeywords": [
+      "manage crypto risk",
+      "crypto portfolio risk",
+      "protect crypto investments"
+    ],
+    "excerpt": "Learn essential risk management strategies for crypto investing, including position sizing, stop losses, and diversification techniques.",
+    "qinvAngle": "QINV's AI incorporates risk management into its index strategy, automatically adjusting exposure based on market conditions.",
+    "searchIntent": "informational",
+    "estimatedVolume": "medium",
+    "priority": 16,
+    "status": "pending",
+    "category": "strategy",
+    "apiCategory": "Guide"
+  },
+  {
+    "id": 17,
+    "title": "What Is Market Cap in Crypto? How to Use It for Investment Decisions",
+    "slug": "what-is-market-cap-crypto",
+    "type": "educational",
+    "primaryKeyword": "crypto market cap",
+    "secondaryKeywords": [
+      "market cap explained",
+      "market cap vs fully diluted",
+      "how to use market cap"
+    ],
+    "excerpt": "Market cap is a key metric for evaluating crypto assets. Learn how it's calculated, what it tells you, and how to use it when making investment decisions.",
+    "qinvAngle": "QINV's index weighting uses market cap as a core factor in determining asset allocation.",
+    "searchIntent": "informational",
+    "estimatedVolume": "high",
+    "priority": 17,
+    "status": "pending",
+    "category": "investing",
+    "apiCategory": "Guide"
+  },
+  {
+    "id": 18,
+    "title": "QINV vs Set Protocol (TokenSets): Automated vs Social Trading",
+    "slug": "qinv-vs-set-protocol-tokenssets-comparison",
+    "type": "comparison",
+    "primaryKeyword": "Set Protocol review",
+    "secondaryKeywords": [
+      "TokenSets review",
+      "Set Protocol alternatives",
+      "automated crypto trading"
+    ],
+    "excerpt": "Compare QINV and Set Protocol (TokenSets) for automated crypto portfolio management. See how AI-driven indexing stacks up against social trading strategies.",
+    "qinvAngle": "Shows how QINV's AI-managed approach outperforms reliance on individual trader strategies offered by Set Protocol.",
+    "searchIntent": "commercial",
+    "estimatedVolume": "low",
+    "priority": 18,
+    "status": "pending",
+    "category": "comparison",
+    "apiCategory": "Comparison"
+  },
+  {
+    "id": 19,
+    "title": "What Is Liquidity in Crypto? Why It Matters for Traders and Investors",
+    "slug": "what-is-liquidity-crypto",
+    "type": "educational",
+    "primaryKeyword": "crypto liquidity",
+    "secondaryKeywords": [
+      "liquidity explained crypto",
+      "liquidity pools",
+      "why liquidity matters"
+    ],
+    "excerpt": "Liquidity determines how easily you can buy or sell crypto without affecting the price. Learn what liquidity means, how to measure it, and why it's critical.",
+    "qinvAngle": "QINV's AI prioritizes liquid assets for its index, ensuring users can enter and exit positions smoothly.",
+    "searchIntent": "informational",
+    "estimatedVolume": "medium",
+    "priority": 19,
+    "status": "pending",
+    "category": "defi",
+    "apiCategory": "Guide"
+  },
+  {
+    "id": 20,
+    "title": "What Is Account Abstraction (ERC-4337)? The Future of Crypto Wallets",
+    "slug": "what-is-account-abstraction-erc-4337",
+    "type": "educational",
+    "primaryKeyword": "account abstraction crypto",
+    "secondaryKeywords": [
+      "ERC-4337 explained",
+      "smart contract wallets",
+      "account abstraction wallets"
+    ],
+    "excerpt": "Account abstraction simplifies crypto UX with smart contract wallets, gasless transactions, and social recovery. Learn how ERC-4337 is changing Web3.",
+    "qinvAngle": "QINV leverages account abstraction on Base to offer a seamless, user-friendly investment experience.",
+    "searchIntent": "informational",
+    "estimatedVolume": "medium",
+    "priority": 20,
+    "status": "pending",
+    "category": "technology",
+    "apiCategory": "Guide"
+  },
+  {
+    "id": 21,
+    "title": "DeFi Lending and Borrowing Explained: Aave, Compound, and More",
+    "slug": "defi-lending-borrowing-explained",
+    "type": "educational",
+    "primaryKeyword": "DeFi lending",
+    "secondaryKeywords": [
+      "DeFi borrowing",
+      "Aave explained",
+      "crypto lending platforms"
+    ],
+    "excerpt": "DeFi lending protocols let you earn interest or borrow against your crypto. Learn how platforms like Aave and Compound work and the risks involved.",
+    "qinvAngle": "QINV's index may include exposure to leading lending protocols, giving investors indirect access to this growing sector.",
+    "searchIntent": "informational",
+    "estimatedVolume": "medium",
+    "priority": 21,
+    "status": "pending",
+    "category": "defi",
+    "apiCategory": "Guide"
+  },
+  {
+    "id": 22,
+    "title": "How to DYOR (Do Your Own Research) in Crypto: A Framework",
+    "slug": "how-to-dyor-crypto-research",
+    "type": "how-to",
+    "primaryKeyword": "DYOR crypto",
+    "secondaryKeywords": [
+      "how to research crypto",
+      "crypto due diligence",
+      "evaluate crypto projects"
+    ],
+    "excerpt": "Learn a systematic framework for evaluating crypto projects. From tokenomics to team analysis, this guide teaches you how to do your own research properly.",
+    "qinvAngle": "QINV's AI does the research for you, but understanding DYOR helps investors appreciate the value of algorithmic analysis.",
+    "searchIntent": "informational",
+    "estimatedVolume": "medium",
+    "priority": 22,
+    "status": "pending",
+    "category": "strategy",
+    "apiCategory": "Guide"
+  },
+  {
+    "id": 23,
+    "title": "QINV vs Yearn Finance: Index Funds vs Yield Optimization",
+    "slug": "qinv-vs-yearn-finance-comparison",
+    "type": "comparison",
+    "primaryKeyword": "Yearn Finance review",
+    "secondaryKeywords": [
+      "Yearn Finance alternatives",
+      "YFI review",
+      "yield optimizer vs index fund"
+    ],
+    "excerpt": "Compare QINV's index fund approach with Yearn Finance's yield optimization vaults. Understand the key differences in strategy, risk, and returns.",
+    "qinvAngle": "Clarifies how QINV's diversified index strategy differs from Yearn's yield-chasing approach and suits different investor profiles.",
+    "searchIntent": "commercial",
+    "estimatedVolume": "medium",
+    "priority": 23,
+    "status": "pending",
+    "category": "comparison",
+    "apiCategory": "Comparison"
+  },
+  {
+    "id": 24,
+    "title": "What Are ERC-20 Tokens? The Standard Behind Most Crypto Tokens",
+    "slug": "what-are-erc-20-tokens-explained",
+    "type": "educational",
+    "primaryKeyword": "ERC-20 tokens",
+    "secondaryKeywords": [
+      "ERC-20 explained",
+      "ERC-20 standard",
+      "what is ERC-20"
+    ],
+    "excerpt": "ERC-20 is the most widely used token standard in crypto. Learn what it means, how it works, and why almost every DeFi token uses this standard.",
+    "qinvAngle": "QINV's index fund tokens follow the ERC-20 standard, making them compatible with any wallet and DeFi protocol.",
+    "searchIntent": "informational",
+    "estimatedVolume": "medium",
+    "priority": 24,
+    "status": "pending",
+    "category": "technology",
+    "apiCategory": "Guide"
+  },
+  {
+    "id": 25,
+    "title": "Passive Income in Crypto: 7 Strategies That Actually Work in 2026",
+    "slug": "passive-income-crypto-strategies",
+    "type": "listicle",
+    "primaryKeyword": "passive income crypto",
+    "secondaryKeywords": [
+      "earn passive income crypto",
+      "crypto passive income strategies",
+      "make money with crypto"
+    ],
+    "excerpt": "Explore proven strategies for earning passive income with crypto, from staking and lending to index funds and yield farming.",
+    "qinvAngle": "QINV's AI-managed index funds are highlighted as one of the simplest ways to earn passive crypto returns.",
+    "searchIntent": "commercial",
+    "estimatedVolume": "high",
+    "priority": 25,
+    "status": "pending",
+    "category": "strategy",
+    "apiCategory": "Investments"
+  },
+  {
+    "id": 26,
+    "title": "What Are Blockchain Oracles? How They Connect DeFi to the Real World",
+    "slug": "what-are-blockchain-oracles",
+    "type": "educational",
+    "primaryKeyword": "blockchain oracles",
+    "secondaryKeywords": [
+      "oracle problem blockchain",
+      "Chainlink oracle",
+      "DeFi oracles explained"
+    ],
+    "excerpt": "Blockchain oracles bridge on-chain and off-chain data. Learn how oracles like Chainlink work and why they're essential for DeFi price feeds and automation.",
+    "qinvAngle": "QINV relies on oracle price feeds to accurately value index assets and trigger rebalancing actions.",
+    "searchIntent": "informational",
+    "estimatedVolume": "medium",
+    "priority": 26,
+    "status": "pending",
+    "category": "technology",
+    "apiCategory": "Guide"
+  },
+  {
+    "id": 27,
+    "title": "How to Start Investing in Crypto with $100 or Less",
+    "slug": "how-to-start-investing-crypto-small-budget",
+    "type": "how-to",
+    "primaryKeyword": "how to invest in crypto",
+    "secondaryKeywords": [
+      "start investing crypto",
+      "crypto investing for beginners",
+      "invest $100 crypto"
+    ],
+    "excerpt": "You don't need thousands to start investing in crypto. Learn how to build a diversified portfolio starting with just $100 using smart strategies.",
+    "qinvAngle": "QINV lets anyone invest in a diversified crypto index with no minimum, making it perfect for small-budget investors.",
+    "searchIntent": "informational",
+    "estimatedVolume": "high",
+    "priority": 27,
+    "status": "pending",
+    "category": "investing",
+    "apiCategory": "Guide"
+  },
+  {
+    "id": 28,
+    "title": "What Is Gas in Crypto? Understanding Transaction Fees",
+    "slug": "what-is-gas-crypto-transaction-fees",
+    "type": "educational",
+    "primaryKeyword": "crypto gas fees",
+    "secondaryKeywords": [
+      "what is gas Ethereum",
+      "gas fees explained",
+      "how to reduce gas fees"
+    ],
+    "excerpt": "Gas fees are the cost of using blockchain networks. Learn what gas is, why fees vary, and how Layer 2s like Base drastically reduce transaction costs.",
+    "qinvAngle": "QINV on Base offers near-zero gas fees, making frequent rebalancing and small investments economically viable.",
+    "searchIntent": "informational",
+    "estimatedVolume": "high",
+    "priority": 28,
+    "status": "pending",
+    "category": "technology",
+    "apiCategory": "Guide"
+  },
+  {
+    "id": 29,
+    "title": "Staking vs Index Funds: Which Crypto Strategy Is Better?",
+    "slug": "staking-vs-index-funds-crypto",
+    "type": "comparison",
+    "primaryKeyword": "crypto staking vs investing",
+    "secondaryKeywords": [
+      "staking vs index funds",
+      "staking or investing crypto",
+      "best crypto strategy"
+    ],
+    "excerpt": "Should you stake your crypto or invest in an index fund? Compare the returns, risks, and effort required for both strategies.",
+    "qinvAngle": "Positions QINV's index funds as a complementary or alternative strategy to staking for broader market exposure.",
+    "searchIntent": "commercial",
+    "estimatedVolume": "medium",
+    "priority": 29,
+    "status": "pending",
+    "category": "strategy",
+    "apiCategory": "Comparison"
+  },
+  {
+    "id": 30,
+    "title": "Top 5 Crypto Index Funds Compared: 2026 Edition",
+    "slug": "best-crypto-index-funds-compared-2026",
+    "type": "listicle",
+    "primaryKeyword": "best crypto index funds",
+    "secondaryKeywords": [
+      "crypto index fund comparison",
+      "top crypto index funds",
+      "crypto index fund 2026"
+    ],
+    "excerpt": "Compare the leading crypto index fund platforms of 2026 by fees, performance, strategy, and ease of use. Find the best option for your investment goals.",
+    "qinvAngle": "QINV is positioned as the top AI-managed option, with direct feature comparisons showing its advantages.",
+    "searchIntent": "commercial",
+    "estimatedVolume": "high",
+    "priority": 30,
+    "status": "pending",
+    "category": "comparison",
+    "apiCategory": "Investments"
+  },
+  {
+    "id": 31,
+    "title": "What Is Tokenomics? How to Evaluate a Crypto Project's Economics",
+    "slug": "what-is-tokenomics-crypto",
+    "type": "educational",
+    "primaryKeyword": "tokenomics",
+    "secondaryKeywords": [
+      "tokenomics explained",
+      "how to analyze tokenomics",
+      "crypto token economics"
+    ],
+    "excerpt": "Tokenomics determines a crypto project's long-term value. Learn how to evaluate supply, distribution, utility, and incentive structures.",
+    "qinvAngle": "QINV's AI analyzes tokenomics as part of its asset selection process for index composition.",
+    "searchIntent": "informational",
+    "estimatedVolume": "medium",
+    "priority": 31,
+    "status": "pending",
+    "category": "investing",
+    "apiCategory": "Guide"
+  },
+  {
+    "id": 32,
+    "title": "How to Use DeFi Safely: Security Best Practices",
+    "slug": "defi-security-best-practices",
+    "type": "how-to",
+    "primaryKeyword": "DeFi security",
+    "secondaryKeywords": [
+      "DeFi safety tips",
+      "avoid DeFi scams",
+      "smart contract security"
+    ],
+    "excerpt": "DeFi offers huge opportunities but also serious risks. Learn essential security practices to protect your assets from hacks, scams, and exploits.",
+    "qinvAngle": "QINV's audited smart contracts and AI management reduce the security burden on individual users.",
+    "searchIntent": "informational",
+    "estimatedVolume": "medium",
+    "priority": 32,
+    "status": "pending",
+    "category": "defi",
+    "apiCategory": "Guide"
+  },
+  {
+    "id": 33,
+    "title": "Bull vs Bear Market: How to Invest in Any Market Condition",
+    "slug": "bull-vs-bear-market-crypto-investing",
+    "type": "educational",
+    "primaryKeyword": "bull vs bear market crypto",
+    "secondaryKeywords": [
+      "crypto bear market strategy",
+      "invest during bear market",
+      "crypto market cycles"
+    ],
+    "excerpt": "Learn the differences between bull and bear markets in crypto and discover strategies that work in both conditions, from DCA to defensive allocation.",
+    "qinvAngle": "QINV's AI adapts its index strategy to market conditions, helping investors navigate both bull and bear cycles.",
+    "searchIntent": "informational",
+    "estimatedVolume": "medium",
+    "priority": 33,
+    "status": "pending",
+    "category": "strategy",
+    "apiCategory": "Guide"
+  },
+  {
+    "id": 34,
+    "title": "What Are Stablecoins? USDC, USDT, and DAI Explained",
+    "slug": "what-are-stablecoins-usdc-usdt-dai",
+    "type": "educational",
+    "primaryKeyword": "what are stablecoins",
+    "secondaryKeywords": [
+      "stablecoins explained",
+      "USDC vs USDT",
+      "stablecoin types"
+    ],
+    "excerpt": "Stablecoins are the backbone of DeFi. Learn how USDC, USDT, and DAI maintain their peg, the risks of each, and how they're used in crypto investing.",
+    "qinvAngle": "QINV accepts stablecoins as the entry point for index fund investments, making it easy to go from stable to diversified.",
+    "searchIntent": "informational",
+    "estimatedVolume": "high",
+    "priority": 34,
+    "status": "pending",
+    "category": "defi",
+    "apiCategory": "Guide"
+  },
+  {
+    "id": 35,
+    "title": "AI in Crypto Trading: How Machine Learning Is Changing DeFi",
+    "slug": "ai-crypto-trading-machine-learning-defi",
+    "type": "educational",
+    "primaryKeyword": "AI crypto trading",
+    "secondaryKeywords": [
+      "AI DeFi",
+      "machine learning crypto",
+      "AI trading bots"
+    ],
+    "excerpt": "AI and machine learning are transforming crypto trading and DeFi. Learn how AI-powered platforms analyze data, manage risk, and optimize portfolios.",
+    "qinvAngle": "QINV is a prime example of AI-managed DeFi, using machine learning to optimize index fund composition and timing.",
+    "searchIntent": "informational",
+    "estimatedVolume": "medium",
+    "priority": 35,
+    "status": "pending",
+    "category": "technology",
+    "apiCategory": "Guide"
+  },
+  {
+    "id": 36,
+    "title": "Crypto Tax Guide 2026: What You Need to Know",
+    "slug": "crypto-tax-guide-2026",
+    "type": "how-to",
+    "primaryKeyword": "crypto tax guide",
+    "secondaryKeywords": [
+      "crypto taxes 2026",
+      "how to report crypto taxes",
+      "DeFi tax implications"
+    ],
+    "excerpt": "Navigating crypto taxes can be complex. Learn the basics of crypto taxation, how DeFi transactions are taxed, and tools to simplify tax reporting.",
+    "qinvAngle": "QINV's index fund structure can simplify tax reporting compared to managing dozens of individual token positions.",
+    "searchIntent": "informational",
+    "estimatedVolume": "high",
+    "priority": 36,
+    "status": "pending",
+    "category": "investing",
+    "apiCategory": "Guide"
+  },
+  {
+    "id": 37,
+    "title": "What Is Slippage in Crypto? How to Minimize Trading Costs",
+    "slug": "what-is-slippage-crypto-trading",
+    "type": "educational",
+    "primaryKeyword": "slippage crypto",
+    "secondaryKeywords": [
+      "slippage explained",
+      "reduce slippage DeFi",
+      "slippage tolerance"
+    ],
+    "excerpt": "Slippage can eat into your crypto trading returns. Learn what causes slippage, how to set tolerance levels, and techniques to minimize its impact.",
+    "qinvAngle": "QINV's AI optimizes trade execution and routing to minimize slippage during index rebalancing.",
+    "searchIntent": "informational",
+    "estimatedVolume": "medium",
+    "priority": 37,
+    "status": "pending",
+    "category": "defi",
+    "apiCategory": "Guide"
+  },
+  {
+    "id": 38,
+    "title": "Optimistic Rollups vs ZK Rollups: L2 Scaling Compared",
+    "slug": "optimistic-rollups-vs-zk-rollups-compared",
+    "type": "comparison",
+    "primaryKeyword": "optimistic rollups vs zk rollups",
+    "secondaryKeywords": [
+      "L2 rollups compared",
+      "rollup technology",
+      "Base rollup type"
+    ],
+    "excerpt": "Compare the two main Layer 2 scaling approaches: Optimistic Rollups and ZK Rollups. Learn the tradeoffs and why Base chose the Optimistic approach.",
+    "qinvAngle": "Explains why Base (an Optimistic Rollup) provides the ideal infrastructure for QINV's low-cost, fast operations.",
+    "searchIntent": "informational",
+    "estimatedVolume": "medium",
+    "priority": 38,
+    "status": "pending",
+    "category": "technology",
+    "apiCategory": "Comparison"
+  },
+  {
+    "id": 39,
+    "title": "How to Build a Long-Term Crypto Investment Plan",
+    "slug": "long-term-crypto-investment-plan",
+    "type": "how-to",
+    "primaryKeyword": "long term crypto investing",
+    "secondaryKeywords": [
+      "crypto investment plan",
+      "hold crypto long term",
+      "crypto retirement strategy"
+    ],
+    "excerpt": "Build a sustainable long-term crypto investment plan with clear goals, diversification, and periodic rebalancing. A framework for patient investors.",
+    "qinvAngle": "QINV's automated index management is built for long-term investors who want diversified exposure without daily management.",
+    "searchIntent": "informational",
+    "estimatedVolume": "medium",
+    "priority": 39,
+    "status": "pending",
+    "category": "strategy",
+    "apiCategory": "Guide"
+  },
+  {
+    "id": 40,
+    "title": "DeFi vs CeFi: Decentralized vs Centralized Finance Compared",
+    "slug": "defi-vs-cefi-comparison",
+    "type": "comparison",
+    "primaryKeyword": "DeFi vs CeFi",
+    "secondaryKeywords": [
+      "decentralized vs centralized finance",
+      "DeFi advantages",
+      "CeFi vs DeFi risks"
+    ],
+    "excerpt": "Compare decentralized and centralized finance across security, control, fees, and accessibility. Understand why DeFi is gaining ground over traditional CeFi.",
+    "qinvAngle": "QINV offers the best of both worlds: CeFi-level simplicity with DeFi's transparency and self-custody.",
+    "searchIntent": "informational",
+    "estimatedVolume": "medium",
+    "priority": 40,
+    "status": "pending",
+    "category": "defi",
+    "apiCategory": "Comparison"
+  }
+]

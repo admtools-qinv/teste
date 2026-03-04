@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kanban</title>
+<link rel="stylesheet" href="kanban2.css">
+</head>
+<body>
+
+<header class="toolbar">
+  <div class="toolbar-left">
+    <div class="segmented-control" id="segmentedControl">
+      <div class="segment-pill" id="segmentPill"></div>
+      <button class="segment active" data-board="clawdemir">Clawdemir</button>
+      <button class="segment" data-board="aragorn">Aragorn</button>
+    </div>
+  </div>
+
+  <div class="toolbar-center">
+    <div class="stats-row" id="stats"></div>
+  </div>
+
+  <div class="toolbar-right">
+    <span class="toolbar-date" id="subtitle"></span>
+  </div>
+</header>
+
+<div class="progress-track">
+  <div class="progress-fill" id="progressFill"></div>
+</div>
+
+<main class="board" id="board"></main>
+
+<div class="toast-container" id="toasts"></div>
+
+<div class="modal-overlay" id="modal">
+  <div class="modal-card">
+    <h2 class="modal-title">Nova Tarefa</h2>
+    <label class="field-label" for="taskTitle">Título</label>
+    <input class="field-input" type="text" id="taskTitle" placeholder="O que precisa ser feito?">
+    <label class="field-label" for="taskDesc">Descrição</label>
+    <textarea class="field-input field-textarea" id="taskDesc" placeholder="Detalhes opcionais..."></textarea>
+    <label class="field-label">Prioridade</label>
+    <div class="priority-selector">
+      <button class="priority-option" data-priority="low">
+        <span class="priority-dot dot-low"></span>Baixa
+      </button>
+      <button class="priority-option selected" data-priority="medium">
+        <span class="priority-dot dot-medium"></span>Média
+      </button>
+      <button class="priority-option" data-priority="high">
+        <span class="priority-dot dot-high"></span>Alta
+      </button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary btn-cancel">Cancelar</button>
+      <button class="btn-primary btn-save">Criar Tarefa</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="detailModal">
+  <div class="modal-card modal-detail">
+    <div class="detail-header">
+      <h2 class="modal-title" id="detailTitle"></h2>
+      <span class="task-priority" id="detailPriority"></span>
+    </div>
+    <p class="detail-desc" id="detailDesc"></p>
+    <div class="detail-meta">
+      <span class="detail-date" id="detailDate"></span>
+      <span class="detail-author" id="detailAuthor"></span>
+    </div>
+    <div class="detail-fields">
+      <label class="field-label">Editar título</label>
+      <input class="field-input" type="text" id="editTitle">
+      <label class="field-label">Editar descrição</label>
+      <textarea class="field-input field-textarea" id="editDesc"></textarea>
+      <label class="field-label">Prioridade</label>
+      <div class="priority-selector" id="editPrioritySelector">
+        <button class="priority-option" data-edit-priority="low">
+          <span class="priority-dot dot-low"></span>Baixa
+        </button>
+        <button class="priority-option" data-edit-priority="medium">
+          <span class="priority-dot dot-medium"></span>Média
+        </button>
+        <button class="priority-option" data-edit-priority="high">
+          <span class="priority-dot dot-high"></span>Alta
+        </button>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary btn-detail-close">Fechar</button>
+      <button class="btn-primary btn-detail-save">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<script src="kanban2.js"></script>
+</body>
+</html>

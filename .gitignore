@@ -1,0 +1,20 @@
+# Secrets & credentials
+*.pem
+*.key
+.env
+.env.*
+
+# SQLite runtime files
+*.db-shm
+*.db-wal
+kanban-server.log
+
+# Node modules
+node_modules/
+
+# OpenClaw internal state
+.openclaw/
+
+# OS files
+.DS_Store
+Thumbs.db
