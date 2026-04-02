@@ -25,7 +25,7 @@ class _ExampleHome extends StatelessWidget {
   Widget build(BuildContext context) {
     return OnboardingScreen(
       steps: defaultOnboardingSteps,
-      voiceService: NullVoiceService(),
+      voiceService: FlutterTtsVoiceService(),
       backend: _ExampleBackend(),
       analytics: _ExampleAnalytics(),
     );
