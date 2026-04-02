@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/qinvweb3_tokens.dart';
+import 'glass_widgets.dart';
 
 class QInvStepCard extends StatelessWidget {
   final Widget child;
@@ -14,14 +15,11 @@ class QInvStepCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
+    return GlassCard(
       padding: padding,
-      decoration: BoxDecoration(
-        color: QInvWeb3Tokens.cardBgLight,
-        borderRadius: BorderRadius.circular(QInvWeb3Tokens.radiusCard),
-        border: Border.all(color: QInvWeb3Tokens.border),
-      ),
+      fillColor: QInvWeb3Tokens.cardBgDropdown.withValues(alpha: 0.38),
+      borderColor: Colors.white.withValues(alpha: 0.10),
+      blurSigma: 28,
       child: child,
     );
   }

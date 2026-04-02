@@ -4,6 +4,7 @@ export 'models/onboarding_review_item.dart';
 export 'models/onboarding_session.dart';
 export 'models/onboarding_step.dart';
 export 'presentation/onboarding_screen.dart';
+export 'presentation/widgets/glass_widgets.dart';
 export 'presentation/widgets/qinv_button.dart';
 export 'presentation/widgets/qinv_caption_bar.dart';
 export 'presentation/widgets/qinv_error_banner.dart';

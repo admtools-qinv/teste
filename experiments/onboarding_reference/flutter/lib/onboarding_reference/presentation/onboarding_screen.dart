@@ -8,6 +8,7 @@ import '../services/backend/onboarding_backend_service.dart';
 import '../services/analytics/onboarding_analytics_service.dart';
 import '../services/voice_service.dart';
 import '../theme/qinvweb3_tokens.dart';
+import 'widgets/glass_widgets.dart';
 import 'widgets/qinv_button.dart';
 import 'widgets/qinv_caption_bar.dart';
 import 'widgets/qinv_error_banner.dart';
@@ -489,18 +490,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
         return Scaffold(
           backgroundColor: QInvWeb3Tokens.background,
-          body: SafeArea(
-            child: AnimatedPadding(
-              duration: QInvWeb3Tokens.transitionAll,
-              padding: EdgeInsets.fromLTRB(
-                horizontalPadding,
-                verticalPadding,
-                horizontalPadding,
-                verticalPadding + bottomInset,
-              ),
-              child: AbsorbPointer(
-                absorbing: controller.isBusy || controller.isCompleted,
-                child: body,
+          body: GlassBackground(
+            child: SafeArea(
+              child: AnimatedPadding(
+                duration: QInvWeb3Tokens.transitionAll,
+                padding: EdgeInsets.fromLTRB(
+                  horizontalPadding,
+                  verticalPadding,
+                  horizontalPadding,
+                  verticalPadding + bottomInset,
+                ),
+                child: AbsorbPointer(
+                  absorbing: controller.isBusy || controller.isCompleted,
+                  child: body,
+                ),
               ),
             ),
           ),
