@@ -1,0 +1,29 @@
+{
+  "colors": {
+    "background": "#FFFFFF",
+    "surface": "#F6F7FB",
+    "textPrimary": "#101828",
+    "textSecondary": "#667085",
+    "primary": "#6D5EF7",
+    "accent": "#12B76A",
+    "border": "#EAECF0"
+  },
+  "typography": {
+    "fontFamily": "Inter",
+    "titleSize": 28,
+    "bodySize": 16,
+    "captionSize": 13
+  },
+  "spacing": {
+    "xs": 4,
+    "sm": 8,
+    "md": 16,
+    "lg": 24,
+    "xl": 32
+  },
+  "radius": {
+    "sm": 10,
+    "md": 16,
+    "lg": 24
+  }
+}
