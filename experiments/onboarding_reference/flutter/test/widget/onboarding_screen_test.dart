@@ -9,21 +9,31 @@ class _TestBackend implements OnboardingBackendService {
   Completer<void>? submitCompleter;
 
   @override
-  Future<void> clearAnswer({required String stepId}) async {}
+  Future<void> clearAnswer({required String sessionId, required String stepId}) async {}
 
   @override
-  Future<void> saveAnswer({required String stepId, required dynamic value}) async {}
+  Future<void> saveAnswer({
+    required String sessionId,
+    required String stepId,
+    required dynamic value,
+  }) async {}
 
   @override
-  Future<void> startSession() async {}
+  Future<OnboardingSessionDto> startSession() async {
+    return const OnboardingSessionDto(sessionId: 'test-session');
+  }
 
   @override
-  Future<void> submitAll(Map<String, dynamic> answers) async {
+  Future<SubmitResultDto> submitAll({
+    required String sessionId,
+    required Map<String, dynamic> answers,
+  }) async {
     submitCount += 1;
     final completer = submitCompleter;
     if (completer != null && !completer.isCompleted) {
       await completer.future;
     }
+    return const SubmitResultDto(success: true);
   }
 }
 
@@ -49,13 +59,13 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 10));
 
-    expect(find.text('Mock onboarding intro'), findsOneWidget);
-    expect(find.text('This is a mock onboarding flow.'), findsOneWidget);
-    expect(find.text('Continue'), findsOneWidget);
+    expect(find.text("Let's get you"), findsOneWidget);
+    expect(find.text('Ready in just a few steps.'), findsOneWidget);
+    expect(find.text('Get started'), findsOneWidget);
     expect(find.byType(QInvButton), findsWidgets);
   });
 
-  testWidgets('renders required and optional chips for step metadata', (tester) async {
+  testWidgets('advances from intro to singleChoice on Continue tap', (tester) async {
     const steps = [
       OnboardingStep(
         id: 'intro',
@@ -67,7 +77,7 @@ void main() {
       OnboardingStep(
         id: 'choice',
         type: OnboardingStepType.singleChoice,
-        title: 'Choice',
+        title: 'Choice step',
         caption: 'Caption',
         voiceText: 'Voice',
         required: false,
@@ -92,11 +102,12 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 10));
 
-    expect(find.text('Required'), findsOneWidget);
+    expect(find.text('Intro'), findsOneWidget);
     await tester.tap(find.text('Continue'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 10));
-    expect(find.text('Optional'), findsOneWidget);
+    expect(find.text('Choice step'), findsOneWidget);
+    expect(find.text('Option A'), findsOneWidget);
   });
 
   testWidgets('rehydrates a selected single choice when going back', (tester) async {
@@ -155,11 +166,11 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 10));
 
-    await tester.tap(find.text('Back'));
+    await tester.tap(find.byIcon(Icons.arrow_back_rounded));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 10));
 
-    expect(find.byIcon(Icons.check_circle_rounded), findsOneWidget);
+    expect(find.byIcon(Icons.check_rounded), findsOneWidget);
     await tester.tap(find.text('Continue').last);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 10));
@@ -238,7 +249,8 @@ void main() {
     expect(backend.submitCount, 1);
     expect(find.byType(CircularProgressIndicator), findsWidgets);
 
-    await tester.tap(find.text('Finish'));
+    // While busy the button shows 'Finishing…'; AbsorbPointer blocks the tap.
+    await tester.tap(find.text('Finishing…'));
     await tester.pump();
     expect(backend.submitCount, 1);
 

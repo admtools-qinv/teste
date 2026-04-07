@@ -1,15 +1,35 @@
+import '../../data/dtos/onboarding_session_dto.dart';
+import '../../data/dtos/submit_result_dto.dart';
 import 'onboarding_backend_service.dart';
 
+/// No-op implementation of [OnboardingBackendService].
+///
+/// All calls succeed silently. Use this during UI development or widget tests
+/// when a real backend is not needed.
 class NoopOnboardingBackendService implements OnboardingBackendService {
   @override
-  Future<void> clearAnswer({required String stepId}) async {}
+  Future<OnboardingSessionDto> startSession() async {
+    return const OnboardingSessionDto(sessionId: 'noop-session');
+  }
 
   @override
-  Future<void> saveAnswer({required String stepId, required dynamic value}) async {}
+  Future<void> saveAnswer({
+    required String sessionId,
+    required String stepId,
+    required dynamic value,
+  }) async {}
 
   @override
-  Future<void> startSession() async {}
+  Future<SubmitResultDto> submitAll({
+    required String sessionId,
+    required Map<String, dynamic> answers,
+  }) async {
+    return const SubmitResultDto(success: true);
+  }
 
   @override
-  Future<void> submitAll(Map<String, dynamic> answers) async {}
+  Future<void> clearAnswer({
+    required String sessionId,
+    required String stepId,
+  }) async {}
 }

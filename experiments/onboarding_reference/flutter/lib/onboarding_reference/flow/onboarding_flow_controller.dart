@@ -22,6 +22,7 @@ class OnboardingFlowController extends ChangeNotifier {
   String? validationError;
   String? serviceError;
   OnboardingSession session = const OnboardingSession();
+  String _sessionId = '';
 
   OnboardingFlowController({
     required this.steps,
@@ -115,7 +116,8 @@ class OnboardingFlowController extends ChangeNotifier {
     _notify();
 
     try {
-      await backend.startSession();
+      final dto = await backend.startSession();
+      _sessionId = dto.sessionId;
       unawaited(_trackEventSafe('onboarding_started'));
       return true;
     } catch (_) {
@@ -129,7 +131,11 @@ class OnboardingFlowController extends ChangeNotifier {
 
   Future<bool> validateCurrentStep([Object? value]) async {
     final candidate = value ?? session.answers[current.id];
-    final error = validator.validate(current, candidate);
+    final error = validator.validate(
+      current,
+      candidate,
+      sessionAnswers: session.answers,
+    );
     validationError = error;
     _notify();
     return error == null;
@@ -137,7 +143,7 @@ class OnboardingFlowController extends ChangeNotifier {
 
   Future<bool> _saveAnswer(String stepId, Object? value) async {
     try {
-      await backend.saveAnswer(stepId: stepId, value: value);
+      await backend.saveAnswer(sessionId: _sessionId, stepId: stepId, value: value);
       session = session.copyWithAnswer(stepId, value);
       validationError = null;
       serviceError = null;
@@ -171,7 +177,7 @@ class OnboardingFlowController extends ChangeNotifier {
             return false;
           }
           if (session.answers.containsKey(step.id)) {
-            await backend.clearAnswer(stepId: step.id);
+            await backend.clearAnswer(sessionId: _sessionId, stepId: step.id);
           }
           session = session.copyWithoutAnswer(step.id);
           validationError = null;
@@ -181,7 +187,8 @@ class OnboardingFlowController extends ChangeNotifier {
         }
       } else if (step.type == OnboardingStepType.textInput ||
           step.type == OnboardingStepType.phoneInput ||
-          step.type == OnboardingStepType.verificationCode) {
+          step.type == OnboardingStepType.verificationCode ||
+          step.type == OnboardingStepType.pinInput) {
         final candidate = inputValue?.toString().trim();
         if (candidate == null || candidate.isEmpty) {
           if (step.required) {
@@ -189,7 +196,7 @@ class OnboardingFlowController extends ChangeNotifier {
             return false;
           }
           if (session.answers.containsKey(step.id)) {
-            await backend.clearAnswer(stepId: step.id);
+            await backend.clearAnswer(sessionId: _sessionId, stepId: step.id);
           }
           session = session.copyWithoutAnswer(step.id);
           validationError = null;
@@ -202,7 +209,7 @@ class OnboardingFlowController extends ChangeNotifier {
       }
 
       if (!hasNext) {
-        await backend.submitAll(session.answers);
+        await backend.submitAll(sessionId: _sessionId, answers: session.answers);
         _completed = true;
         isBusy = false;
         _notify();

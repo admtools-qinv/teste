@@ -8,24 +8,33 @@ class _FakeBackend implements OnboardingBackendService {
   bool submitted = false;
 
   @override
-  Future<void> clearAnswer({required String stepId}) async {
+  Future<void> clearAnswer({required String sessionId, required String stepId}) async {
     cleared.add(stepId);
     saved.remove(stepId);
   }
 
   @override
-  Future<void> saveAnswer({required String stepId, required dynamic value}) async {
+  Future<void> saveAnswer({
+    required String sessionId,
+    required String stepId,
+    required dynamic value,
+  }) async {
     saved[stepId] = value;
   }
 
   @override
-  Future<void> startSession() async {
+  Future<OnboardingSessionDto> startSession() async {
     started = true;
+    return const OnboardingSessionDto(sessionId: 'test-session');
   }
 
   @override
-  Future<void> submitAll(Map<String, dynamic> answers) async {
+  Future<SubmitResultDto> submitAll({
+    required String sessionId,
+    required Map<String, dynamic> answers,
+  }) async {
     submitted = true;
+    return const SubmitResultDto(success: true);
   }
 }
 

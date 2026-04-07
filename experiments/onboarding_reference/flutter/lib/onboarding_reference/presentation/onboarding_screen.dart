@@ -1,19 +1,22 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../flow/onboarding_flow_controller.dart';
+import '../models/country.dart';
 import '../models/onboarding_step.dart';
-import '../services/backend/onboarding_backend_service.dart';
 import '../services/analytics/onboarding_analytics_service.dart';
+import '../services/backend/onboarding_backend_service.dart';
+import '../services/ip_geo_service.dart';
 import '../services/voice_service.dart';
 import '../theme/qinvweb3_tokens.dart';
 import 'widgets/glass_widgets.dart';
+import 'widgets/phone_input_field.dart';
+import 'widgets/pin_input_widget.dart';
 import 'widgets/qinv_button.dart';
-import 'widgets/qinv_caption_bar.dart';
 import 'widgets/qinv_error_banner.dart';
 import 'widgets/qinv_review_tile.dart';
-import 'widgets/qinv_step_card.dart';
 import 'widgets/qinv_text_field.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -41,7 +44,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final Map<String, String> _drafts = {};
   String? selectedOptionId;
   bool voiceReady = false;
+  bool _voiceMuted = false;
   String? _syncedStepId;
+  Country? _detectedCountry;
 
   @override
   void initState() {
@@ -53,25 +58,25 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
     inputController = TextEditingController();
     inputFocusNode = FocusNode();
-
+    _detectedCountry = IpGeoService.detectCountry();
     unawaited(_bootstrap());
   }
 
   Future<void> _bootstrap() async {
     await controller.initialize();
     if (!mounted) return;
-
     if (controller.serviceError != null) {
       setState(() {});
       return;
     }
-
     try {
       await widget.voiceService.initialize();
       if (!mounted) return;
       voiceReady = true;
       setState(() {});
-      await widget.voiceService.speak(controller.current.voiceText);
+      if (!_voiceMuted) {
+        await widget.voiceService.speak(controller.current.voiceText);
+      }
     } catch (_) {
       if (!mounted) return;
       voiceReady = false;
@@ -89,16 +94,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   void _syncStepState(OnboardingStep step) {
-    if (_syncedStepId == step.id) {
-      return;
-    }
-
+    if (_syncedStepId == step.id) return;
     _syncedStepId = step.id;
 
     if (step.type == OnboardingStepType.singleChoice) {
       final stored = controller.session.answers[step.id]?.toString();
-      final validIds = step.options.map((option) => option.id).toSet();
-      selectedOptionId = stored != null && validIds.contains(stored) ? stored : null;
+      final validIds = step.options.map((o) => o.id).toSet();
+      selectedOptionId =
+          stored != null && validIds.contains(stored) ? stored : null;
       return;
     }
 
@@ -108,26 +111,45 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         step.type == OnboardingStepType.phoneInput ||
         step.type == OnboardingStepType.verificationCode) {
       final draft = _drafts[step.id];
-      final value = draft ?? controller.session.answers[step.id]?.toString() ?? '';
+      final value =
+          draft ?? controller.session.answers[step.id]?.toString() ?? '';
       inputController.text = value;
-      inputController.selection = TextSelection.collapsed(offset: value.length);
+      inputController.selection =
+          TextSelection.collapsed(offset: value.length);
     }
-  }
-
-  void _clearTransientSelection() {
-    selectedOptionId = null;
   }
 
   Future<void> _goBack() async {
     final moved = await controller.previous();
     if (!mounted || !moved) return;
     setState(() {});
-    await widget.voiceService.speak(controller.current.voiceText);
+    final current = controller.current;
+    if (current.type == OnboardingStepType.textInput ||
+        current.type == OnboardingStepType.phoneInput ||
+        current.type == OnboardingStepType.verificationCode) {
+      Future.delayed(const Duration(milliseconds: 400), () {
+        if (mounted) inputFocusNode.requestFocus();
+      });
+    }
+    if (!_voiceMuted) await widget.voiceService.speak(current.voiceText);
+  }
+
+  Future<void> _toggleMute() async {
+    setState(() => _voiceMuted = !_voiceMuted);
+    if (_voiceMuted) {
+      HapticFeedback.lightImpact();
+      await widget.voiceService.stop();
+    } else {
+      HapticFeedback.lightImpact();
+    }
   }
 
   Future<void> _submitCurrentStep() async {
     final step = controller.current;
-    final inputValue = inputController.text.trim();
+    final inputValue = (step.type == OnboardingStepType.phoneInput ||
+            step.type == OnboardingStepType.pinInput)
+        ? (_drafts[step.id] ?? '').trim()
+        : inputController.text.trim();
     final ok = await controller.advanceCurrentStep(
       inputValue: inputValue,
       selectedOptionId: selectedOptionId,
@@ -150,96 +172,212 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       inputController.clear();
       inputFocusNode.unfocus();
     }
+    if (step.type == OnboardingStepType.pinInput) {
+      _drafts.remove(step.id);
+    }
 
-    _clearTransientSelection();
+    selectedOptionId = null;
     setState(() {});
 
-    if (controller.hasNext) {
+    final next = controller.current;
+    if (next.type == OnboardingStepType.textInput ||
+        next.type == OnboardingStepType.verificationCode) {
+      Future.delayed(const Duration(milliseconds: 400), () {
+        if (mounted) inputFocusNode.requestFocus();
+      });
+    } else {
+      inputFocusNode.unfocus();
+    }
+
+    if (controller.hasNext && !_voiceMuted) {
       await widget.voiceService.speak(controller.current.voiceText);
     }
   }
 
+  // ── Zone A: Progress ────────────────────────────────────────
+
+  Widget _buildProgress(BuildContext context, double progressValue) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Stack(
+          children: [
+            Container(
+              height: 2,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(999),
+              ),
+            ),
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 500),
+              curve: Curves.easeOutCubic,
+              height: 2,
+              width: constraints.maxWidth * progressValue.clamp(0.0, 1.0),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [QInvWeb3Tokens.primary, QInvWeb3Tokens.primaryLight],
+                ),
+                borderRadius: BorderRadius.circular(999),
+                boxShadow: [
+                  BoxShadow(
+                    color: QInvWeb3Tokens.primary.withValues(alpha: 0.55),
+                    blurRadius: 8,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // ── Zone B: Title ───────────────────────────────────────────
+
+  Widget _buildTitle(BuildContext context, OnboardingStep step) {
+    return Semantics(
+      header: true,
+      child: SizedBox(
+        width: double.infinity,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              step.title,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: QInvWeb3Tokens.fontSans,
+                fontSize: 32,
+                fontWeight: FontWeight.w500,
+                color: QInvWeb3Tokens.textHeading,
+                height: 1.10,
+                letterSpacing: -0.3,
+              ),
+            ),
+            if (step.titleItalic != null) ...[
+              const SizedBox(height: 2),
+              Text(
+                step.titleItalic!,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontFamily: QInvWeb3Tokens.fontSerif,
+                  fontStyle: FontStyle.italic,
+                  fontWeight: FontWeight.w400,
+                  fontSize: QInvWeb3Tokens.fontSizeTitleAccent,
+                  color: QInvWeb3Tokens.primaryLight,
+                  height: 1.20,
+                  letterSpacing: 0.0,
+                ),
+              ),
+            ],
+            const SizedBox(height: 12),
+            Text(
+              step.caption,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontFamily: QInvWeb3Tokens.fontSans,
+                fontSize: QInvWeb3Tokens.fontSizeSubtitle,
+                fontWeight: FontWeight.w400,
+                color: QInvWeb3Tokens.textMuted,
+                height: 1.55,
+                letterSpacing: 0.1,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── Zone C: Interactive content ─────────────────────────────
+
   Widget _buildOption(OnboardingStep step, OnboardingOption option) {
     final selected = selectedOptionId == option.id;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: QInvButton(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: _OptionCard(
         label: option.label,
-        outline: true,
-        busy: controller.isBusy,
         selected: selected,
-        onPressed: controller.isBusy
+        enabled: !controller.isBusy,
+        onTap: controller.isBusy
             ? null
             : () {
-                selectedOptionId = selected && !step.required ? null : option.id;
+                selectedOptionId =
+                    selected && !step.required ? null : option.id;
                 setState(() {});
               },
       ),
     );
   }
 
-  Widget _buildStepContent(OnboardingStep step) {
-    final isInteractionBlocked = controller.isBusy || controller.isCompleted;
-
+  Widget? _buildInteractiveContent(OnboardingStep step) {
     switch (step.type) {
       case OnboardingStepType.intro:
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const SizedBox(height: 24),
-            QInvButton(
-              label: controller.isBusy ? 'Loading…' : (step.primaryCtaLabel ?? 'Continue'),
-              busy: controller.isBusy,
-              onPressed: isInteractionBlocked ? null : _submitCurrentStep,
-            ),
-          ],
-        );
+        return null;
+
       case OnboardingStepType.singleChoice:
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: step.options.map((o) => _buildOption(step, o)).toList(),
+        );
+
+      case OnboardingStepType.pinInput:
+        return Column(
           children: [
-            const SizedBox(height: 8),
-            ...step.options.map((option) => _buildOption(step, option)),
-            const SizedBox(height: 4),
-            QInvButton(
-              label: controller.isBusy ? 'Saving…' : (step.primaryCtaLabel ?? 'Continue'),
-              busy: controller.isBusy,
-              selected: selectedOptionId != null,
-              onPressed: isInteractionBlocked || (step.required && selectedOptionId == null) ? null : _submitCurrentStep,
+            PinInputWidget(
+              key: ValueKey('pin_${step.id}'),
+              enabled: !controller.isBusy,
+              onChanged: (digits) => _drafts[step.id] = digits,
+              onComplete: () => unawaited(_submitCurrentStep()),
             ),
+            if (controller.validationError != null) ...[
+              const SizedBox(height: 12),
+              QInvErrorBanner(message: controller.validationError!),
+            ],
           ],
         );
-      case OnboardingStepType.textInput:
+
       case OnboardingStepType.phoneInput:
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            PhoneInputField(
+              controller: inputController,
+              initialCountry: _detectedCountry,
+              enabled: !controller.isBusy,
+              onChanged: (value) => _drafts[step.id] = value,
+              onSubmitted: () => unawaited(_submitCurrentStep()),
+            ),
+            if (controller.validationError != null) ...[
+              const SizedBox(height: 12),
+              QInvErrorBanner(message: controller.validationError!),
+            ],
+          ],
+        );
+
+      case OnboardingStepType.textInput:
       case OnboardingStepType.verificationCode:
         final inputType = step.type == OnboardingStepType.verificationCode
             ? TextInputType.number
             : step.inputKind == OnboardingInputKind.email
                 ? TextInputType.emailAddress
-                : step.inputKind == OnboardingInputKind.phone
-                    ? TextInputType.phone
-                    : TextInputType.text;
-
+                : TextInputType.text;
         final action = step.type == OnboardingStepType.verificationCode
             ? TextInputAction.done
             : TextInputAction.next;
-
-        final maxLength = step.type == OnboardingStepType.verificationCode ? 6 : null;
-
+        final maxLength =
+            step.type == OnboardingStepType.verificationCode ? 6 : null;
         final hasError = controller.validationError != null;
-        final helperText = step.required ? 'Required' : 'Optional';
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const SizedBox(height: 8),
             QInvTextField(
               controller: inputController,
-              labelText: null,
+              focusNode: inputFocusNode,
               hintText: step.placeholder,
-              helperText: helperText,
               keyboardType: inputType,
-              autofocus: true,
+              autofocus: false,
               enabled: !controller.isBusy,
               maxLength: maxLength,
               textInputAction: action,
@@ -247,21 +385,28 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               semanticsHint: step.placeholder,
               onChanged: (value) => _drafts[step.id] = value,
               onSubmitted: (_) => unawaited(_submitCurrentStep()),
+              textStyle: step.type == OnboardingStepType.verificationCode
+                  ? const TextStyle(
+                      fontFamily: QInvWeb3Tokens.fontUI,
+                      fontSize: QInvWeb3Tokens.fontSizeOtp,
+                      fontWeight: FontWeight.w600,
+                      color: QInvWeb3Tokens.textHeading,
+                      letterSpacing: 8.0,
+                      height: 1.20,
+                    )
+                  : null,
             ),
             if (hasError) ...[
               const SizedBox(height: 12),
               QInvErrorBanner(message: controller.validationError!),
             ],
-            const SizedBox(height: 16),
-            QInvButton(
-              label: controller.isBusy ? 'Saving…' : (step.primaryCtaLabel ?? 'Continue'),
-              busy: controller.isBusy,
-              onPressed: isInteractionBlocked ? null : _submitCurrentStep,
-            ),
           ],
         );
+
       case OnboardingStepType.review:
         final items = controller.reviewItems;
+        final isInteractionBlocked =
+            controller.isBusy || controller.isCompleted;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -272,70 +417,173 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 onEdit: isInteractionBlocked
                     ? null
                     : () {
-                        final stepIndex = widget.steps.indexWhere((candidate) => candidate.id == item.stepId);
-                        if (stepIndex < 0) return;
-                        if (!controller.jumpToStepIndex(stepIndex)) return;
+                        final idx = widget.steps.indexWhere(
+                            (s) => s.id == item.stepId);
+                        if (idx < 0) return;
+                        if (!controller.jumpToStepIndex(idx)) return;
                         _syncedStepId = null;
                         setState(() {});
                       },
-            ),
+              ),
             if (controller.validationError != null) ...[
               const SizedBox(height: 12),
               QInvErrorBanner(message: controller.validationError!),
             ],
-            const SizedBox(height: 8),
-            QInvButton(
-              label: controller.isBusy ? 'Submitting…' : (controller.isCompleted ? 'Completed' : (step.primaryCtaLabel ?? 'Confirm')),
-              busy: controller.isBusy,
-              onPressed: isInteractionBlocked ? null : _submitCurrentStep,
-            ),
           ],
         );
+
       case OnboardingStepType.completion:
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const SizedBox(height: 12),
-            Semantics(
-              container: true,
-              label: 'Onboarding complete',
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: QInvWeb3Tokens.primary.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(QInvWeb3Tokens.radiusCard),
-                  border: Border.all(color: QInvWeb3Tokens.primary.withValues(alpha: 0.35)),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Icon(Icons.verified_rounded, color: QInvWeb3Tokens.primaryLight),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        'Everything is ready. You can safely close this flow.',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: QInvWeb3Tokens.textSecondary,
-                              height: 1.35,
-                            ),
+        return Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: QInvWeb3Tokens.primary.withValues(alpha: 0.10),
+            borderRadius: BorderRadius.circular(QInvWeb3Tokens.radiusCard),
+            border: Border.all(
+                color: QInvWeb3Tokens.primary.withValues(alpha: 0.30)),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Icon(Icons.verified_rounded,
+                  color: QInvWeb3Tokens.primaryLight, size: 20),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Everything is ready. You can safely close this flow.',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: QInvWeb3Tokens.textSecondary,
+                        height: 1.50,
                       ),
-                    ),
-                  ],
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
-            QInvButton(
-              label: controller.isCompleted ? 'Completed' : (controller.isBusy ? 'Finishing…' : (step.primaryCtaLabel ?? 'Finish')),
-              busy: controller.isBusy,
-              selected: controller.isCompleted,
-              onPressed: isInteractionBlocked || controller.isCompleted ? null : _submitCurrentStep,
-            ),
-          ],
+            ],
+          ),
         );
     }
   }
+
+  // ── Zone D: CTA button ──────────────────────────────────────
+
+  Widget _buildCTA(OnboardingStep step) {
+    final isBlocked = controller.isBusy || controller.isCompleted;
+
+    final String label;
+    final bool enabled;
+
+    switch (step.type) {
+      case OnboardingStepType.intro:
+        label = controller.isBusy
+            ? 'Loading…'
+            : (step.primaryCtaLabel ?? 'Continue');
+        enabled = !isBlocked;
+      case OnboardingStepType.singleChoice:
+        label = controller.isBusy
+            ? 'Saving…'
+            : (step.primaryCtaLabel ?? 'Continue');
+        enabled =
+            !isBlocked && !(step.required && selectedOptionId == null);
+      case OnboardingStepType.textInput:
+      case OnboardingStepType.phoneInput:
+      case OnboardingStepType.verificationCode:
+        label = controller.isBusy
+            ? 'Saving…'
+            : (step.primaryCtaLabel ?? 'Continue');
+        enabled = !isBlocked;
+      case OnboardingStepType.pinInput:
+        label = controller.isBusy
+            ? 'Saving…'
+            : (step.primaryCtaLabel ?? 'Continue');
+        enabled = !isBlocked && (_drafts[step.id]?.length ?? 0) == 6;
+      case OnboardingStepType.review:
+        label = controller.isBusy
+            ? 'Submitting…'
+            : (controller.isCompleted
+                ? 'Completed'
+                : (step.primaryCtaLabel ?? 'Confirm'));
+        enabled = !isBlocked;
+      case OnboardingStepType.completion:
+        label = controller.isCompleted
+            ? 'Completed'
+            : (controller.isBusy
+                ? 'Finishing…'
+                : (step.primaryCtaLabel ?? 'Finish'));
+        enabled = !isBlocked && !controller.isCompleted;
+    }
+
+    return QInvButton(
+      label: label,
+      busy: controller.isBusy,
+      selected: controller.isCompleted &&
+          step.type == OnboardingStepType.completion,
+      onPressed: enabled ? _submitCurrentStep : null,
+    );
+  }
+
+  // ── Zone E: Footer (narration + back) ───────────────────────
+
+  Widget _buildFooter(BuildContext context, OnboardingStep step) {
+    final narrationText =
+        voiceReady ? step.voiceText : 'Narration unavailable.';
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.only(top: 12),
+      decoration: BoxDecoration(
+        border: Border(
+          top: BorderSide(
+            color: Colors.white.withValues(alpha: 0.07),
+            width: 1.0,
+          ),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Text(
+                  narrationText,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontFamily: QInvWeb3Tokens.fontUI,
+                    fontSize: 12,
+                    fontStyle: FontStyle.italic,
+                    color: QInvWeb3Tokens.textMuted,
+                    height: 1.50,
+                  ),
+                ),
+              ),
+              if (voiceReady) ...[
+                const SizedBox(width: 4),
+                IconButton(
+                  icon: Icon(
+                    _voiceMuted
+                        ? Icons.volume_off_rounded
+                        : Icons.volume_up_rounded,
+                    size: 14,
+                  ),
+                  color: _voiceMuted
+                      ? QInvWeb3Tokens.textMuted
+                      : QInvWeb3Tokens.primaryLight,
+                  visualDensity: VisualDensity.compact,
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+                  onPressed: () => unawaited(_toggleMute()),
+                  tooltip: _voiceMuted ? 'Ativar som' : 'Desativar som',
+                ),
+              ],
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Build ────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -347,168 +595,222 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
         final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
         final size = MediaQuery.sizeOf(context);
-        final isCompact = size.width < 360;
-        final horizontalPadding = isCompact ? 16.0 : 20.0;
-        final verticalPadding = isCompact ? 16.0 : 20.0;
-        final contentSpacing = isCompact ? 16.0 : 24.0;
-        final cardPadding = isCompact ? 18.0 : 24.0;
-        final progressValue = widget.steps.isEmpty ? 0.0 : (controller.index + 1) / widget.steps.length;
-        final stepLabel = controller.isCompleted ? 'Complete' : 'Step ${controller.index + 1} of ${widget.steps.length}';
+        final hPad = size.width < 360 ? 20.0 : 24.0;
+        final progressValue = widget.steps.isEmpty
+            ? 0.0
+            : (controller.index + 1) / widget.steps.length;
 
-        final body = CustomScrollView(
-          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          slivers: [
-            SliverToBoxAdapter(
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Semantics(
-                      label: stepLabel,
-                      value: '${(progressValue * 100).round()} percent',
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(9999),
-                        child: LinearProgressIndicator(
-                          minHeight: 6,
-                          value: progressValue,
-                          backgroundColor: QInvWeb3Tokens.border,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            controller.isCompleted ? QInvWeb3Tokens.primaryLight : QInvWeb3Tokens.primary,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    controller.isCompleted ? 'Done' : '${controller.index + 1}/${widget.steps.length}',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: QInvWeb3Tokens.textMuted,
-                        ),
-                  ),
-                ],
-              ),
-            ),
-            SliverToBoxAdapter(child: SizedBox(height: contentSpacing)),
-            SliverFillRemaining(
-              hasScrollBody: true,
-              child: AnimatedSwitcher(
-                duration: QInvWeb3Tokens.transitionAll,
-                child: SingleChildScrollView(
-                  key: ValueKey(step.id),
-                  keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                  physics: const BouncingScrollPhysics(),
-                  child: QInvStepCard(
-                    padding: EdgeInsets.all(cardPadding),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Semantics(
-                          header: true,
-                          child: Text(
-                            step.title,
-                            textAlign: step.type == OnboardingStepType.singleChoice ||
-                                    step.type == OnboardingStepType.review ||
-                                    step.type == OnboardingStepType.completion
-                                ? TextAlign.left
-                                : TextAlign.center,
-                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                  color: QInvWeb3Tokens.textHeading,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          step.caption,
-                          textAlign: step.type == OnboardingStepType.singleChoice ||
-                                  step.type == OnboardingStepType.review ||
-                                  step.type == OnboardingStepType.completion
-                              ? TextAlign.left
-                              : TextAlign.center,
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                color: QInvWeb3Tokens.textSecondary,
-                              ),
-                        ),
-                        const SizedBox(height: 12),
-                        Align(
-                          alignment: step.required ? Alignment.centerLeft : Alignment.centerRight,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: (step.required ? QInvWeb3Tokens.primary : QInvWeb3Tokens.textMuted).withValues(alpha: 0.12),
-                              borderRadius: BorderRadius.circular(999),
-                              border: Border.all(
-                                color: (step.required ? QInvWeb3Tokens.primary : QInvWeb3Tokens.border).withValues(alpha: 0.65),
-                              ),
-                            ),
-                            child: Text(
-                              step.required ? 'Required' : 'Optional',
-                              style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                                    color: step.required ? QInvWeb3Tokens.primaryLight : QInvWeb3Tokens.textMuted,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-                        if (controller.serviceError != null) ...[
-                          QInvErrorBanner(message: controller.serviceError!),
-                          const SizedBox(height: 12),
-                        ],
-                        _buildStepContent(step),
-                        if (controller.isBusy) ...[
-                          const SizedBox(height: 16),
-                          const LinearProgressIndicator(minHeight: 2),
-                        ],
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            SliverToBoxAdapter(child: SizedBox(height: contentSpacing)),
-            SliverToBoxAdapter(
-              child: QInvCaptionBar(
-                text: voiceReady ? step.voiceText : 'Narration unavailable.',
-                onReplay: voiceReady ? () => unawaited(widget.voiceService.speak(step.voiceText)) : null,
-              ),
-            ),
-            if (controller.hasPrevious) ...[
-              SliverToBoxAdapter(child: SizedBox(height: 12)),
-              SliverToBoxAdapter(
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: TextButton(
-                    onPressed: (controller.isBusy || controller.isCompleted) ? null : _goBack,
-                    child: const Text('Back'),
-                  ),
-                ),
-              ),
-            ],
-          ],
-        );
+        final interactiveContent = _buildInteractiveContent(step);
 
         return Scaffold(
           backgroundColor: QInvWeb3Tokens.background,
+          resizeToAvoidBottomInset: false,
           body: GlassBackground(
             child: SafeArea(
               child: AnimatedPadding(
                 duration: QInvWeb3Tokens.transitionAll,
                 padding: EdgeInsets.fromLTRB(
-                  horizontalPadding,
-                  verticalPadding,
-                  horizontalPadding,
-                  verticalPadding + bottomInset,
+                  hPad, 16, hPad, 16 + bottomInset,
                 ),
                 child: AbsorbPointer(
-                  absorbing: controller.isBusy || controller.isCompleted,
-                  child: body,
+                  absorbing: controller.isBusy,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Zone A — Back arrow + Progress line
+                      Row(
+                        children: [
+                          if (controller.hasPrevious)
+                            Padding(
+                              padding: const EdgeInsets.only(right: 12),
+                              child: IconButton(
+                                icon: const Icon(Icons.arrow_back_rounded),
+                                color: QInvWeb3Tokens.textMuted,
+                                iconSize: 20,
+                                visualDensity: VisualDensity.compact,
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+                                onPressed: (controller.isBusy || controller.isCompleted)
+                                    ? null
+                                    : _goBack,
+                              ),
+                            ),
+                          Expanded(child: _buildProgress(context, progressValue)),
+                        ],
+                      ),
+                      const SizedBox(height: 32),
+
+                      // Zone B + C — Scrollable content
+                      Expanded(
+                        child: AnimatedSwitcher(
+                          duration: QInvWeb3Tokens.transitionAll,
+                          child: SingleChildScrollView(
+                            key: ValueKey(step.id),
+                            physics: const BouncingScrollPhysics(),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                // Title + subtitle (outside card, on background)
+                                _buildTitle(context, step),
+
+                                if (controller.serviceError != null) ...[
+                                  const SizedBox(height: 16),
+                                  QInvErrorBanner(
+                                      message: controller.serviceError!),
+                                ],
+
+                                if (interactiveContent != null) ...[
+                                  const SizedBox(height: 24),
+                                  if (step.type == OnboardingStepType.pinInput)
+                                    interactiveContent
+                                  else
+                                    GlassCard(
+                                      fillColor:
+                                          Colors.white.withValues(alpha: 0.06),
+                                      borderColor:
+                                          Colors.white.withValues(alpha: 0.10),
+                                      blurSigma: 20,
+                                      padding: const EdgeInsets.all(20),
+                                      child: interactiveContent,
+                                    ),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 24),
+
+                      // Zone D — CTA button
+                      _buildCTA(step),
+
+                      const SizedBox(height: 16),
+
+                      // Zone E — Footer
+                      _buildFooter(context, step),
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
         );
       },
+    );
+  }
+}
+
+// ── Option Card ─────────────────────────────────────────────────
+
+class _OptionCard extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final bool enabled;
+  final VoidCallback? onTap;
+
+  const _OptionCard({
+    required this.label,
+    required this.selected,
+    required this.enabled,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeOut,
+      constraints: const BoxConstraints(minHeight: 58),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(QInvWeb3Tokens.radiusOption),
+        color: selected
+            ? QInvWeb3Tokens.primary.withValues(alpha: 0.15)
+            : Colors.white.withValues(alpha: 0.04),
+        border: Border.all(
+          color: selected
+              ? QInvWeb3Tokens.primaryLight.withValues(alpha: 0.70)
+              : Colors.white.withValues(alpha: 0.09),
+          width: selected ? 1.5 : 1.0,
+        ),
+        boxShadow: selected
+            ? [
+                BoxShadow(
+                  color: QInvWeb3Tokens.primary.withValues(alpha: 0.28),
+                  blurRadius: 20,
+                  spreadRadius: -2,
+                  offset: const Offset(0, 4),
+                ),
+              ]
+            : [],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: enabled && onTap != null
+              ? () {
+                  HapticFeedback.lightImpact();
+                  onTap!();
+                }
+              : null,
+          borderRadius: BorderRadius.circular(QInvWeb3Tokens.radiusOption),
+          splashColor: QInvWeb3Tokens.primary.withValues(alpha: 0.08),
+          highlightColor: Colors.transparent,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    label,
+                    style: TextStyle(
+                      fontFamily: QInvWeb3Tokens.fontUI,
+                      fontSize: 15.0,
+                      fontWeight:
+                          selected ? FontWeight.w600 : FontWeight.w500,
+                      color: selected
+                          ? Colors.white
+                          : QInvWeb3Tokens.textSecondary,
+                      height: 1.35,
+                      letterSpacing: 0.1,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200),
+                  transitionBuilder: (child, animation) => ScaleTransition(
+                    scale: Tween<double>(begin: 0.6, end: 1.0).animate(
+                      CurvedAnimation(
+                          parent: animation, curve: Curves.easeOutBack),
+                    ),
+                    child: FadeTransition(opacity: animation, child: child),
+                  ),
+                  child: selected
+                      ? const Icon(
+                          Icons.check_rounded,
+                          key: ValueKey('check'),
+                          color: QInvWeb3Tokens.primaryLight,
+                          size: 16,
+                        )
+                      : Container(
+                          key: const ValueKey('empty'),
+                          width: 16,
+                          height: 16,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.20),
+                              width: 1.5,
+                            ),
+                          ),
+                        ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

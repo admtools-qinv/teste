@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../theme/qinvweb3_tokens.dart';
 
@@ -21,12 +22,19 @@ class QInvButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final enabled = onPressed != null && !busy;
+    VoidCallback? _hapticOnPressed;
+    if (onPressed != null) {
+      _hapticOnPressed = () {
+        HapticFeedback.mediumImpact();
+        onPressed!();
+      };
+    }
 
     final spinner = SizedBox(
-      height: 18,
-      width: 18,
+      height: 17,
+      width: 17,
       child: CircularProgressIndicator(
-        strokeWidth: 2.2,
+        strokeWidth: 2.0,
         valueColor: AlwaysStoppedAnimation<Color>(
           outline ? QInvWeb3Tokens.primary : QInvWeb3Tokens.primaryForeground,
         ),
@@ -38,8 +46,8 @@ class QInvButton extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         if (selected) ...[
-          const Icon(Icons.check_circle_rounded, size: 18),
-          const SizedBox(width: 8),
+          const Icon(Icons.check_circle_rounded, size: 16),
+          const SizedBox(width: 7),
         ],
         Flexible(
           child: Text(
@@ -57,11 +65,7 @@ class QInvButton extends StatelessWidget {
       children: [
         spinner,
         const SizedBox(width: 10),
-        Text(
-          label,
-          textAlign: TextAlign.center,
-          overflow: TextOverflow.ellipsis,
-        ),
+        Text(label, textAlign: TextAlign.center, overflow: TextOverflow.ellipsis),
       ],
     );
 
@@ -72,42 +76,69 @@ class QInvButton extends StatelessWidget {
 
     final button = outline
         ? OutlinedButton(
-            onPressed: enabled ? onPressed : null,
+            onPressed: enabled ? _hapticOnPressed : null,
             style: OutlinedButton.styleFrom(
-              backgroundColor: selected ? QInvWeb3Tokens.primary.withValues(alpha: 0.16) : null,
-              foregroundColor: selected ? QInvWeb3Tokens.primary : null,
+              backgroundColor:
+                  selected ? QInvWeb3Tokens.primary.withValues(alpha: 0.14) : null,
+              foregroundColor:
+                  selected ? QInvWeb3Tokens.primaryLight : QInvWeb3Tokens.textSecondary,
               side: BorderSide(
-                color: selected ? QInvWeb3Tokens.primary : QInvWeb3Tokens.border,
-                width: selected ? 1.4 : 1.0,
+                color: selected
+                    ? QInvWeb3Tokens.primaryLight.withValues(alpha: 0.65)
+                    : Colors.white.withValues(alpha: 0.15),
+                width: selected ? 1.5 : 1.0,
               ),
-              minimumSize: const Size.fromHeight(52),
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+              minimumSize: const Size.fromHeight(54),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               textStyle: const TextStyle(
-                fontFamily: 'Plus Jakarta Sans',
+                fontFamily: QInvWeb3Tokens.fontUI,
+                fontSize: QInvWeb3Tokens.fontSizeLabel,
                 fontWeight: FontWeight.w600,
+                letterSpacing: 0.3,
               ),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(QInvWeb3Tokens.radiusCard),
+                borderRadius: BorderRadius.circular(QInvWeb3Tokens.radiusButton),
               ),
             ),
             child: child,
           )
-        : ElevatedButton(
-            onPressed: enabled ? onPressed : null,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: QInvWeb3Tokens.primary,
-              foregroundColor: QInvWeb3Tokens.primaryForeground,
-              minimumSize: const Size.fromHeight(52),
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(QInvWeb3Tokens.radiusCard),
-              ),
-              textStyle: const TextStyle(
-                fontFamily: 'Plus Jakarta Sans',
-                fontWeight: FontWeight.w600,
-              ),
+        : AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(QInvWeb3Tokens.radiusButton),
+              boxShadow: enabled
+                  ? [
+                      BoxShadow(
+                        color: QInvWeb3Tokens.primary.withValues(alpha: 0.40),
+                        blurRadius: 24,
+                        offset: const Offset(0, 8),
+                      ),
+                    ]
+                  : [],
             ),
-            child: child,
+            child: ElevatedButton(
+              onPressed: enabled ? _hapticOnPressed : null,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: QInvWeb3Tokens.primary,
+                foregroundColor: QInvWeb3Tokens.primaryForeground,
+                disabledBackgroundColor: Colors.white.withValues(alpha: 0.08),
+                disabledForegroundColor: Colors.white.withValues(alpha: 0.28),
+                minimumSize: const Size.fromHeight(54),
+                elevation: 0,
+                shadowColor: Colors.transparent,
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(QInvWeb3Tokens.radiusButton),
+                ),
+                textStyle: const TextStyle(
+                  fontFamily: QInvWeb3Tokens.fontUI,
+                  fontSize: QInvWeb3Tokens.fontSizeLabel,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.3,
+                ),
+              ),
+              child: child,
+            ),
           );
 
     return Semantics(

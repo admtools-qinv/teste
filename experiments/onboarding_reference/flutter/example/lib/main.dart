@@ -34,16 +34,30 @@ class _ExampleHome extends StatelessWidget {
 
 class _ExampleBackend implements OnboardingBackendService {
   @override
-  Future<void> clearAnswer({required String stepId}) async {}
+  Future<OnboardingSessionDto> startSession() async {
+    return const OnboardingSessionDto(sessionId: 'example-session');
+  }
 
   @override
-  Future<void> saveAnswer({required String stepId, required dynamic value}) async {}
+  Future<void> saveAnswer({
+    required String sessionId,
+    required String stepId,
+    required dynamic value,
+  }) async {}
 
   @override
-  Future<void> startSession() async {}
+  Future<SubmitResultDto> submitAll({
+    required String sessionId,
+    required Map<String, dynamic> answers,
+  }) async {
+    return const SubmitResultDto(success: true);
+  }
 
   @override
-  Future<void> submitAll(Map<String, dynamic> answers) async {}
+  Future<void> clearAnswer({
+    required String sessionId,
+    required String stepId,
+  }) async {}
 }
 
 class _ExampleAnalytics implements OnboardingAnalyticsService {

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class QInvTextField extends StatelessWidget {
+import '../../theme/qinvweb3_tokens.dart';
+
+class QInvTextField extends StatefulWidget {
   final TextEditingController controller;
   final String? labelText;
   final String? hintText;
@@ -17,6 +19,8 @@ class QInvTextField extends StatelessWidget {
   final List<TextInputFormatter>? inputFormatters;
   final String? semanticsLabel;
   final String? semanticsHint;
+  final TextStyle? textStyle;
+  final FocusNode? focusNode;
 
   const QInvTextField({
     super.key,
@@ -35,30 +39,84 @@ class QInvTextField extends StatelessWidget {
     this.inputFormatters,
     this.semanticsLabel,
     this.semanticsHint,
+    this.textStyle,
+    this.focusNode,
   });
+
+  @override
+  State<QInvTextField> createState() => _QInvTextFieldState();
+}
+
+class _QInvTextFieldState extends State<QInvTextField> {
+  late final FocusNode _focusNode;
+  bool _hasFocus = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = widget.focusNode ?? FocusNode();
+    _focusNode.addListener(_onFocusChange);
+  }
+
+  void _onFocusChange() {
+    if (mounted) setState(() => _hasFocus = _focusNode.hasFocus);
+  }
+
+  @override
+  void dispose() {
+    _focusNode.removeListener(_onFocusChange);
+    if (widget.focusNode == null) _focusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Semantics(
       textField: true,
-      label: semanticsLabel,
-      hint: semanticsHint,
-      enabled: enabled,
-      child: TextField(
-        controller: controller,
-        keyboardType: keyboardType,
-        obscureText: obscureText,
-        autofocus: autofocus,
-        enabled: enabled,
-        maxLength: maxLength,
-        textInputAction: textInputAction,
-        onSubmitted: onSubmitted,
-        onChanged: onChanged,
-        inputFormatters: inputFormatters,
-        decoration: InputDecoration(
-          labelText: labelText,
-          hintText: hintText,
-          helperText: helperText,
+      label: widget.semanticsLabel,
+      hint: widget.semanticsHint,
+      enabled: widget.enabled,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(QInvWeb3Tokens.radiusInput),
+          boxShadow: _hasFocus
+              ? [
+                  BoxShadow(
+                    color: QInvWeb3Tokens.primary.withValues(alpha: 0.22),
+                    blurRadius: 18,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+              : [],
+        ),
+        child: TextField(
+          controller: widget.controller,
+          focusNode: _focusNode,
+          keyboardType: widget.keyboardType,
+          obscureText: widget.obscureText,
+          autofocus: widget.autofocus,
+          enabled: widget.enabled,
+          maxLength: widget.maxLength,
+          textInputAction: widget.textInputAction,
+          onSubmitted: widget.onSubmitted,
+          onChanged: widget.onChanged,
+          inputFormatters: widget.inputFormatters,
+          keyboardAppearance: Brightness.dark,
+          style: widget.textStyle ??
+              const TextStyle(
+                fontFamily: QInvWeb3Tokens.fontUI,
+                fontSize: QInvWeb3Tokens.fontSizeInput,
+                fontWeight: FontWeight.w400,
+                color: QInvWeb3Tokens.textHeading,
+                height: 1.25,
+                letterSpacing: 0.1,
+              ),
+          decoration: InputDecoration(
+            labelText: widget.labelText,
+            hintText: widget.hintText,
+            helperText: widget.helperText,
+          ),
         ),
       ),
     );

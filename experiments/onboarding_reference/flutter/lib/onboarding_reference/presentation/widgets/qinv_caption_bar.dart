@@ -18,11 +18,11 @@ class QInvCaptionBar extends StatelessWidget {
       value: text,
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           color: QInvWeb3Tokens.cardBgDropdown,
-          borderRadius: BorderRadius.circular(QInvWeb3Tokens.radiusCard),
-          border: Border.all(color: QInvWeb3Tokens.border),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
         ),
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -33,10 +33,15 @@ class QInvCaptionBar extends StatelessWidget {
               softWrap: true,
               maxLines: null,
               overflow: TextOverflow.visible,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: QInvWeb3Tokens.textSecondary,
-                    height: 1.35,
-                  ),
+              style: const TextStyle(
+                fontFamily: QInvWeb3Tokens.fontUI,
+                fontSize: QInvWeb3Tokens.fontSizeSmall,
+                fontWeight: FontWeight.w400,
+                fontStyle: FontStyle.italic,
+                color: QInvWeb3Tokens.textSecondary,
+                height: 1.55,
+                letterSpacing: 0.1,
+              ),
             );
 
             if (compact) {
@@ -50,7 +55,7 @@ class QInvCaptionBar extends StatelessWidget {
                       alignment: Alignment.centerRight,
                       child: IconButton(
                         visualDensity: VisualDensity.compact,
-                        icon: const Icon(Icons.replay_rounded),
+                        icon: const Icon(Icons.replay_rounded, size: 18),
                         color: QInvWeb3Tokens.primaryLight,
                         onPressed: onReplay,
                         tooltip: 'Replay narration',
@@ -62,19 +67,14 @@ class QInvCaptionBar extends StatelessWidget {
             }
 
             return Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 2),
-                    child: caption,
-                  ),
-                ),
+                Expanded(child: caption),
                 if (onReplay != null) ...[
                   const SizedBox(width: 8),
                   IconButton(
                     visualDensity: VisualDensity.compact,
-                    icon: const Icon(Icons.replay_rounded),
+                    icon: const Icon(Icons.replay_rounded, size: 18),
                     color: QInvWeb3Tokens.primaryLight,
                     onPressed: onReplay,
                     tooltip: 'Replay narration',

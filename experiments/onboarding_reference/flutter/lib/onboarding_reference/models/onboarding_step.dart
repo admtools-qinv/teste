@@ -4,11 +4,13 @@ enum OnboardingStepType {
   textInput,
   phoneInput,
   verificationCode,
+  pinInput,
   review,
   completion,
 }
 
 enum OnboardingInputKind {
+  name,
   email,
   phone,
 }
@@ -27,6 +29,7 @@ class OnboardingStep {
   final String id;
   final OnboardingStepType type;
   final String title;
+  final String? titleItalic;
   final String? reviewLabel;
   final String caption;
   final String voiceText;
@@ -36,11 +39,13 @@ class OnboardingStep {
   final OnboardingInputKind? inputKind;
   final bool required;
   final bool sensitive;
+  final String? matchesStepId; // for confirm PIN: must match answer of this stepId
 
   const OnboardingStep({
     required this.id,
     required this.type,
     required this.title,
+    this.titleItalic,
     this.reviewLabel,
     required this.caption,
     required this.voiceText,
@@ -50,5 +55,6 @@ class OnboardingStep {
     this.inputKind,
     this.required = true,
     this.sensitive = false,
+    this.matchesStepId,
   });
 }

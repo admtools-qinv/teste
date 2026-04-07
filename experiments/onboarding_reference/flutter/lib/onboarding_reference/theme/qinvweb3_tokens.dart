@@ -22,7 +22,30 @@ class QInvWeb3Tokens {
   static const cardBgLight = Color.fromRGBO(143, 155, 179, 0.06);
   static const cardBgDropdown = Color.fromRGBO(31, 31, 35, 0.90);
 
-  static const radiusCard = 20.0;
+  // Radius
+  static const double radiusCard = 20.0;
+  static const double radiusButton = 999.0;
+  static const double radiusInput = 14.0;
+  static const double radiusOption = 16.0;
+
+  // Typography scale
+  static const double fontSizeHeadlineL = 28.0;
+  static const double fontSizeHeadlineM = 26.0;
+  static const double fontSizeTitleAccent = 36.0;
+  static const double fontSizeBody = 15.0;
+  static const double fontSizeSubtitle = 14.0;
+  static const double fontSizeSmall = 13.0;
+  static const double fontSizeLabel = 15.0;
+  static const double fontSizeLabelS = 11.0;
+  static const double fontSizeInput = 16.0;
+  static const double fontSizeInputHint = 15.0;
+  static const double fontSizeInputHelper = 12.0;
+  static const double fontSizeOtp = 22.0;
 
   static const transitionAll = Duration(milliseconds: 300);
+
+  // Font families (package-prefixed so they resolve from the library bundle)
+  static const String fontSerif = 'packages/onboarding_reference/PlayfairDisplay';
+  static const String fontUI = 'packages/onboarding_reference/PlusJakartaSans';
+  static const String fontSans = 'packages/onboarding_reference/PlusJakartaSans';
 }

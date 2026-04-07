@@ -1,0 +1,70 @@
+import '../models/country.dart';
+
+const allCountries = <Country>[
+  Country(name: 'Argentina',            code: 'AR', dialCode: '+54',  phoneMask: '### ####-####'),
+  Country(name: 'Australia',            code: 'AU', dialCode: '+61',  phoneMask: '#### ### ###'),
+  Country(name: 'Austria',              code: 'AT', dialCode: '+43',  phoneMask: '### #######'),
+  Country(name: 'Belgium',              code: 'BE', dialCode: '+32',  phoneMask: '### ## ## ##'),
+  Country(name: 'Bolivia',              code: 'BO', dialCode: '+591', phoneMask: '########'),
+  Country(name: 'Brazil',               code: 'BR', dialCode: '+55',  phoneMask: '(##) #####-####'),
+  Country(name: 'Canada',               code: 'CA', dialCode: '+1',   phoneMask: '(###) ###-####'),
+  Country(name: 'Chile',                code: 'CL', dialCode: '+56',  phoneMask: '# ####-####'),
+  Country(name: 'China',                code: 'CN', dialCode: '+86',  phoneMask: '### #### ####'),
+  Country(name: 'Colombia',             code: 'CO', dialCode: '+57',  phoneMask: '### ### ####'),
+  Country(name: 'Czech Republic',       code: 'CZ', dialCode: '+420', phoneMask: '### ### ###'),
+  Country(name: 'Denmark',              code: 'DK', dialCode: '+45',  phoneMask: '## ## ## ##'),
+  Country(name: 'Ecuador',              code: 'EC', dialCode: '+593', phoneMask: '## ### ####'),
+  Country(name: 'Egypt',                code: 'EG', dialCode: '+20',  phoneMask: '### ### ####'),
+  Country(name: 'Finland',              code: 'FI', dialCode: '+358', phoneMask: '## ### ####'),
+  Country(name: 'France',               code: 'FR', dialCode: '+33',  phoneMask: '## ## ## ## ##'),
+  Country(name: 'Germany',              code: 'DE', dialCode: '+49',  phoneMask: '#### #######'),
+  Country(name: 'Greece',               code: 'GR', dialCode: '+30',  phoneMask: '### ### ####'),
+  Country(name: 'Hungary',              code: 'HU', dialCode: '+36',  phoneMask: '## ### ####'),
+  Country(name: 'India',                code: 'IN', dialCode: '+91',  phoneMask: '##### #####'),
+  Country(name: 'Indonesia',            code: 'ID', dialCode: '+62',  phoneMask: '###-####-####'),
+  Country(name: 'Ireland',              code: 'IE', dialCode: '+353', phoneMask: '## ### ####'),
+  Country(name: 'Israel',               code: 'IL', dialCode: '+972', phoneMask: '##-###-####'),
+  Country(name: 'Italy',                code: 'IT', dialCode: '+39',  phoneMask: '### ### ####'),
+  Country(name: 'Japan',                code: 'JP', dialCode: '+81',  phoneMask: '###-####-####'),
+  Country(name: 'Malaysia',             code: 'MY', dialCode: '+60',  phoneMask: '##-#### ####'),
+  Country(name: 'Mexico',               code: 'MX', dialCode: '+52',  phoneMask: '## #### ####'),
+  Country(name: 'Netherlands',          code: 'NL', dialCode: '+31',  phoneMask: '## #### ####'),
+  Country(name: 'New Zealand',          code: 'NZ', dialCode: '+64',  phoneMask: '### ### ####'),
+  Country(name: 'Nigeria',              code: 'NG', dialCode: '+234', phoneMask: '### ### ####'),
+  Country(name: 'Norway',               code: 'NO', dialCode: '+47',  phoneMask: '### ## ###'),
+  Country(name: 'Pakistan',             code: 'PK', dialCode: '+92',  phoneMask: '### #######'),
+  Country(name: 'Paraguay',             code: 'PY', dialCode: '+595', phoneMask: '### ### ###'),
+  Country(name: 'Peru',                 code: 'PE', dialCode: '+51',  phoneMask: '### ### ###'),
+  Country(name: 'Philippines',          code: 'PH', dialCode: '+63',  phoneMask: '### ### ####'),
+  Country(name: 'Poland',               code: 'PL', dialCode: '+48',  phoneMask: '### ### ###'),
+  Country(name: 'Portugal',             code: 'PT', dialCode: '+351', phoneMask: '### ### ###'),
+  Country(name: 'Romania',              code: 'RO', dialCode: '+40',  phoneMask: '### ### ###'),
+  Country(name: 'Russia',               code: 'RU', dialCode: '+7',   phoneMask: '(###) ###-##-##'),
+  Country(name: 'Saudi Arabia',         code: 'SA', dialCode: '+966', phoneMask: '## ### ####'),
+  Country(name: 'Singapore',            code: 'SG', dialCode: '+65',  phoneMask: '#### ####'),
+  Country(name: 'South Africa',         code: 'ZA', dialCode: '+27',  phoneMask: '## ### ####'),
+  Country(name: 'South Korea',          code: 'KR', dialCode: '+82',  phoneMask: '###-####-####'),
+  Country(name: 'Spain',                code: 'ES', dialCode: '+34',  phoneMask: '### ### ###'),
+  Country(name: 'Sweden',               code: 'SE', dialCode: '+46',  phoneMask: '##-### ## ##'),
+  Country(name: 'Switzerland',          code: 'CH', dialCode: '+41',  phoneMask: '## ### ## ##'),
+  Country(name: 'Taiwan',               code: 'TW', dialCode: '+886', phoneMask: '####-###-###'),
+  Country(name: 'Thailand',             code: 'TH', dialCode: '+66',  phoneMask: '##-####-####'),
+  Country(name: 'Turkey',               code: 'TR', dialCode: '+90',  phoneMask: '### ### ## ##'),
+  Country(name: 'Ukraine',              code: 'UA', dialCode: '+380', phoneMask: '## ### ## ##'),
+  Country(name: 'United Arab Emirates', code: 'AE', dialCode: '+971', phoneMask: '## ### ####'),
+  Country(name: 'United Kingdom',       code: 'GB', dialCode: '+44',  phoneMask: '#### ######'),
+  Country(name: 'United States',        code: 'US', dialCode: '+1',   phoneMask: '(###) ###-####'),
+  Country(name: 'Uruguay',              code: 'UY', dialCode: '+598', phoneMask: '## ### ###'),
+  Country(name: 'Venezuela',            code: 'VE', dialCode: '+58',  phoneMask: '###-###-####'),
+  Country(name: 'Vietnam',              code: 'VN', dialCode: '+84',  phoneMask: '### #### ###'),
+];
+
+Country? countryByCode(String isoCode) {
+  try {
+    return allCountries.firstWhere(
+      (c) => c.code.toUpperCase() == isoCode.toUpperCase(),
+    );
+  } catch (_) {
+    return null;
+  }
+}

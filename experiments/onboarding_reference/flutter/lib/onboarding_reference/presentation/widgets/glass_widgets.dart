@@ -1,6 +1,8 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../theme/qinvweb3_tokens.dart';
 
@@ -52,7 +54,7 @@ const kDefaultOrbs = <GlassOrb>[
   ),
 ];
 
-class GlassBackground extends StatelessWidget {
+class GlassBackground extends StatefulWidget {
   final Widget child;
   final List<GlassOrb> orbs;
   final Color baseColor;
@@ -65,42 +67,88 @@ class GlassBackground extends StatelessWidget {
   });
 
   @override
+  State<GlassBackground> createState() => _GlassBackgroundState();
+}
+
+class _GlassBackgroundState extends State<GlassBackground>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 7),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Stack(
       fit: StackFit.expand,
       children: [
         DecoratedBox(
           decoration: BoxDecoration(
-            color: baseColor,
+            color: widget.baseColor,
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                baseColor,
+                widget.baseColor,
                 const Color(0xFF121827),
-                baseColor.withValues(alpha: 0.97),
+                widget.baseColor.withValues(alpha: 0.97),
               ],
             ),
           ),
         ),
         Positioned.fill(
           child: IgnorePointer(
-            child: Stack(
-              children: [
-                for (final orb in orbs)
-                  Align(
-                    alignment: orb.alignment,
-                    child: Transform.translate(
-                      offset: orb.offset,
-                      child: _GlassOrbSurface(orb: orb),
-                    ),
-                  ),
-              ],
+            child: AnimatedBuilder(
+              animation: _controller,
+              builder: (context, _) {
+                final t = _controller.value * 2 * pi;
+                return Stack(
+                  children: [
+                    for (int i = 0; i < widget.orbs.length; i++)
+                      _AnimatedOrb(orb: widget.orbs[i], t: t, index: i),
+                  ],
+                );
+              },
             ),
           ),
         ),
-        Positioned.fill(child: child),
+        Positioned.fill(child: widget.child),
       ],
+    );
+  }
+}
+
+class _AnimatedOrb extends StatelessWidget {
+  final GlassOrb orb;
+  final double t;
+  final int index;
+
+  const _AnimatedOrb({required this.orb, required this.t, required this.index});
+
+  @override
+  Widget build(BuildContext context) {
+    final phase = index * pi / 2.0;
+    final dx = orb.offset.dx + sin(t + phase) * 45;
+    final dy = orb.offset.dy + cos(t * 0.65 + phase) * 35;
+
+    return Align(
+      alignment: orb.alignment,
+      child: Transform.translate(
+        offset: Offset(dx, dy),
+        child: _GlassOrbSurface(orb: orb),
+      ),
     );
   }
 }
@@ -147,7 +195,7 @@ class GlassCard extends StatelessWidget {
     this.padding = const EdgeInsets.all(24),
     this.borderRadius = const BorderRadius.all(Radius.circular(QInvWeb3Tokens.radiusCard)),
     this.blurSigma = 24,
-    this.fillColor = const Color.fromRGBO(17, 18, 24, 0.46),
+    this.fillColor = const Color.fromRGBO(17, 18, 24, 0.28),
     this.borderColor = const Color.fromRGBO(255, 255, 255, 0.12),
   });
 
@@ -316,7 +364,12 @@ class GlassButton extends StatelessWidget {
     final button = Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: enabled ? onPressed : null,
+        onTap: enabled
+            ? () {
+                HapticFeedback.mediumImpact();
+                onPressed!();
+              }
+            : null,
         borderRadius: borderRadius,
         child: AnimatedOpacity(
           duration: QInvWeb3Tokens.transitionAll,
