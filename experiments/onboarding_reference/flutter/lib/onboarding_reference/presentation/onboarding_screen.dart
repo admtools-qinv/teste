@@ -24,6 +24,7 @@ class OnboardingScreen extends StatefulWidget {
   final VoiceService voiceService;
   final OnboardingBackendService backend;
   final OnboardingAnalyticsService analytics;
+  final VoidCallback? onExit;
 
   const OnboardingScreen({
     super.key,
@@ -31,6 +32,7 @@ class OnboardingScreen extends StatefulWidget {
     required this.voiceService,
     required this.backend,
     required this.analytics,
+    this.onExit,
   });
 
   @override
@@ -634,6 +636,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                     ? null
                                     : _goBack,
                               ),
+                            )
+                          else if (widget.onExit != null)
+                            Padding(
+                              padding: const EdgeInsets.only(right: 12),
+                              child: IconButton(
+                                icon: const Icon(Icons.close_rounded),
+                                color: QInvWeb3Tokens.textMuted,
+                                iconSize: 20,
+                                visualDensity: VisualDensity.compact,
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+                                onPressed: controller.isBusy ? null : widget.onExit,
+                              ),
                             ),
                           Expanded(child: _buildProgress(context, progressValue)),
                         ],
@@ -680,15 +695,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         ),
                       ),
 
-                      const SizedBox(height: 24),
+                      SizedBox(height: bottomInset > 0 ? 12 : 24),
 
                       // Zone D — CTA button
                       _buildCTA(step),
 
-                      const SizedBox(height: 16),
-
-                      // Zone E — Footer
-                      _buildFooter(context, step),
+                      // Zone E — Footer (hidden when keyboard is open)
+                      if (bottomInset == 0) ...[
+                        const SizedBox(height: 16),
+                        _buildFooter(context, step),
+                      ],
                     ],
                   ),
                 ),

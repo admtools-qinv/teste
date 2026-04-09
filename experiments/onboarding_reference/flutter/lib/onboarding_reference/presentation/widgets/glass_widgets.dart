@@ -141,7 +141,7 @@ class _AnimatedOrb extends StatelessWidget {
   Widget build(BuildContext context) {
     final phase = index * pi / 2.0;
     final dx = orb.offset.dx + sin(t + phase) * 45;
-    final dy = orb.offset.dy + cos(t * 0.65 + phase) * 35;
+    final dy = orb.offset.dy + cos(2 * t + phase) * 35;
 
     return Align(
       alignment: orb.alignment,

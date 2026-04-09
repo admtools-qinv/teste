@@ -11,6 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_tts: ^4.0.2
+  flutter_svg: ^2.0.0
 
 dev_dependencies:
   flutter_test:
@@ -19,6 +20,13 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/google_icon.svg
+    - assets/qinv_logo.svg
+    - assets/btc.png
+    - assets/xrp.png
+    - assets/sol.png
 
   fonts:
     - family: PlayfairDisplay

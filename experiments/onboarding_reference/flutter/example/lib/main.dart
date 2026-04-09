@@ -13,24 +13,43 @@ class ExampleApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: QInvWeb3Theme.dark(),
-      home: const _ExampleHome(),
+      home: const _LoginEntry(),
     );
   }
 }
 
-class _ExampleHome extends StatelessWidget {
-  const _ExampleHome();
+// ── Login entry point ────────────────────────────────────────────
+
+class _LoginEntry extends StatelessWidget {
+  const _LoginEntry();
 
   @override
   Widget build(BuildContext context) {
-    return OnboardingScreen(
-      steps: defaultOnboardingSteps,
-      voiceService: FlutterTtsVoiceService(),
-      backend: _ExampleBackend(),
-      analytics: _ExampleAnalytics(),
+    return LoginScreen(
+      onGoogleAuth: () {
+        // TODO: implement Google auth
+      },
+      onSignUp: () {
+        Navigator.of(context).push(
+          MaterialPageRoute<void>(
+            builder: (ctx) => OnboardingScreen(
+              steps: defaultOnboardingSteps,
+              voiceService: FlutterTtsVoiceService(),
+              backend: _ExampleBackend(),
+              analytics: _ExampleAnalytics(),
+              onExit: () => Navigator.of(ctx).pop(),
+            ),
+          ),
+        );
+      },
+      onLogin: () {
+        // TODO: implement email/password login
+      },
     );
   }
 }
+
+// ── Stub implementations ─────────────────────────────────────────
 
 class _ExampleBackend implements OnboardingBackendService {
   @override
@@ -62,5 +81,6 @@ class _ExampleBackend implements OnboardingBackendService {
 
 class _ExampleAnalytics implements OnboardingAnalyticsService {
   @override
-  Future<void> trackEvent(String name, {Map<String, dynamic>? properties}) async {}
+  Future<void> trackEvent(String name,
+      {Map<String, dynamic>? properties}) async {}
 }

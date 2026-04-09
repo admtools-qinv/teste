@@ -122,7 +122,7 @@ class QInvWeb3Theme {
           fontFamily: QInvWeb3Tokens.fontUI,
           fontSize: QInvWeb3Tokens.fontSizeInputHint,
           fontWeight: FontWeight.w400,
-          color: QInvWeb3Tokens.textMuted,
+          color: Color(0x4DFFFFFF),
           letterSpacing: 0.1,
         ),
         labelStyle: const TextStyle(

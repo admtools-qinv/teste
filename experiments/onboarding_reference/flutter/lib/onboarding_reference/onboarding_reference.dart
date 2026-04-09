@@ -3,6 +3,7 @@ export 'flow/onboarding_flow_controller.dart';
 export 'models/onboarding_review_item.dart';
 export 'models/onboarding_session.dart';
 export 'models/onboarding_step.dart';
+export 'presentation/login_screen.dart';
 export 'presentation/onboarding_screen.dart';
 export 'presentation/widgets/glass_widgets.dart';
 export 'presentation/widgets/qinv_button.dart';
