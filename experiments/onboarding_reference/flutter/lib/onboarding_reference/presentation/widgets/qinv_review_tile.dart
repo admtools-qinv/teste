@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class QInvReviewTile extends StatelessWidget {
   final String label;
@@ -71,7 +72,12 @@ class QInvReviewTile extends StatelessWidget {
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton.icon(
-                      onPressed: onEdit,
+                      onPressed: onEdit == null
+                          ? null
+                          : () {
+                              HapticFeedback.lightImpact();
+                              onEdit!();
+                            },
                       icon: const Icon(Icons.edit, size: 16),
                       label: const Text('Edit'),
                     ),

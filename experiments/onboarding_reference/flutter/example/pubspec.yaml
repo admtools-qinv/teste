@@ -12,6 +12,7 @@ dependencies:
     sdk: flutter
   onboarding_reference:
     path: ..
+  shared_preferences: ^2.3.3
 
 flutter:
   uses-material-design: true

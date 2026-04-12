@@ -16,12 +16,14 @@ class LoginScreen extends StatelessWidget {
   final String title;
   final List<String> accentPhrases;
   final String subtitle;
+  final bool showBackground;
 
   const LoginScreen({
     super.key,
     this.onGoogleAuth,
     this.onSignUp,
     this.onLogin,
+    this.showBackground = true,
     this.title = 'Your wealth,',
     this.accentPhrases = const [
       'always growing.',
@@ -37,31 +39,26 @@ class LoginScreen extends StatelessWidget {
     final size = MediaQuery.sizeOf(context);
     final hPad = size.width < 360 ? 20.0 : 24.0;
 
-    return Scaffold(
-      backgroundColor: QInvWeb3Tokens.background,
-      body: GlassBackground(
-        child: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: hPad),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const Spacer(flex: 3),
-
-                // ── Hero ──────────────────────────────────────────
-                _buildHero(),
-
-                const Spacer(flex: 2),
-
-                // ── CTAs ──────────────────────────────────────────
-                _buildCtas(),
-
-                const SizedBox(height: 32),
-              ],
-            ),
-          ),
+    final content = SafeArea(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: hPad),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Spacer(flex: 3),
+            _buildHero(),
+            const Spacer(flex: 2),
+            _buildCtas(),
+            const SizedBox(height: 32),
+          ],
         ),
       ),
+    );
+
+    return Scaffold(
+      backgroundColor:
+          showBackground ? QInvWeb3Tokens.background : Colors.transparent,
+      body: showBackground ? GlassBackground(child: content) : content,
     );
   }
 

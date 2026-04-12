@@ -1,61 +1,366 @@
-import 'package:flutter/material.dart';
-import 'package:onboarding_reference/onboarding_reference.dart';
+import 'dart:async';
 
-void main() {
-  runApp(const ExampleApp());
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:onboarding_reference/onboarding_reference.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final prefs = await SharedPreferences.getInstance();
+  final store = LocalCredentialStore(prefs: prefs);
+  runApp(ExampleApp(store: store));
 }
 
 class ExampleApp extends StatelessWidget {
-  const ExampleApp({super.key});
+  final LocalCredentialStore store;
+
+  const ExampleApp({super.key, required this.store});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: QInvWeb3Theme.dark(),
-      home: const _LoginEntry(),
+      home: _AppEntry(store: store),
     );
   }
 }
 
-// ── Login entry point ────────────────────────────────────────────
+// ── Entry point ───────────────────────────────────────────────────
 
-class _LoginEntry extends StatelessWidget {
-  const _LoginEntry();
+class _AppEntry extends StatelessWidget {
+  final LocalCredentialStore store;
+  final _auth = _ExampleAuthService();
+
+  _AppEntry({required this.store});
 
   @override
   Widget build(BuildContext context) {
-    return LoginScreen(
-      onGoogleAuth: () {
-        // TODO: implement Google auth
+    if (store.savedEmail != null) {
+      final name = store.displayName ?? store.savedEmail!.split('@').first;
+      return ReturnLoginScreen(
+        displayName: name,
+        email: store.savedEmail!,
+        biometricService:
+            store.isBiometricEnabled ? LocalAuthBiometricService() : null,
+        onPinSubmit: (pin) async {
+          await Future<void>.delayed(const Duration(milliseconds: 600));
+          return pin.length == 6;
+        },
+        onSuccess: () => _goHome(context),
+        onForgotPassword: () => _goToPassword(context, store.savedEmail!),
+        onSwitchAccount: () async {
+          await store.clearAll();
+          if (!context.mounted) return;
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute<void>(builder: (_) => _AppEntry(store: store)),
+          );
+        },
+      );
+    }
+
+    return _LandingWithTransition(
+      onGoogleAuth: () {},
+      onLogin: () => _showSignIn(context),
+    );
+  }
+
+  Future<void> _showSignIn(BuildContext context) async {
+    await showSignInSheet(
+      context: context,
+      authService: _auth,
+      onLoginSuccess: (result, email) async {
+        await store.saveEmail(email);
+        await store.saveToken(result.token);
+        await store.saveDisplayName('Fabricio');
+        if (!context.mounted) return;
+        await _handlePostLogin(context);
       },
-      onSignUp: () {
-        Navigator.of(context).push(
-          MaterialPageRoute<void>(
-            builder: (ctx) => OnboardingScreen(
+    );
+  }
+
+  Future<void> _handlePostLogin(BuildContext context) async {
+    if (!store.hasBiometricBeenAsked) {
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => BiometricPromptScreen(
+            onEnabled: () async {
+              await store.setBiometricEnabled(enabled: true);
+              if (!context.mounted) return;
+              _goHome(context);
+            },
+            onSkipped: () async {
+              await store.setBiometricEnabled(enabled: false);
+              if (!context.mounted) return;
+              _goHome(context);
+            },
+          ),
+        ),
+      );
+    } else {
+      _goHome(context);
+    }
+  }
+
+  void _goToPassword(BuildContext context, String email) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => EmailPasswordScreen(
+          authService: _auth,
+          initialEmail: email,
+          onLoginSuccess: (result, _) async {
+            await store.saveToken(result.token);
+            if (!context.mounted) return;
+            _goHome(context);
+          },
+        ),
+      ),
+    );
+  }
+
+  void _goHome(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Login realizado! Implemente a navegação para o Home.'),
+        backgroundColor: Color(0xFF7D39EB),
+      ),
+    );
+  }
+}
+
+// ── Landing com transição estilo Alinea ──────────────────────────
+//
+// Coreografia dramática em 4 fases:
+// Fase 1 (0–500ms):   Conteúdo LoginScreen dissolve + encolhe (pull-in)
+// Fase 2 (200–800ms): Orbs pulsam/brilham — glow overlay intensifica
+// Fase 3 (500–1100ms): Conteúdo OnboardingScreen materializa com slide-up
+// Fase 4 (700–1100ms): Glow dissipa, tela nova domina
+
+class _LandingWithTransition extends StatefulWidget {
+  final VoidCallback onGoogleAuth;
+  final VoidCallback onLogin;
+
+  const _LandingWithTransition({
+    required this.onGoogleAuth,
+    required this.onLogin,
+  });
+
+  @override
+  State<_LandingWithTransition> createState() => _LandingWithTransitionState();
+}
+
+class _LandingWithTransitionState extends State<_LandingWithTransition>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _exitCtrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _exitCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+  }
+
+  @override
+  void dispose() {
+    _exitCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleSignUp() async {
+    HapticFeedback.mediumImpact();
+    unawaited(_exitCtrl.forward());
+    await Future.delayed(const Duration(milliseconds: 250));
+    if (!mounted) return;
+    _pushOnboarding();
+  }
+
+  void _pushOnboarding() {
+    Navigator.of(context)
+        .push(
+          PageRouteBuilder<void>(
+            transitionDuration: const Duration(milliseconds: 1400),
+            reverseTransitionDuration: const Duration(milliseconds: 500),
+            opaque: false,
+            pageBuilder: (ctx, _, __) => OnboardingScreen(
               steps: defaultOnboardingSteps,
               voiceService: FlutterTtsVoiceService(),
               backend: _ExampleBackend(),
               analytics: _ExampleAnalytics(),
               onExit: () => Navigator.of(ctx).pop(),
+              showBackground: false,
             ),
+            transitionsBuilder: (ctx, animation, _, child) {
+              // Fase 3: conteúdo novo entra com fade + slide visível
+              final contentIn = CurvedAnimation(
+                parent: animation,
+                curve: const Interval(0.40, 0.82, curve: Curves.easeOut),
+                reverseCurve: const Interval(0.0, 0.4, curve: Curves.easeIn),
+              );
+              final slideUp = Tween<Offset>(
+                begin: const Offset(0, 0.06),
+                end: Offset.zero,
+              ).animate(CurvedAnimation(
+                parent: animation,
+                curve: const Interval(0.38, 0.88, curve: Curves.easeOutCubic),
+              ));
+
+              return Stack(
+                children: [
+                  // Fase 2+4: glow overlay — orbs "pulsam"
+                  IgnorePointer(
+                    child: AnimatedBuilder(
+                      animation: animation,
+                      builder: (_, __) => CustomPaint(
+                        painter: _GlowPulsePainter(t: animation.value),
+                        child: const SizedBox.expand(),
+                      ),
+                    ),
+                  ),
+
+                  // Fase 3: conteúdo novo materializa
+                  SlideTransition(
+                    position: slideUp,
+                    child: FadeTransition(opacity: contentIn, child: child),
+                  ),
+                ],
+              );
+            },
           ),
-        );
-      },
-      onLogin: () {
-        // TODO: implement email/password login
-      },
+        )
+        .then((_) {
+          if (mounted) _exitCtrl.reverse();
+        });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        // Camada 1: GlassBackground persistente
+        const GlassBackground(child: SizedBox.expand()),
+
+        // Camada 2: Conteúdo LoginScreen — dissolve + encolhe (pull-in)
+        AnimatedBuilder(
+          animation: _exitCtrl,
+          builder: (_, child) {
+            final t = CurvedAnimation(
+              parent: _exitCtrl,
+              curve: Curves.easeIn,
+            ).value;
+            return Opacity(
+              opacity: 1.0 - t,
+              child: Transform.scale(
+                scale: 1.0 - (t * 0.08), // encolhe até 92%
+                child: child,
+              ),
+            );
+          },
+          child: LoginScreen(
+            showBackground: false,
+            onGoogleAuth: widget.onGoogleAuth,
+            onSignUp: _handleSignUp,
+            onLogin: widget.onLogin,
+          ),
+        ),
+      ],
     );
   }
 }
 
-// ── Stub implementations ─────────────────────────────────────────
+// ── Glow pulse painter ───────────────────────────────────────────
+//
+// Simula os orbs do GlassBackground "pulsando" durante a transição.
+// Um brilho suave roxo/azul irradia do centro-superior da tela,
+// intensifica no meio da transição e dissipa no final.
+// Sem bordas duras — tudo é gradiente radial com transparência.
+
+class _GlowPulsePainter extends CustomPainter {
+  final double t;
+
+  const _GlowPulsePainter({required this.t});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (t <= 0.05 || t >= 0.92) return;
+
+    // Curva de intensidade: sobe suave, pico em ~40%, desce gradual
+    final double intensity;
+    if (t < 0.40) {
+      intensity = Curves.easeOut.transform((t / 0.40).clamp(0.0, 1.0));
+    } else if (t < 0.80) {
+      intensity = Curves.easeIn.transform(
+        1.0 - ((t - 0.40) / 0.40).clamp(0.0, 1.0),
+      );
+    } else {
+      intensity = 0.0;
+    }
+
+    if (intensity <= 0.02) return;
+
+    final center = Offset(size.width * 0.4, size.height * 0.3);
+    final maxRadius = size.height * 0.7;
+    final radius = maxRadius * (0.5 + 0.5 * Curves.easeOutCubic.transform(
+      t.clamp(0.0, 0.6) / 0.6,
+    ));
+
+    // Glow principal — roxo suave
+    final shader = RadialGradient(
+      colors: [
+        Color.fromRGBO(159, 122, 234, intensity * 0.35), // roxo orb
+        Color.fromRGBO(124, 58, 237, intensity * 0.20),  // violeta
+        Color.fromRGBO(96, 165, 250, intensity * 0.10),  // azul sutil
+        Colors.transparent,
+      ],
+      stops: const [0.0, 0.35, 0.65, 1.0],
+    ).createShader(Rect.fromCircle(center: center, radius: radius));
+
+    canvas.drawCircle(center, radius, Paint()..shader = shader);
+
+    // Glow secundário — canto inferior oposto, mais sutil
+    final center2 = Offset(size.width * 0.7, size.height * 0.75);
+    final radius2 = maxRadius * 0.5;
+    final shader2 = RadialGradient(
+      colors: [
+        Color.fromRGBO(244, 114, 182, intensity * 0.18), // rosa orb
+        Color.fromRGBO(124, 58, 237, intensity * 0.08),
+        Colors.transparent,
+      ],
+      stops: const [0.0, 0.45, 1.0],
+    ).createShader(Rect.fromCircle(center: center2, radius: radius2));
+
+    canvas.drawCircle(center2, radius2, Paint()..shader = shader2);
+  }
+
+  @override
+  bool shouldRepaint(_GlowPulsePainter old) => old.t != t;
+}
+
+// ── Stubs ─────────────────────────────────────────────────────────
+
+class _ExampleAuthService implements AuthService {
+  @override
+  Future<AuthResult> login({
+    required String email,
+    required String password,
+  }) async {
+    await Future<void>.delayed(const Duration(milliseconds: 800));
+    if (password == 'wrong') {
+      throw const AuthException('E-mail ou senha incorretos.');
+    }
+    return const AuthResult(token: 'noop-token-example');
+  }
+
+  @override
+  Future<void> logout({required String token}) async {}
+}
 
 class _ExampleBackend implements OnboardingBackendService {
   @override
-  Future<OnboardingSessionDto> startSession() async {
-    return const OnboardingSessionDto(sessionId: 'example-session');
-  }
+  Future<OnboardingSessionDto> startSession() async =>
+      const OnboardingSessionDto(sessionId: 'example-session');
 
   @override
   Future<void> saveAnswer({
@@ -68,9 +373,8 @@ class _ExampleBackend implements OnboardingBackendService {
   Future<SubmitResultDto> submitAll({
     required String sessionId,
     required Map<String, dynamic> answers,
-  }) async {
-    return const SubmitResultDto(success: true);
-  }
+  }) async =>
+      const SubmitResultDto(success: true);
 
   @override
   Future<void> clearAnswer({

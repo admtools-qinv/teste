@@ -6,7 +6,7 @@ import '../../theme/qinvweb3_tokens.dart';
 class PinInputWidget extends StatefulWidget {
   final bool enabled;
   final ValueChanged<String>? onChanged;
-  final VoidCallback? onComplete;
+  final ValueChanged<String>? onComplete;
 
   const PinInputWidget({
     super.key,
@@ -27,7 +27,7 @@ class _PinInputWidgetState extends State<PinInputWidget> {
     setState(() => _digits += digit);
     widget.onChanged?.call(_digits);
     if (_digits.length == 6) {
-      Future.microtask(() => widget.onComplete?.call());
+      Future.microtask(() => widget.onComplete?.call(_digits));
     }
   }
 

@@ -43,6 +43,7 @@ class QInvWeb3Tokens {
   static const double fontSizeOtp = 22.0;
 
   static const transitionAll = Duration(milliseconds: 300);
+  static const transitionStep = Duration(milliseconds: 450);
 
   // Font families (package-prefixed so they resolve from the library bundle)
   static const String fontSerif = 'packages/onboarding_reference/PlayfairDisplay';

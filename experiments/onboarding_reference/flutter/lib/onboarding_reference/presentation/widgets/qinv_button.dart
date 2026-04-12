@@ -103,7 +103,7 @@ class QInvButton extends StatelessWidget {
             child: child,
           )
         : AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
+            duration: QInvWeb3Tokens.transitionAll,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(QInvWeb3Tokens.radiusButton),
               boxShadow: enabled

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 import '../flow/onboarding_flow_controller.dart';
 import '../models/country.dart';
@@ -25,6 +26,7 @@ class OnboardingScreen extends StatefulWidget {
   final OnboardingBackendService backend;
   final OnboardingAnalyticsService analytics;
   final VoidCallback? onExit;
+  final bool showBackground;
 
   const OnboardingScreen({
     super.key,
@@ -33,6 +35,7 @@ class OnboardingScreen extends StatefulWidget {
     required this.backend,
     required this.analytics,
     this.onExit,
+    this.showBackground = true,
   });
 
   @override
@@ -129,7 +132,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     if (current.type == OnboardingStepType.textInput ||
         current.type == OnboardingStepType.phoneInput ||
         current.type == OnboardingStepType.verificationCode) {
-      Future.delayed(const Duration(milliseconds: 400), () {
+      Future.delayed(const Duration(milliseconds: 500), () {
         if (mounted) inputFocusNode.requestFocus();
       });
     }
@@ -184,7 +187,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final next = controller.current;
     if (next.type == OnboardingStepType.textInput ||
         next.type == OnboardingStepType.verificationCode) {
-      Future.delayed(const Duration(milliseconds: 400), () {
+      Future.delayed(const Duration(milliseconds: 500), () {
         if (mounted) inputFocusNode.requestFocus();
       });
     } else {
@@ -234,6 +237,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
+  // ── Step Transition ──────────────────────────────────────────
+
+  Widget _stepTransitionBuilder(Widget child, Animation<double> animation) {
+    return FadeTransition(
+      opacity: CurvedAnimation(
+        parent: animation,
+        curve: Curves.easeOut,       // entering: aparece suavemente
+        reverseCurve: Curves.easeIn, // exiting: evaporação rápida
+      ),
+      child: child,
+    );
+  }
+
   // ── Zone B: Title ───────────────────────────────────────────
 
   Widget _buildTitle(BuildContext context, OnboardingStep step) {
@@ -247,7 +263,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             Text(
               step.title,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontFamily: QInvWeb3Tokens.fontSans,
                 fontSize: 32,
                 fontWeight: FontWeight.w500,
@@ -286,14 +302,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
             ),
           ],
-        ),
+        )
+            .animate()
+            .slideY(begin: 0.03, end: 0, duration: 400.ms, curve: Curves.easeOutCubic),
       ),
     );
   }
 
   // ── Zone C: Interactive content ─────────────────────────────
 
-  Widget _buildOption(OnboardingStep step, OnboardingOption option) {
+  Widget _buildOption(OnboardingStep step, OnboardingOption option, int index) {
     final selected = selectedOptionId == option.id;
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
@@ -309,7 +327,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 setState(() {});
               },
       ),
-    );
+    )
+        .animate(delay: Duration(milliseconds: 60 + 40 * index))
+        .slideY(begin: 0.05, end: 0, duration: 320.ms, curve: Curves.easeOutCubic);
   }
 
   Widget? _buildInteractiveContent(OnboardingStep step) {
@@ -320,7 +340,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       case OnboardingStepType.singleChoice:
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: step.options.map((o) => _buildOption(step, o)).toList(),
+          children: [
+            for (int i = 0; i < step.options.length; i++)
+              _buildOption(step, step.options[i], i),
+          ],
         );
 
       case OnboardingStepType.pinInput:
@@ -330,7 +353,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               key: ValueKey('pin_${step.id}'),
               enabled: !controller.isBusy,
               onChanged: (digits) => _drafts[step.id] = digits,
-              onComplete: () => unawaited(_submitCurrentStep()),
+              onComplete: (_) => unawaited(_submitCurrentStep()),
             ),
             if (controller.validationError != null) ...[
               const SizedBox(height: 12),
@@ -419,6 +442,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 onEdit: isInteractionBlocked
                     ? null
                     : () {
+                        HapticFeedback.lightImpact();
                         final idx = widget.steps.indexWhere(
                             (s) => s.id == item.stepId);
                         if (idx < 0) return;
@@ -567,6 +591,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         ? Icons.volume_off_rounded
                         : Icons.volume_up_rounded,
                     size: 14,
+                    semanticLabel: _voiceMuted ? 'Ativar narração' : 'Desativar narração',
                   ),
                   color: _voiceMuted
                       ? QInvWeb3Tokens.textMuted
@@ -574,7 +599,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   visualDensity: VisualDensity.compact,
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-                  onPressed: () => unawaited(_toggleMute()),
+                  onPressed: () {
+                    HapticFeedback.lightImpact();
+                    unawaited(_toggleMute());
+                  },
                   tooltip: _voiceMuted ? 'Ativar som' : 'Desativar som',
                 ),
               ],
@@ -604,11 +632,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
         final interactiveContent = _buildInteractiveContent(step);
 
-        return Scaffold(
-          backgroundColor: QInvWeb3Tokens.background,
-          resizeToAvoidBottomInset: false,
-          body: GlassBackground(
-            child: SafeArea(
+        final screenContent = SafeArea(
               child: AnimatedPadding(
                 duration: QInvWeb3Tokens.transitionAll,
                 padding: EdgeInsets.fromLTRB(
@@ -632,9 +656,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 visualDensity: VisualDensity.compact,
                                 padding: EdgeInsets.zero,
                                 constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+                                tooltip: 'Voltar',
                                 onPressed: (controller.isBusy || controller.isCompleted)
                                     ? null
-                                    : _goBack,
+                                    : () {
+                                        HapticFeedback.lightImpact();
+                                        _goBack();
+                                      },
                               ),
                             )
                           else if (widget.onExit != null)
@@ -647,7 +675,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 visualDensity: VisualDensity.compact,
                                 padding: EdgeInsets.zero,
                                 constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-                                onPressed: controller.isBusy ? null : widget.onExit,
+                                tooltip: 'Fechar',
+                                onPressed: controller.isBusy
+                                    ? null
+                                    : () {
+                                        HapticFeedback.lightImpact();
+                                        widget.onExit!();
+                                      },
                               ),
                             ),
                           Expanded(child: _buildProgress(context, progressValue)),
@@ -658,7 +692,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       // Zone B + C — Scrollable content
                       Expanded(
                         child: AnimatedSwitcher(
-                          duration: QInvWeb3Tokens.transitionAll,
+                          duration: const Duration(milliseconds: 400),
+                          reverseDuration: const Duration(milliseconds: 200),
+                          transitionBuilder: _stepTransitionBuilder,
                           child: SingleChildScrollView(
                             key: ValueKey(step.id),
                             physics: const BouncingScrollPhysics(),
@@ -678,6 +714,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                   const SizedBox(height: 24),
                                   if (step.type == OnboardingStepType.pinInput)
                                     interactiveContent
+                                        .animate(delay: 60.ms)
+                                        .slideY(begin: 0.04, end: 0, duration: 360.ms, curve: Curves.easeOutCubic)
+                                  else if (step.type == OnboardingStepType.singleChoice)
+                                    interactiveContent
                                   else
                                     GlassCard(
                                       fillColor:
@@ -687,7 +727,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                       blurSigma: 20,
                                       padding: const EdgeInsets.all(20),
                                       child: interactiveContent,
-                                    ),
+                                    )
+                                        .animate(delay: 60.ms)
+                                        .slideY(begin: 0.04, end: 0, duration: 360.ms, curve: Curves.easeOutCubic),
                                 ],
                               ],
                             ),
@@ -700,17 +742,37 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       // Zone D — CTA button
                       _buildCTA(step),
 
-                      // Zone E — Footer (hidden when keyboard is open)
-                      if (bottomInset == 0) ...[
-                        const SizedBox(height: 16),
-                        _buildFooter(context, step),
-                      ],
+                      // Zone E — Footer (animated show/hide with keyboard)
+                      ClipRect(
+                        child: AnimatedSize(
+                          duration: QInvWeb3Tokens.transitionAll,
+                          curve: Curves.easeOutCubic,
+                          child: bottomInset == 0
+                              ? Column(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const SizedBox(height: 16),
+                                    _buildFooter(context, step),
+                                  ],
+                                )
+                              : const SizedBox.shrink(),
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ),
-            ),
-          ),
+            );
+
+        return Scaffold(
+          backgroundColor: widget.showBackground
+              ? QInvWeb3Tokens.background
+              : Colors.transparent,
+          resizeToAvoidBottomInset: false,
+          body: widget.showBackground
+              ? GlassBackground(child: screenContent)
+              : screenContent,
         );
       },
     );
