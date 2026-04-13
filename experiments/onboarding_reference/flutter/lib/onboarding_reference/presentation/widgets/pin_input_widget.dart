@@ -20,21 +20,44 @@ class PinInputWidget extends StatefulWidget {
 }
 
 class _PinInputWidgetState extends State<PinInputWidget> {
-  String _digits = '';
+  late final TextEditingController _controller;
+  late final FocusNode _focusNode;
 
-  void _addDigit(String digit) {
-    if (!widget.enabled || _digits.length >= 6) return;
-    setState(() => _digits += digit);
-    widget.onChanged?.call(_digits);
-    if (_digits.length == 6) {
-      Future.microtask(() => widget.onComplete?.call(_digits));
+  String get _digits => _controller.text;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+    _focusNode = FocusNode();
+    _controller.addListener(_onTextChanged);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && widget.enabled) _focusNode.requestFocus();
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.removeListener(_onTextChanged);
+    _controller.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _onTextChanged() {
+    final text = _controller.text;
+    setState(() {});
+    HapticFeedback.selectionClick();
+    widget.onChanged?.call(text);
+    if (text.length == 6) {
+      Future.microtask(() => widget.onComplete?.call(text));
     }
   }
 
-  void _removeDigit() {
-    if (!widget.enabled || _digits.isEmpty) return;
-    setState(() => _digits = _digits.substring(0, _digits.length - 1));
-    widget.onChanged?.call(_digits);
+  void _ensureFocus() {
+    if (!_focusNode.hasFocus && widget.enabled) {
+      _focusNode.requestFocus();
+    }
   }
 
   @override
@@ -42,9 +65,46 @@ class _PinInputWidgetState extends State<PinInputWidget> {
     return Column(
       children: [
         const SizedBox(height: 8),
-        _buildDots(),
-        const SizedBox(height: 32),
-        _buildKeypad(),
+        // TextField invisível que aciona o teclado nativo
+        SizedBox(
+          width: 0,
+          height: 0,
+          child: TextField(
+            controller: _controller,
+            focusNode: _focusNode,
+            keyboardType: TextInputType.number,
+            keyboardAppearance: Brightness.dark,
+            enableIMEPersonalizedLearning: false,
+            autocorrect: false,
+            enableSuggestions: false,
+            obscureText: true,
+            enabled: widget.enabled,
+            maxLength: 6,
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+              LengthLimitingTextInputFormatter(6),
+            ],
+            decoration: const InputDecoration(
+              counterText: '',
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.zero,
+            ),
+            style: const TextStyle(
+              color: Colors.transparent,
+              fontSize: 1,
+              height: 0.01,
+            ),
+          ),
+        ),
+        // Dots — tap para re-abrir teclado
+        GestureDetector(
+          onTap: _ensureFocus,
+          behavior: HitTestBehavior.opaque,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: _buildDots(),
+          ),
+        ),
         const SizedBox(height: 8),
       ],
     );
@@ -74,93 +134,6 @@ class _PinInputWidgetState extends State<PinInputWidget> {
           ),
         );
       }),
-    );
-  }
-
-  Widget _buildKeypad() {
-    return Column(
-      children: [
-        _buildKeyRow(['1', '2', '3']),
-        const SizedBox(height: 12),
-        _buildKeyRow(['4', '5', '6']),
-        const SizedBox(height: 12),
-        _buildKeyRow(['7', '8', '9']),
-        const SizedBox(height: 12),
-        _buildBottomRow(),
-      ],
-    );
-  }
-
-  Widget _buildKeyRow(List<String> digits) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: digits.map((d) => _buildDigitKey(d)).toList(),
-    );
-  }
-
-  Widget _buildBottomRow() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        const SizedBox(width: 80, height: 64),
-        _buildDigitKey('0'),
-        _buildBackspaceKey(),
-      ],
-    );
-  }
-
-  Widget _buildDigitKey(String digit) {
-    return _KeyButton(
-      onTap: widget.enabled ? () => _addDigit(digit) : null,
-      child: Text(
-        digit,
-        style: const TextStyle(
-          fontFamily: QInvWeb3Tokens.fontUI,
-          fontSize: 24,
-          fontWeight: FontWeight.w400,
-          color: QInvWeb3Tokens.textHeading,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBackspaceKey() {
-    return _KeyButton(
-      onTap: widget.enabled ? _removeDigit : null,
-      child: const Icon(
-        Icons.backspace_outlined,
-        color: QInvWeb3Tokens.textSecondary,
-        size: 22,
-      ),
-    );
-  }
-}
-
-class _KeyButton extends StatelessWidget {
-  final VoidCallback? onTap;
-  final Widget child;
-
-  const _KeyButton({required this.onTap, required this.child});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap != null
-          ? () {
-              HapticFeedback.selectionClick();
-              onTap!();
-            }
-          : null,
-      child: Container(
-        width: 80,
-        height: 64,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          color: Colors.white.withValues(alpha: 0.07),
-        ),
-        alignment: Alignment.center,
-        child: child,
-      ),
     );
   }
 }

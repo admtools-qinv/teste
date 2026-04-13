@@ -24,7 +24,8 @@ class ReturnLoginScreen extends StatefulWidget {
   final String displayName;
   final String email;
   final BiometricAuthService? biometricService;
-  final Future<bool> Function(String pin) onPinSubmit;
+  /// Null for Google users who have no PIN — hides "Usar senha" fallback.
+  final Future<bool> Function(String pin)? onPinSubmit;
   final VoidCallback onSuccess;
   final VoidCallback? onForgotPassword;
   final VoidCallback? onSwitchAccount;
@@ -33,7 +34,7 @@ class ReturnLoginScreen extends StatefulWidget {
     super.key,
     required this.displayName,
     required this.email,
-    required this.onPinSubmit,
+    this.onPinSubmit,
     required this.onSuccess,
     this.biometricService,
     this.onForgotPassword,
@@ -97,14 +98,17 @@ class _ReturnLoginScreenState extends State<ReturnLoginScreen> {
     }
   }
 
+  bool get _hasPinFallback => widget.onPinSubmit != null;
+
   Future<void> _openPinSheet() async {
+    if (!_hasPinFallback) return;
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       barrierColor: Colors.black.withValues(alpha: 0.72),
       builder: (_) => _PinSheet(
-        onSubmit: widget.onPinSubmit,
+        onSubmit: widget.onPinSubmit!,
         onSuccess: widget.onSuccess,
         onForgotPassword: widget.onForgotPassword,
       ),
@@ -127,7 +131,7 @@ class _ReturnLoginScreenState extends State<ReturnLoginScreen> {
                   busy: _biometricBusy,
                   failed: _biometricFailed,
                   onRetry: _triggerBiometric,
-                  onUsePin: _openPinSheet,
+                  onUsePin: _hasPinFallback ? _openPinSheet : null,
                   onSwitchAccount: widget.onSwitchAccount,
                   bottomPadding: bottom,
                 ),
@@ -139,7 +143,7 @@ class _ReturnLoginScreenState extends State<ReturnLoginScreen> {
                 child: _BottomPanel(
                   displayName: widget.displayName,
                   email: widget.email,
-                  onAccessTap: _openPinSheet,
+                  onAccessTap: _hasPinFallback ? _openPinSheet : null,
                   onSwitchAccount: widget.onSwitchAccount,
                   bottomPadding: bottom,
                 ),
@@ -157,7 +161,7 @@ class _BiometricWaitView extends StatelessWidget {
   final bool busy;
   final bool failed;
   final VoidCallback onRetry;
-  final VoidCallback onUsePin;
+  final VoidCallback? onUsePin;
   final VoidCallback? onSwitchAccount;
   final double bottomPadding;
 
@@ -165,7 +169,7 @@ class _BiometricWaitView extends StatelessWidget {
     required this.busy,
     required this.failed,
     required this.onRetry,
-    required this.onUsePin,
+    this.onUsePin,
     required this.bottomPadding,
     this.onSwitchAccount,
   });
@@ -245,15 +249,16 @@ class _BiometricWaitView extends StatelessWidget {
 
             const SizedBox(height: 28),
 
-            // Link "Usar senha" — só aparece após falha
-            AnimatedOpacity(
-              duration: QInvWeb3Tokens.transitionAll,
-              opacity: failed ? 1.0 : 0.0,
-              child: IgnorePointer(
-                ignoring: !failed,
-                child: _TextLink(label: 'Usar senha', onTap: onUsePin),
+            // Link "Usar senha" — só aparece após falha e se PIN disponível
+            if (onUsePin != null)
+              AnimatedOpacity(
+                duration: QInvWeb3Tokens.transitionAll,
+                opacity: failed ? 1.0 : 0.0,
+                child: IgnorePointer(
+                  ignoring: !failed,
+                  child: _TextLink(label: 'Usar senha', onTap: onUsePin!),
+                ),
               ),
-            ),
 
             const SizedBox(height: 12),
 
@@ -275,14 +280,14 @@ class _BiometricWaitView extends StatelessWidget {
 class _BottomPanel extends StatelessWidget {
   final String displayName;
   final String email;
-  final VoidCallback onAccessTap;
+  final VoidCallback? onAccessTap;
   final VoidCallback? onSwitchAccount;
   final double bottomPadding;
 
   const _BottomPanel({
     required this.displayName,
     required this.email,
-    required this.onAccessTap,
+    this.onAccessTap,
     required this.bottomPadding,
     this.onSwitchAccount,
   });
@@ -418,6 +423,7 @@ class _PinSheetState extends State<_PinSheet> {
   @override
   Widget build(BuildContext context) {
     final bottom = MediaQuery.of(context).padding.bottom;
+    final viewInsets = MediaQuery.viewInsetsOf(context);
 
     return ClipRRect(
       borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
@@ -428,7 +434,12 @@ class _PinSheetState extends State<_PinSheet> {
               top: BorderSide(color: Colors.white.withValues(alpha: 0.12)),
             ),
           ),
-          padding: EdgeInsets.fromLTRB(24, 32, 24, bottom > 0 ? bottom + 8 : 24),
+          padding: EdgeInsets.fromLTRB(
+            24, 32, 24,
+            viewInsets.bottom > 0
+                ? viewInsets.bottom + 16
+                : (bottom > 0 ? bottom + 8 : 24),
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [

@@ -1,5 +1,19 @@
 import '../models/onboarding_step.dart';
 
+/// Método de autenticação usado no cadastro.
+enum AuthMethod { emailPassword, google }
+
+/// IDs dos steps pulados no fluxo Google (email/verificação/PIN já resolvidos).
+const _googleSkipIds = {'email', 'emailCode', 'pin', 'confirmPin'};
+
+/// Retorna os steps de onboarding filtrados por método de autenticação.
+List<OnboardingStep> onboardingStepsFor(AuthMethod method) {
+  if (method == AuthMethod.emailPassword) return defaultOnboardingSteps;
+  return defaultOnboardingSteps
+      .where((s) => !_googleSkipIds.contains(s.id))
+      .toList();
+}
+
 const defaultOnboardingSteps = <OnboardingStep>[
   // ── Investment profile ─────────────────────────────────────────
 

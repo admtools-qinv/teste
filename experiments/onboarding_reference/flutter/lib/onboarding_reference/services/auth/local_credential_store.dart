@@ -28,6 +28,7 @@ class LocalCredentialStore {
   static const _kBiometricEnabled = 'qinv_biometric_enabled';
   static const _kBiometricAsked = 'qinv_biometric_asked';
   static const _kToken = 'qinv_auth_token';
+  static const _kAuthMethod = 'qinv_auth_method';
 
   final SharedPreferences _prefs;
   final SecureStore _secure;
@@ -54,6 +55,13 @@ class LocalCredentialStore {
   /// choice. Used to avoid showing [BiometricPromptScreen] more than once.
   bool get hasBiometricBeenAsked => _prefs.getBool(_kBiometricAsked) ?? false;
 
+  /// The authentication method used during sign-up (e.g. 'google', 'emailPassword').
+  /// Returns null if not yet saved.
+  String? get authMethod => _prefs.getString(_kAuthMethod);
+
+  /// Whether this account was created via Google Sign-In.
+  bool get isGoogleUser => authMethod == 'google';
+
   // ── Writes ────────────────────────────────────────────────────────
 
   Future<void> saveEmail(String email) =>
@@ -72,6 +80,9 @@ class LocalCredentialStore {
   /// [isBiometricEnabled] flag (e.g. the user dismissed without deciding).
   Future<void> markBiometricAsked() =>
       _prefs.setBool(_kBiometricAsked, true);
+
+  Future<void> saveAuthMethod(String method) =>
+      _prefs.setString(_kAuthMethod, method);
 
   // ── Secure token ──────────────────────────────────────────────────
 
@@ -92,8 +103,10 @@ class LocalCredentialStore {
   /// Full wipe — call on account deletion or explicit "forget this device".
   Future<void> clearAll() async {
     await _prefs.remove(_kEmail);
+    await _prefs.remove(_kDisplayName);
     await _prefs.remove(_kBiometricEnabled);
     await _prefs.remove(_kBiometricAsked);
+    await _prefs.remove(_kAuthMethod);
     await _secure.delete(_kToken);
   }
 }

@@ -139,10 +139,10 @@ class _SignInSheetState extends State<SignInSheet> {
             top: BorderSide(color: Colors.white.withValues(alpha: 0.12)),
           ),
         ),
-        // Sobe com o teclado no passo 1; usa padding seguro no passo 2.
+        // Sobe com o teclado nativo em ambos os passos.
         padding: EdgeInsets.only(
-          bottom: _step == _Step.email
-              ? (viewInsets.bottom > 0 ? viewInsets.bottom + 16 : bottomPad + 24)
+          bottom: viewInsets.bottom > 0
+              ? viewInsets.bottom + 16
               : (bottomPad > 0 ? bottomPad + 8 : 24),
         ),
         child: AnimatedSize(

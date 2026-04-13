@@ -26,6 +26,7 @@ class OnboardingScreen extends StatefulWidget {
   final OnboardingBackendService backend;
   final OnboardingAnalyticsService analytics;
   final VoidCallback? onExit;
+  final Future<void> Function(Map<String, dynamic> answers)? onCompletion;
   final bool showBackground;
 
   const OnboardingScreen({
@@ -35,6 +36,7 @@ class OnboardingScreen extends StatefulWidget {
     required this.backend,
     required this.analytics,
     this.onExit,
+    this.onCompletion,
     this.showBackground = true,
   });
 
@@ -167,6 +169,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
     if (controller.isCompleted) {
       setState(() {});
+      if (widget.onCompletion != null) {
+        await widget.onCompletion!(controller.session.answers);
+      }
       return;
     }
 

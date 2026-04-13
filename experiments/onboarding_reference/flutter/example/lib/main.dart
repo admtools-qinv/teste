@@ -39,17 +39,21 @@ class _AppEntry extends StatelessWidget {
   Widget build(BuildContext context) {
     if (store.savedEmail != null) {
       final name = store.displayName ?? store.savedEmail!.split('@').first;
+      final isGoogle = store.isGoogleUser;
       return ReturnLoginScreen(
         displayName: name,
         email: store.savedEmail!,
         biometricService:
             store.isBiometricEnabled ? LocalAuthBiometricService() : null,
-        onPinSubmit: (pin) async {
-          await Future<void>.delayed(const Duration(milliseconds: 600));
-          return pin.length == 6;
-        },
+        // Google users don't have a PIN — only biometric or re-auth via Google.
+        onPinSubmit: isGoogle
+            ? null
+            : (pin) async {
+                await Future<void>.delayed(const Duration(milliseconds: 600));
+                return pin.length == 6;
+              },
         onSuccess: () => _goHome(context),
-        onForgotPassword: () => _goToPassword(context, store.savedEmail!),
+        onForgotPassword: isGoogle ? null : () => _goToPassword(context, store.savedEmail!),
         onSwitchAccount: () async {
           await store.clearAll();
           if (!context.mounted) return;
@@ -61,8 +65,42 @@ class _AppEntry extends StatelessWidget {
     }
 
     return _LandingWithTransition(
-      onGoogleAuth: () {},
+      onGoogleAuth: () => _pushGoogleOnboarding(context),
       onLogin: () => _showSignIn(context),
+      onSignUpCompletion: (answers) async {
+        final email = answers['email']?.toString() ?? '';
+        final name = answers['fullName']?.toString() ?? email.split('@').first;
+        await store.saveEmail(email);
+        await store.saveDisplayName(name);
+        await store.saveToken('signup-token-example');
+        await store.saveAuthMethod('emailPassword');
+        if (!context.mounted) return;
+        await _handlePostLogin(context);
+      },
+    );
+  }
+
+  void _pushGoogleOnboarding(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (ctx) => OnboardingScreen(
+          steps: onboardingStepsFor(AuthMethod.google),
+          voiceService: FlutterTtsVoiceService(),
+          backend: _ExampleBackend(),
+          analytics: _ExampleAnalytics(),
+          onExit: () => Navigator.of(ctx).pop(),
+          onCompletion: (answers) async {
+            final name = answers['fullName']?.toString() ?? 'Usuário';
+            await store.saveEmail('google-user@gmail.com');
+            await store.saveDisplayName(name);
+            await store.saveToken('google-token-example');
+            await store.saveAuthMethod('google');
+            if (!ctx.mounted) return;
+            Navigator.of(ctx).pop();
+            await _handlePostLogin(ctx);
+          },
+        ),
+      ),
     );
   }
 
@@ -112,7 +150,7 @@ class _AppEntry extends StatelessWidget {
           onLoginSuccess: (result, _) async {
             await store.saveToken(result.token);
             if (!context.mounted) return;
-            _goHome(context);
+            await _handlePostLogin(context);
           },
         ),
       ),
@@ -120,11 +158,23 @@ class _AppEntry extends StatelessWidget {
   }
 
   void _goHome(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Login realizado! Implemente a navegação para o Home.'),
-        backgroundColor: Color(0xFF7D39EB),
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute<void>(
+        builder: (_) => _FakeHomeScreen(
+          displayName: store.displayName ?? 'Usuário',
+          onLogout: () async {
+            await store.clearAll();
+            if (!context.mounted) return;
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute<void>(
+                builder: (_) => _AppEntry(store: store),
+              ),
+              (_) => false,
+            );
+          },
+        ),
       ),
+      (_) => false,
     );
   }
 }
@@ -140,10 +190,12 @@ class _AppEntry extends StatelessWidget {
 class _LandingWithTransition extends StatefulWidget {
   final VoidCallback onGoogleAuth;
   final VoidCallback onLogin;
+  final Future<void> Function(Map<String, dynamic> answers)? onSignUpCompletion;
 
   const _LandingWithTransition({
     required this.onGoogleAuth,
     required this.onLogin,
+    this.onSignUpCompletion,
   });
 
   @override
@@ -190,6 +242,12 @@ class _LandingWithTransitionState extends State<_LandingWithTransition>
               backend: _ExampleBackend(),
               analytics: _ExampleAnalytics(),
               onExit: () => Navigator.of(ctx).pop(),
+              onCompletion: widget.onSignUpCompletion != null
+                  ? (answers) async {
+                      Navigator.of(ctx).pop();
+                      await widget.onSignUpCompletion!(answers);
+                    }
+                  : null,
               showBackground: false,
             ),
             transitionsBuilder: (ctx, animation, _, child) {
@@ -336,6 +394,67 @@ class _GlowPulsePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_GlowPulsePainter old) => old.t != t;
+}
+
+// ── Fake home screen ─────────────────────────────────────────────
+
+class _FakeHomeScreen extends StatelessWidget {
+  final String displayName;
+  final VoidCallback onLogout;
+
+  const _FakeHomeScreen({
+    required this.displayName,
+    required this.onLogout,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: QInvWeb3Tokens.background,
+      body: GlassBackground(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Olá, $displayName',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontFamily: QInvWeb3Tokens.fontSerif,
+                    fontStyle: FontStyle.italic,
+                    fontSize: 32,
+                    fontWeight: FontWeight.w400,
+                    color: QInvWeb3Tokens.textHeading,
+                    height: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Você está logado.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: QInvWeb3Tokens.fontUI,
+                    fontSize: QInvWeb3Tokens.fontSizeSubtitle,
+                    color: QInvWeb3Tokens.textMuted,
+                  ),
+                ),
+                const SizedBox(height: 40),
+                QInvButton(
+                  label: 'Sair',
+                  onPressed: () {
+                    HapticFeedback.mediumImpact();
+                    onLogout();
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 // ── Stubs ─────────────────────────────────────────────────────────
