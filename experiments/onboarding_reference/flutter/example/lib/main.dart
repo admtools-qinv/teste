@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:onboarding_reference/onboarding_reference.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -80,19 +81,47 @@ class _AppEntry extends StatelessWidget {
     );
   }
 
-  void _pushGoogleOnboarding(BuildContext context) {
+  Future<void> _pushGoogleOnboarding(BuildContext context) async {
+    // Step 1: Google Sign-In
+    final googleSignIn = GoogleSignIn(
+      scopes: ['email'],
+      serverClientId:
+          '234657807436-lspj40mggavc13ab00utrnm2jgefpp1p.apps.googleusercontent.com',
+    );
+    final GoogleSignInAccount? account;
+    try {
+      account = await googleSignIn.signIn();
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro ao conectar com Google: $e')),
+      );
+      return;
+    }
+
+    if (account == null) return; // user cancelled
+
+    final googleEmail = account.email;
+    final googleName = account.displayName ?? '';
+
+    if (!context.mounted) return;
+
+    // Step 2: Onboarding with remaining steps (profile questions, phone, etc.)
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (ctx) => OnboardingScreen(
           steps: onboardingStepsFor(AuthMethod.google),
-          voiceService: FlutterTtsVoiceService(),
+          voiceService: AssetVoiceService(),
           backend: _ExampleBackend(),
           analytics: _ExampleAnalytics(),
-          onExit: () => Navigator.of(ctx).pop(),
+          onExit: () {
+            googleSignIn.signOut(); // cleanup on cancel
+            Navigator.of(ctx).pop();
+          },
           onCompletion: (answers) async {
-            final name = answers['fullName']?.toString() ?? 'Usuário';
-            await store.saveEmail('google-user@gmail.com');
-            await store.saveDisplayName(name);
+            final name = answers['fullName']?.toString() ?? googleName;
+            await store.saveEmail(googleEmail);
+            await store.saveDisplayName(name.isNotEmpty ? name : 'Usuário');
             await store.saveToken('google-token-example');
             await store.saveAuthMethod('google');
             if (!ctx.mounted) return;
@@ -160,12 +189,12 @@ class _AppEntry extends StatelessWidget {
   void _goHome(BuildContext context) {
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute<void>(
-        builder: (_) => _FakeHomeScreen(
+        builder: (routeContext) => _FakeHomeScreen(
           displayName: store.displayName ?? 'Usuário',
           onLogout: () async {
             await store.clearAll();
-            if (!context.mounted) return;
-            Navigator.of(context).pushAndRemoveUntil(
+            if (!routeContext.mounted) return;
+            Navigator.of(routeContext).pushAndRemoveUntil(
               MaterialPageRoute<void>(
                 builder: (_) => _AppEntry(store: store),
               ),
@@ -238,7 +267,7 @@ class _LandingWithTransitionState extends State<_LandingWithTransition>
             opaque: false,
             pageBuilder: (ctx, _, __) => OnboardingScreen(
               steps: defaultOnboardingSteps,
-              voiceService: FlutterTtsVoiceService(),
+              voiceService: AssetVoiceService(),
               backend: _ExampleBackend(),
               analytics: _ExampleAnalytics(),
               onExit: () => Navigator.of(ctx).pop(),

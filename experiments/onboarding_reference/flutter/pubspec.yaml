@@ -11,6 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_tts: ^4.0.2
+  just_audio: ^0.9.42
   flutter_svg: ^2.0.0
   local_auth: ^2.3.0
   flutter_secure_storage: ^9.2.2
@@ -31,6 +32,7 @@ flutter:
     - assets/btc.png
     - assets/xrp.png
     - assets/sol.png
+    - assets/audio/
 
   fonts:
     - family: PlayfairDisplay

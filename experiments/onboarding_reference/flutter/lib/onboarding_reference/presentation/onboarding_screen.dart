@@ -82,7 +82,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       voiceReady = true;
       setState(() {});
       if (!_voiceMuted) {
-        await widget.voiceService.speak(controller.current.voiceText);
+        await widget.voiceService.speak(controller.current.voiceText, stepId: controller.current.id);
       }
     } catch (_) {
       if (!mounted) return;
@@ -95,7 +95,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   void dispose() {
     inputController.dispose();
     inputFocusNode.dispose();
-    unawaited(widget.voiceService.stop());
+    unawaited(widget.voiceService.dispose());
     controller.dispose();
     super.dispose();
   }
@@ -138,7 +138,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         if (mounted) inputFocusNode.requestFocus();
       });
     }
-    if (!_voiceMuted) await widget.voiceService.speak(current.voiceText);
+    if (!_voiceMuted) await widget.voiceService.speak(current.voiceText, stepId: current.id);
   }
 
   Future<void> _toggleMute() async {
@@ -148,6 +148,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       await widget.voiceService.stop();
     } else {
       HapticFeedback.lightImpact();
+      await widget.voiceService.speak(
+        controller.current.voiceText,
+        stepId: controller.current.id,
+      );
     }
   }
 
@@ -200,7 +204,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     }
 
     if (controller.hasNext && !_voiceMuted) {
-      await widget.voiceService.speak(controller.current.voiceText);
+      await widget.voiceService.speak(controller.current.voiceText, stepId: controller.current.id);
     }
   }
 
@@ -575,18 +579,23 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
-                child: Text(
-                  narrationText,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontFamily: QInvWeb3Tokens.fontUI,
-                    fontSize: 12,
-                    fontStyle: FontStyle.italic,
-                    color: QInvWeb3Tokens.textMuted,
-                    height: 1.50,
-                  ),
-                ),
+                child: voiceReady && !_voiceMuted
+                    ? _KaraokeText(
+                        text: narrationText,
+                        progressStream: widget.voiceService.progressStream,
+                      )
+                    : Text(
+                        narrationText,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontFamily: QInvWeb3Tokens.fontUI,
+                          fontSize: 12,
+                          fontStyle: FontStyle.italic,
+                          color: QInvWeb3Tokens.textMuted,
+                          height: 1.50,
+                        ),
+                      ),
               ),
               if (voiceReady) ...[
                 const SizedBox(width: 4),
@@ -894,6 +903,79 @@ class _OptionCard extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+// ── Karaoke Text ───────────────────────────────────────────────
+
+class _KaraokeText extends StatelessWidget {
+  final String text;
+  final Stream<double> progressStream;
+
+  const _KaraokeText({
+    required this.text,
+    required this.progressStream,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final words = text.split(' ');
+    // Weight each word by character length for more natural timing.
+    final lengths = words.map((w) => w.length).toList();
+    final totalChars = lengths.fold<int>(0, (a, b) => a + b);
+
+    return StreamBuilder<double>(
+      stream: progressStream,
+      initialData: 0.0,
+      builder: (context, snapshot) {
+        final progress = snapshot.data ?? 0.0;
+
+        // Map progress to cumulative character position.
+        final charPos = (progress * totalChars).floor();
+        int accumulated = 0;
+        int activeIndex = -1;
+        for (int i = 0; i < words.length; i++) {
+          accumulated += lengths[i];
+          if (charPos < accumulated) {
+            activeIndex = i;
+            break;
+          }
+        }
+        // If progress >= 1.0, no word is highlighted (finished).
+        if (progress >= 0.99) activeIndex = -1;
+
+        return RichText(
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          text: TextSpan(
+            style: const TextStyle(
+              fontFamily: QInvWeb3Tokens.fontUI,
+              fontSize: 12,
+              fontStyle: FontStyle.italic,
+              color: QInvWeb3Tokens.textMuted,
+              height: 1.50,
+            ),
+            children: [
+              for (int i = 0; i < words.length; i++) ...[
+                if (i > 0) const TextSpan(text: ' '),
+                TextSpan(
+                  text: words[i],
+                  style: i == activeIndex
+                      ? TextStyle(
+                          color: QInvWeb3Tokens.textHeading,
+                          backgroundColor:
+                              QInvWeb3Tokens.primary.withValues(alpha: 0.30),
+                        )
+                      : i < activeIndex
+                          ? const TextStyle(color: QInvWeb3Tokens.textHeading)
+                          : null,
+                ),
+              ],
+            ],
+          ),
+        );
+      },
     );
   }
 }

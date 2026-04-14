@@ -30,6 +30,7 @@ export 'services/auth/secure_store.dart';
 export 'services/backend/noop_onboarding_backend_service.dart';
 export 'services/backend/onboarding_backend_service.dart';
 export 'services/backend/remote_onboarding_backend_service.dart';
+export 'services/asset_voice_service.dart';
 export 'services/flutter_tts_voice_service.dart';
 export 'services/voice_service.dart';
 export 'theme/qinvweb3_theme.dart';

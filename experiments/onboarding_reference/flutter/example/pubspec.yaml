@@ -13,6 +13,7 @@ dependencies:
   onboarding_reference:
     path: ..
   shared_preferences: ^2.3.3
+  google_sign_in: ^6.2.2
 
 flutter:
   uses-material-design: true

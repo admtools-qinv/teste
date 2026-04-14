@@ -40,7 +40,7 @@ class FlutterTtsVoiceService implements VoiceService {
   }
 
   @override
-  Future<void> speak(String text) async {
+  Future<void> speak(String text, {String? stepId}) async {
     await initialize();
     if (_unsupported) return;
     try {
@@ -56,4 +56,10 @@ class FlutterTtsVoiceService implements VoiceService {
       await _tts.stop();
     } catch (_) {}
   }
+
+  @override
+  Future<void> dispose() async {}
+
+  @override
+  Stream<double> get progressStream => const Stream.empty();
 }
