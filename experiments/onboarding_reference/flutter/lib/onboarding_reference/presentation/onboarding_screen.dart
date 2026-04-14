@@ -203,7 +203,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       inputFocusNode.unfocus();
     }
 
-    if (controller.hasNext && !_voiceMuted) {
+    if (!_voiceMuted) {
       await widget.voiceService.speak(controller.current.voiceText, stepId: controller.current.id);
     }
   }

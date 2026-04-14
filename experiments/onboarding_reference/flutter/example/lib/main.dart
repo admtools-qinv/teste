@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:onboarding_reference/onboarding_reference.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -126,7 +127,8 @@ class _AppEntry extends StatelessWidget {
             await store.saveAuthMethod('google');
             if (!ctx.mounted) return;
             Navigator.of(ctx).pop();
-            await _handlePostLogin(ctx);
+            if (!context.mounted) return;
+            await _handlePostLogin(context);
           },
         ),
       ),
@@ -148,7 +150,10 @@ class _AppEntry extends StatelessWidget {
   }
 
   Future<void> _handlePostLogin(BuildContext context) async {
-    if (!store.hasBiometricBeenAsked) {
+    final biometrics = await LocalAuthentication().getAvailableBiometrics();
+    final biometricAvailable = biometrics.isNotEmpty;
+    if (!store.hasBiometricBeenAsked && biometricAvailable) {
+      if (!context.mounted) return;
       Navigator.of(context).push(
         MaterialPageRoute<void>(
           builder: (_) => BiometricPromptScreen(

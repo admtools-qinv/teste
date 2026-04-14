@@ -71,11 +71,14 @@ class _SignInSheetState extends State<SignInSheet> {
     if (trimmed.isEmpty) return;
     // Validação mínima — evita avançar sem um email no formato básico.
     if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(trimmed)) return;
-    FocusScope.of(context).unfocus();
     setState(() {
       _email = trimmed;
       _step = _Step.pin;
       _error = null;
+    });
+    // Fecha o teclado após o setState para evitar flash de fechar/abrir.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) FocusScope.of(context).unfocus();
     });
   }
 
@@ -187,7 +190,10 @@ class _EmailStepState extends State<_EmailStep> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _focus.requestFocus());
+    // Aguarda a animação do bottom sheet antes de pedir focus.
+    Future.delayed(const Duration(milliseconds: 400), () {
+      if (mounted) _focus.requestFocus();
+    });
   }
 
   @override
