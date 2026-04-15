@@ -22,9 +22,9 @@ class QInvButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final enabled = onPressed != null && !busy;
-    VoidCallback? _hapticOnPressed;
+    VoidCallback? hapticOnPressed;
     if (onPressed != null) {
-      _hapticOnPressed = () {
+      hapticOnPressed = () {
         HapticFeedback.mediumImpact();
         onPressed!();
       };
@@ -76,7 +76,7 @@ class QInvButton extends StatelessWidget {
 
     final button = outline
         ? OutlinedButton(
-            onPressed: enabled ? _hapticOnPressed : null,
+            onPressed: enabled ? hapticOnPressed : null,
             style: OutlinedButton.styleFrom(
               backgroundColor:
                   selected ? QInvWeb3Tokens.primary.withValues(alpha: 0.14) : null,
@@ -117,7 +117,7 @@ class QInvButton extends StatelessWidget {
                   : [],
             ),
             child: ElevatedButton(
-              onPressed: enabled ? _hapticOnPressed : null,
+              onPressed: enabled ? hapticOnPressed : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor: QInvWeb3Tokens.primary,
                 foregroundColor: QInvWeb3Tokens.primaryForeground,

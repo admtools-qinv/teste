@@ -25,6 +25,9 @@ class AssetVoiceService implements VoiceService {
     'pin': 'audio/voice_09_pin.mp3',
     'confirmPin': 'audio/voice_10_pin_confirm.mp3',
     'trial': 'audio/voice_11_done.mp3',
+    'timeHorizon': 'audio/voice_12_time_horizon.mp3',
+    'lossReaction': 'audio/voice_13_loss_reaction.mp3',
+    'allocation': 'audio/voice_14_allocation.mp3',
   };
 
   AssetVoiceService() {

@@ -468,35 +468,104 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         );
 
       case OnboardingStepType.completion:
-        return Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: QInvWeb3Tokens.primary.withValues(alpha: 0.10),
-            borderRadius: BorderRadius.circular(QInvWeb3Tokens.radiusCard),
-            border: Border.all(
-                color: QInvWeb3Tokens.primary.withValues(alpha: 0.30)),
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Icon(Icons.verified_rounded,
-                  color: QInvWeb3Tokens.primaryLight, size: 20),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  'Everything is ready. You can safely close this flow.',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: QInvWeb3Tokens.textSecondary,
-                        height: 1.50,
+        final result = controller.suitabilityResult;
+        final profile = result?.profile;
+        return Column(
+          children: [
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: _tintedCardDecoration(QInvWeb3Tokens.primary),
+              child: Column(
+                children: [
+                  Text(
+                    '${result?.score ?? 0} / 100',
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          color: QInvWeb3Tokens.primaryLight,
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Your suitability score',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: QInvWeb3Tokens.textMuted,
+                        ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: _tintedCardDecoration(QInvWeb3Tokens.primary),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Icon(Icons.verified_rounded,
+                      color: QInvWeb3Tokens.primaryLight, size: 20),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          profile?.label ?? 'Investor Profile',
+                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                color: QInvWeb3Tokens.textHeading,
+                                fontWeight: FontWeight.w600,
+                              ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          profile?.description ?? 'Complete the questionnaire to see your profile.',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: QInvWeb3Tokens.textSecondary,
+                                height: 1.50,
+                              ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (result != null && result.showVolatilityWarning) ...[
+              const SizedBox(height: 12),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: _tintedCardDecoration(QInvWeb3Tokens.destructive),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(Icons.warning_amber_rounded,
+                        color: QInvWeb3Tokens.destructive, size: 20),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Crypto can be volatile. Based on your answers, we recommend starting small.',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: QInvWeb3Tokens.destructive,
+                              height: 1.50,
+                            ),
                       ),
+                    ),
+                  ],
                 ),
               ),
             ],
-          ),
+          ],
         );
     }
   }
+
+  BoxDecoration _tintedCardDecoration(Color tint) => BoxDecoration(
+        color: tint.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(QInvWeb3Tokens.radiusCard),
+        border: Border.all(color: tint.withValues(alpha: 0.30)),
+      );
 
   // ── Zone D: CTA button ──────────────────────────────────────
 

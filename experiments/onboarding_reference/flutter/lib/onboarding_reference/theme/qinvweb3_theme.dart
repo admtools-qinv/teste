@@ -199,7 +199,6 @@ class QInvWeb3Theme {
         color: QInvWeb3Tokens.primary,
         linearTrackColor: QInvWeb3Tokens.border,
       ),
-      useMaterial3: true,
     );
   }
 }

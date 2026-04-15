@@ -1,5 +1,3 @@
-import '../../data/dtos/onboarding_session_dto.dart';
-import '../../data/dtos/submit_result_dto.dart';
 import 'onboarding_backend_service.dart';
 
 /// Skeleton HTTP implementation of [OnboardingBackendService].

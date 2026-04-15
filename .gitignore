@@ -15,6 +15,10 @@ node_modules/
 # OpenClaw internal state
 .openclaw/
 
+# Flutter
+.dart_tool/
+build/
+
 # OS files
 .DS_Store
 Thumbs.db

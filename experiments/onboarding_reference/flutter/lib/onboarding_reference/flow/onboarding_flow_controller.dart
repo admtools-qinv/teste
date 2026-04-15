@@ -7,6 +7,7 @@ import '../models/onboarding_session.dart';
 import '../models/onboarding_step.dart';
 import '../services/analytics/onboarding_analytics_service.dart';
 import '../services/backend/onboarding_backend_service.dart';
+import '../services/suitability_scorer.dart';
 import '../validation/onboarding_validator.dart';
 
 class OnboardingFlowController extends ChangeNotifier {
@@ -22,7 +23,10 @@ class OnboardingFlowController extends ChangeNotifier {
   String? validationError;
   String? serviceError;
   OnboardingSession session = const OnboardingSession();
+  SuitabilityResult? _suitabilityResult;
   String _sessionId = '';
+
+  SuitabilityResult? get suitabilityResult => _suitabilityResult;
 
   OnboardingFlowController({
     required this.steps,
@@ -209,11 +213,23 @@ class OnboardingFlowController extends ChangeNotifier {
       }
 
       if (!hasNext) {
-        await backend.submitAll(sessionId: _sessionId, answers: session.answers);
+        _suitabilityResult = SuitabilityScorer.compute(steps, session.answers);
+        await backend.submitAll(
+          sessionId: _sessionId,
+          answers: {
+            ...session.answers,
+            'suitabilityScore': _suitabilityResult!.score,
+            'suitabilityProfile': _suitabilityResult!.profile.name,
+          },
+        );
         _completed = true;
         isBusy = false;
         _notify();
-        unawaited(_trackEventSafe('onboarding_completed', properties: _sanitizedAnswers()));
+        unawaited(_trackEventSafe('onboarding_completed', properties: {
+          ..._sanitizedAnswers(),
+          'suitabilityScore': _suitabilityResult!.score,
+          'suitabilityProfile': _suitabilityResult!.profile.name,
+        }));
         return true;
       }
 
