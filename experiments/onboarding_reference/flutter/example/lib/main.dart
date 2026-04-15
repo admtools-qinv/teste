@@ -432,7 +432,7 @@ class _GlowPulsePainter extends CustomPainter {
 
 // ── Fake home screen ─────────────────────────────────────────────
 
-class _FakeHomeScreen extends StatelessWidget {
+class _FakeHomeScreen extends StatefulWidget {
   final String displayName;
   final VoidCallback onLogout;
 
@@ -440,6 +440,29 @@ class _FakeHomeScreen extends StatelessWidget {
     required this.displayName,
     required this.onLogout,
   });
+
+  @override
+  State<_FakeHomeScreen> createState() => _FakeHomeScreenState();
+}
+
+class _FakeHomeScreenState extends State<_FakeHomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(const Duration(milliseconds: 800), _showUpdate);
+  }
+
+  Future<void> _showUpdate() async {
+    if (!mounted) return;
+    await showUpdateModal(
+      context: context,
+      onUpdate: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Redirecionando para a loja...')),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -453,7 +476,7 @@ class _FakeHomeScreen extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Olá, $displayName',
+                  'Olá, ${widget.displayName}',
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontFamily: QInvWeb3Tokens.fontSerif,
@@ -479,7 +502,7 @@ class _FakeHomeScreen extends StatelessWidget {
                   label: 'Sair',
                   onPressed: () {
                     HapticFeedback.mediumImpact();
-                    onLogout();
+                    widget.onLogout();
                   },
                 ),
               ],

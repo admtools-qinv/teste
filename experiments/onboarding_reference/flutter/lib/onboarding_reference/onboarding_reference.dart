@@ -20,6 +20,8 @@ export 'presentation/widgets/qinv_error_banner.dart';
 export 'presentation/widgets/qinv_review_tile.dart';
 export 'presentation/widgets/qinv_step_card.dart';
 export 'presentation/widgets/qinv_text_field.dart';
+export 'presentation/widgets/slide_to_update_slider.dart';
+export 'presentation/widgets/update_modal.dart';
 export 'services/analytics/noop_onboarding_analytics_service.dart';
 export 'services/analytics/onboarding_analytics_service.dart';
 export 'services/auth/auth_service.dart';

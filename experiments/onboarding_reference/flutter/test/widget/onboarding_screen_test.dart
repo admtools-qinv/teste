@@ -42,6 +42,13 @@ class _TestAnalytics implements OnboardingAnalyticsService {
   Future<void> trackEvent(String name, {Map<String, dynamic>? properties}) async {}
 }
 
+/// Pumps enough frames to settle finite flutter_animate animations
+/// without blocking on GlassBackground's infinite orb loop.
+Future<void> _pumpAnimations(WidgetTester tester) async {
+  await tester.pump();
+  await tester.pump(const Duration(milliseconds: 500));
+}
+
 void main() {
   testWidgets('shows first step content', (tester) async {
     await tester.pumpWidget(
@@ -56,8 +63,7 @@ void main() {
       ),
     );
 
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 10));
+    await _pumpAnimations(tester);
 
     expect(find.text("Let's get you"), findsOneWidget);
     expect(find.text('Ready in just a few steps.'), findsOneWidget);
@@ -99,13 +105,11 @@ void main() {
       ),
     );
 
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 10));
+    await _pumpAnimations(tester);
 
     expect(find.text('Intro'), findsOneWidget);
     await tester.tap(find.text('Continue'));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 10));
+    await _pumpAnimations(tester);
     expect(find.text('Choice step'), findsOneWidget);
     expect(find.text('Option A'), findsOneWidget);
   });
@@ -153,27 +157,22 @@ void main() {
       ),
     );
 
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 10));
+    await _pumpAnimations(tester);
 
     await tester.tap(find.text('Continue').first);
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 10));
+    await _pumpAnimations(tester);
 
     await tester.tap(find.text('Option A'));
     await tester.pump();
     await tester.tap(find.text('Continue').last);
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 10));
+    await _pumpAnimations(tester);
 
     await tester.tap(find.byIcon(Icons.arrow_back_rounded));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 10));
+    await _pumpAnimations(tester);
 
     expect(find.byIcon(Icons.check_rounded), findsOneWidget);
     await tester.tap(find.text('Continue').last);
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 10));
+    await _pumpAnimations(tester);
     expect(find.text('Done'), findsOneWidget);
   });
 
@@ -226,22 +225,18 @@ void main() {
       ),
     );
 
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 10));
+    await _pumpAnimations(tester);
 
     await tester.tap(find.text('Continue').first);
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 10));
+    await _pumpAnimations(tester);
 
     await tester.tap(find.text('Option A'));
     await tester.pump();
     await tester.tap(find.text('Continue').last);
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 10));
+    await _pumpAnimations(tester);
 
     await tester.tap(find.text('Confirm'));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 10));
+    await _pumpAnimations(tester);
 
     await tester.tap(find.text('Finish'));
     await tester.pump();
@@ -255,8 +250,7 @@ void main() {
     expect(backend.submitCount, 1);
 
     backend.submitCompleter!.complete();
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 10));
+    await _pumpAnimations(tester);
 
     expect(find.text('Completed'), findsOneWidget);
     await tester.tap(find.text('Completed'));
