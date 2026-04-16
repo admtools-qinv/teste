@@ -29,10 +29,13 @@ flutter:
   assets:
     - assets/google_icon.svg
     - assets/qinv_logo.svg
+    - assets/qinv_wordmark.svg
     - assets/btc.png
     - assets/xrp.png
     - assets/sol.png
     - assets/audio/
+    - assets/showcase/
+    - assets/logos/
 
   fonts:
     - family: PlayfairDisplay

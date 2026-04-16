@@ -21,6 +21,7 @@ class DefaultOnboardingValidator implements OnboardingValidator {
     Map<String, dynamic> sessionAnswers = const {},
   }) {
     switch (step.type) {
+      case OnboardingStepType.showcase:
       case OnboardingStepType.intro:
       case OnboardingStepType.completion:
       case OnboardingStepType.review:

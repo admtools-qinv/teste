@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -5,7 +7,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../theme/qinvweb3_tokens.dart';
 import 'slide_to_update_slider.dart';
 
-/// Shows the update modal as a bottom sheet.
+/// Shows the update modal as a centered glass banner.
 ///
 /// ```dart
 /// await showUpdateModal(
@@ -15,20 +17,30 @@ import 'slide_to_update_slider.dart';
 /// ```
 Future<void> showUpdateModal({
   required BuildContext context,
-  String title = 'Hora de atualizar',
+  String title = "It's time for an upgrade",
   String description =
-      'Seu app QInvWeb3 ficou ainda melhor. '
-      'Melhoramos a performance e corrigimos '
-      'problemas para uma experiência mais fluida.',
+      "Your QINV app just got better. We've made some improvements "
+      'and resolved some issues for a smoother experience.',
   VoidCallback? onUpdate,
   VoidCallback? onDismiss,
 }) {
-  return showModalBottomSheet<void>(
+  return showGeneralDialog<void>(
     context: context,
-    isScrollControlled: true,
-    backgroundColor: Colors.transparent,
+    barrierDismissible: true,
+    barrierLabel: 'Dismiss update',
     barrierColor: Colors.black.withValues(alpha: 0.72),
-    builder: (_) => UpdateModal(
+    transitionDuration: const Duration(milliseconds: 350),
+    transitionBuilder: (context, animation, _, child) {
+      final curved = animation.drive(CurveTween(curve: Curves.easeOutCubic));
+      return FadeTransition(
+        opacity: curved,
+        child: ScaleTransition(
+          scale: Tween<double>(begin: 0.92, end: 1.0).animate(curved),
+          child: child,
+        ),
+      );
+    },
+    pageBuilder: (context, _, __) => UpdateModal(
       title: title,
       description: description,
       onUpdate: onUpdate,
@@ -37,7 +49,7 @@ Future<void> showUpdateModal({
   );
 }
 
-/// Light-surface modal with a "slide to update" gesture.
+/// Glass-surface modal with a "slide to update" gesture.
 class UpdateModal extends StatelessWidget {
   final String title;
   final String description;
@@ -54,157 +66,124 @@ class UpdateModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bottomPad = MediaQuery.of(context).padding.bottom;
-
-    return ClipRRect(
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-      child: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFFFFFFFF), Color(0xFFF4F4F8)],
-          ),
-        ),
-        child: Padding(
-          padding: EdgeInsets.only(
-            left: 24,
-            right: 24,
-            top: 12,
-            bottom: bottomPad + 24,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Handle bar + close button
-              _HandleRow(
-                onClose: () {
-                  HapticFeedback.lightImpact();
-                  Navigator.of(context).pop();
-                  onDismiss?.call();
-                },
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 28),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.2),
+                ),
               ),
+              child: Material(
+                color: Colors.transparent,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 16, 24, 28),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Close button
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: IconButton(
+                          onPressed: () {
+                            HapticFeedback.lightImpact();
+                            Navigator.of(context).pop();
+                            onDismiss?.call();
+                          },
+                          icon: Icon(
+                            Icons.close_rounded,
+                            size: 22,
+                            color: Colors.white.withValues(alpha: 0.6),
+                          ),
+                        ),
+                      ),
 
-              const SizedBox(height: 24),
+                      // Upgrade icon
+                      Container(
+                        width: 72,
+                        height: 72,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              QInvWeb3Tokens.primary,
+                              QInvWeb3Tokens.primaryLight,
+                            ],
+                          ),
+                        ),
+                        child: const Center(
+                          child: Icon(
+                            Icons.rocket_launch_rounded,
+                            size: 36,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
 
-              // Upgrade icon
-              Container(
-                width: 72,
-                height: 72,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [QInvWeb3Tokens.primary, QInvWeb3Tokens.primaryLight],
+                      const SizedBox(height: 24),
+
+                      // Title
+                      Text(
+                        title,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontFamily: QInvWeb3Tokens.fontUI,
+                          fontSize: 24,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          height: 1.2,
+                        ),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      // Description
+                      Text(
+                        description,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: QInvWeb3Tokens.fontUI,
+                          fontSize: QInvWeb3Tokens.fontSizeBody,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.white.withValues(alpha: 0.65),
+                          height: 1.55,
+                        ),
+                      ),
+
+                      const SizedBox(height: 32),
+
+                      // Slider
+                      SlideToUpdateSlider(
+                        onCompleted: () {
+                          Navigator.of(context).pop();
+                          onUpdate?.call();
+                        },
+                      )
+                          .animate(delay: 180.ms)
+                          .slideY(
+                            begin: 0.06,
+                            end: 0,
+                            duration: 340.ms,
+                            curve: Curves.easeOutCubic,
+                          )
+                          .fadeIn(duration: 280.ms),
+                    ],
                   ),
                 ),
-                child: const Center(
-                  child: Icon(
-                    Icons.rocket_launch_rounded,
-                    size: 36,
-                    color: Colors.white,
-                  ),
-                ),
               ),
-
-              const SizedBox(height: 24),
-
-              // Title
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontFamily: QInvWeb3Tokens.fontSerif,
-                  fontSize: 24,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF111111),
-                  height: 1.2,
-                ),
-              ),
-
-              const SizedBox(height: 10),
-
-              // Description
-              Text(
-                description,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontFamily: QInvWeb3Tokens.fontUI,
-                  fontSize: QInvWeb3Tokens.fontSizeBody,
-                  fontWeight: FontWeight.w400,
-                  color: Color(0xFF666870),
-                  height: 1.55,
-                ),
-              ),
-
-              const SizedBox(height: 32),
-
-              // Slider
-              SlideToUpdateSlider(
-                onCompleted: () {
-                  Navigator.of(context).pop();
-                  onUpdate?.call();
-                },
-              )
-                  .animate(delay: 180.ms)
-                  .slideY(
-                    begin: 0.06,
-                    end: 0,
-                    duration: 340.ms,
-                    curve: Curves.easeOutCubic,
-                  )
-                  .fadeIn(duration: 280.ms),
-            ],
-          )
-              .animate()
-              .slideY(
-                begin: 0.04,
-                end: 0,
-                duration: 400.ms,
-                curve: Curves.easeOutCubic,
-              )
-              .fadeIn(duration: 350.ms),
+            ),
+          ),
         ),
       ),
-    );
-  }
-}
-
-class _HandleRow extends StatelessWidget {
-  final VoidCallback onClose;
-  const _HandleRow({required this.onClose});
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        // Centered drag handle
-        Center(
-          child: Container(
-            width: 36,
-            height: 4,
-            decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-        ),
-
-        // Close button on the right
-        Positioned(
-          right: -8,
-          child: IconButton(
-            onPressed: onClose,
-            icon: Icon(
-              Icons.close_rounded,
-              size: 24,
-              color: Colors.black.withValues(alpha: 0.45),
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

@@ -1,8 +1,11 @@
 import 'dart:async';
+import 'dart:math' show pi;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../data/voice_timestamps.dart';
 import '../flow/onboarding_flow_controller.dart';
@@ -273,8 +276,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             Text(
               step.title,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontFamily: QInvWeb3Tokens.fontSans,
+              style: TextStyle(
+                fontFamily: step.titleItalic == null
+                    ? QInvWeb3Tokens.fontSerif
+                    : QInvWeb3Tokens.fontSans,
                 fontSize: 32,
                 fontWeight: FontWeight.w500,
                 color: QInvWeb3Tokens.textHeading,
@@ -344,6 +349,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   Widget? _buildInteractiveContent(OnboardingStep step) {
     switch (step.type) {
+      case OnboardingStepType.showcase:
+        return _buildShowcaseContent(step);
+
       case OnboardingStepType.intro:
         return null;
 
@@ -567,6 +575,95 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     }
   }
 
+  // ── Showcase helpers ────────────────────────────────────────
+
+  Widget _buildShowcaseDots(int activeIndex, int total) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(total, (i) {
+        final isActive = i == activeIndex;
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          width: isActive ? 24 : 8,
+          height: 8,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(4),
+            color: isActive
+                ? QInvWeb3Tokens.primaryLight
+                : Colors.white.withValues(alpha: 0.20),
+          ),
+        );
+      }),
+    );
+  }
+
+  bool _isShowcaseMockupStep(OnboardingStep step) =>
+      step.id == 'showcaseAnalysis' || step.id == 'showcaseAI';
+
+  String? _showcaseMockupAsset(OnboardingStep step) {
+    switch (step.id) {
+      case 'showcaseAnalysis':
+        return 'assets/showcase/showcase_analysis.png';
+      case 'showcaseAI':
+        return 'assets/showcase/showcase_ai_chat.png';
+      default:
+        return null;
+    }
+  }
+
+  Widget _buildShowcaseContent(OnboardingStep step) {
+    switch (step.id) {
+      case 'showcaseWelcome':
+        return const _ShowcaseWelcome();
+      case 'showcaseAnalysis':
+      case 'showcaseAI':
+        return const SizedBox.shrink(); // handled by _buildShowcaseMockupZone
+      case 'showcaseReviews':
+        return const _ShowcaseReviews();
+      default:
+        return const SizedBox.shrink();
+    }
+  }
+
+  Widget _buildShowcaseMockupZone(
+    BuildContext context,
+    OnboardingStep step,
+    double hPad,
+  ) {
+    return Expanded(
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 400),
+        reverseDuration: const Duration(milliseconds: 200),
+        transitionBuilder: _stepTransitionBuilder,
+        child: Stack(
+          key: ValueKey(step.id),
+          fit: StackFit.expand,
+          clipBehavior: Clip.none,
+          children: [
+            // Phone mockup — extends edge-to-edge, fades at bottom
+            Positioned(
+              top: 110,
+              left: -hPad,
+              right: -hPad,
+              bottom: 0,
+              child: _ShowcaseMockup(
+                assetPath: _showcaseMockupAsset(step)!,
+              ),
+            ),
+            // Title floats above the image
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: _buildTitle(context, step),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   BoxDecoration _tintedCardDecoration(Color tint) => BoxDecoration(
         color: tint.withValues(alpha: 0.10),
         borderRadius: BorderRadius.circular(QInvWeb3Tokens.radiusCard),
@@ -582,6 +679,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final bool enabled;
 
     switch (step.type) {
+      case OnboardingStepType.showcase:
+        label = step.primaryCtaLabel ?? 'Continue';
+        enabled = !isBlocked;
       case OnboardingStepType.intro:
         label = controller.isBusy
             ? 'Loading…'
@@ -717,9 +817,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
         final size = MediaQuery.sizeOf(context);
         final hPad = size.width < 360 ? 20.0 : 24.0;
-        final progressValue = widget.steps.isEmpty
+        final showcaseCount = controller.showcaseCount;
+        final nonShowcaseTotal = widget.steps.length - showcaseCount;
+        final nonShowcaseIndex = controller.index - showcaseCount;
+        final progressValue = nonShowcaseTotal <= 0
             ? 0.0
-            : (controller.index + 1) / widget.steps.length;
+            : (nonShowcaseIndex + 1).clamp(0, nonShowcaseTotal) / nonShowcaseTotal;
 
         final interactiveContent = _buildInteractiveContent(step);
 
@@ -734,100 +837,107 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // Zone A — Back arrow + Progress line
-                      Row(
-                        children: [
-                          if (controller.hasPrevious)
-                            Padding(
-                              padding: const EdgeInsets.only(right: 12),
-                              child: IconButton(
-                                icon: const Icon(Icons.arrow_back_rounded),
-                                color: QInvWeb3Tokens.textMuted,
-                                iconSize: 20,
-                                visualDensity: VisualDensity.compact,
-                                padding: EdgeInsets.zero,
-                                constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-                                tooltip: 'Voltar',
-                                onPressed: (controller.isBusy || controller.isCompleted || step.type == OnboardingStepType.analysing)
-                                    ? null
-                                    : () {
-                                        HapticFeedback.lightImpact();
-                                        _goBack();
-                                      },
+                      // Zone A — Back arrow + Progress (dots for showcase, bar for rest)
+                      if (controller.isShowcase)
+                        _buildShowcaseDots(controller.showcaseIndex, controller.showcaseCount)
+                      else
+                        Row(
+                          children: [
+                            if (controller.hasPrevious && !controller.isShowcase)
+                              Padding(
+                                padding: const EdgeInsets.only(right: 12),
+                                child: IconButton(
+                                  icon: const Icon(Icons.arrow_back_rounded),
+                                  color: QInvWeb3Tokens.textMuted,
+                                  iconSize: 20,
+                                  visualDensity: VisualDensity.compact,
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+                                  tooltip: 'Back',
+                                  onPressed: (controller.isBusy || controller.isCompleted || step.type == OnboardingStepType.analysing)
+                                      ? null
+                                      : () {
+                                          HapticFeedback.lightImpact();
+                                          _goBack();
+                                        },
+                                ),
+                              )
+                            else if (widget.onExit != null)
+                              Padding(
+                                padding: const EdgeInsets.only(right: 12),
+                                child: IconButton(
+                                  icon: const Icon(Icons.close_rounded),
+                                  color: QInvWeb3Tokens.textMuted,
+                                  iconSize: 20,
+                                  visualDensity: VisualDensity.compact,
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+                                  tooltip: 'Close',
+                                  onPressed: controller.isBusy
+                                      ? null
+                                      : () {
+                                          HapticFeedback.lightImpact();
+                                          widget.onExit!();
+                                        },
+                                ),
                               ),
-                            )
-                          else if (widget.onExit != null)
-                            Padding(
-                              padding: const EdgeInsets.only(right: 12),
-                              child: IconButton(
-                                icon: const Icon(Icons.close_rounded),
-                                color: QInvWeb3Tokens.textMuted,
-                                iconSize: 20,
-                                visualDensity: VisualDensity.compact,
-                                padding: EdgeInsets.zero,
-                                constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-                                tooltip: 'Fechar',
-                                onPressed: controller.isBusy
-                                    ? null
-                                    : () {
-                                        HapticFeedback.lightImpact();
-                                        widget.onExit!();
-                                      },
-                              ),
-                            ),
-                          Expanded(child: _buildProgress(context, progressValue)),
-                        ],
-                      ),
+                            Expanded(child: _buildProgress(context, progressValue)),
+                          ],
+                        ),
                       const SizedBox(height: 32),
 
-                      // Zone B + C — Scrollable content
-                      Expanded(
-                        child: AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 400),
-                          reverseDuration: const Duration(milliseconds: 200),
-                          transitionBuilder: _stepTransitionBuilder,
-                          child: SingleChildScrollView(
-                            key: ValueKey(step.id),
-                            physics: const BouncingScrollPhysics(),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                // Title + subtitle (outside card, on background)
-                                _buildTitle(context, step),
+                      // Zone B + C — Content area
+                      if (_isShowcaseMockupStep(step))
+                        _buildShowcaseMockupZone(context, step, hPad)
+                      else
+                        Expanded(
+                          child: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 400),
+                            reverseDuration: const Duration(milliseconds: 200),
+                            transitionBuilder: _stepTransitionBuilder,
+                            child: SingleChildScrollView(
+                              key: ValueKey(step.id),
+                              physics: const BouncingScrollPhysics(),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  if (step.id != 'showcaseReviews')
+                                    _buildTitle(context, step),
 
-                                if (controller.serviceError != null) ...[
-                                  const SizedBox(height: 16),
-                                  QInvErrorBanner(
-                                      message: controller.serviceError!),
-                                ],
+                                  if (controller.serviceError != null) ...[
+                                    const SizedBox(height: 16),
+                                    QInvErrorBanner(
+                                        message: controller.serviceError!),
+                                  ],
 
-                                if (interactiveContent != null) ...[
-                                  const SizedBox(height: 24),
-                                  if (step.type == OnboardingStepType.pinInput)
-                                    interactiveContent
-                                        .animate(delay: 60.ms)
-                                        .slideY(begin: 0.04, end: 0, duration: 360.ms, curve: Curves.easeOutCubic)
-                                  else if (step.type == OnboardingStepType.singleChoice ||
-                                           step.type == OnboardingStepType.analysing)
-                                    interactiveContent
-                                  else
-                                    GlassCard(
-                                      fillColor:
-                                          Colors.white.withValues(alpha: 0.06),
-                                      borderColor:
-                                          Colors.white.withValues(alpha: 0.10),
-                                      blurSigma: 20,
-                                      padding: const EdgeInsets.all(20),
-                                      child: interactiveContent,
-                                    )
-                                        .animate(delay: 60.ms)
-                                        .slideY(begin: 0.04, end: 0, duration: 360.ms, curve: Curves.easeOutCubic),
+                                  if (interactiveContent != null) ...[
+                                    const SizedBox(height: 24),
+                                    if (step.type == OnboardingStepType.pinInput)
+                                      interactiveContent
+                                          .animate(delay: 60.ms)
+                                          .slideY(begin: 0.04, end: 0, duration: 360.ms, curve: Curves.easeOutCubic)
+                                    else if (step.type == OnboardingStepType.showcase ||
+                                             step.type == OnboardingStepType.singleChoice ||
+                                             step.type == OnboardingStepType.analysing)
+                                      interactiveContent
+                                    else
+                                      GlassCard(
+                                        fillColor:
+                                            Colors.white.withValues(alpha: 0.06),
+                                        borderColor:
+                                            Colors.white.withValues(alpha: 0.10),
+                                        blurSigma: 20,
+                                        padding: const EdgeInsets.all(20),
+                                        child: interactiveContent,
+                                      )
+                                          .animate(delay: 60.ms)
+                                          .slideY(begin: 0.04, end: 0, duration: 360.ms, curve: Curves.easeOutCubic),
+                                  ],
                                 ],
-                              ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
 
                       SizedBox(height: bottomInset > 0 ? 12 : 24),
 
@@ -1190,5 +1300,458 @@ class _KaraokeText extends StatelessWidget {
         );
       },
     );
+  }
+}
+
+// ── Showcase: Welcome ────────────────────────────────────────────
+
+class _ShowcaseWelcome extends StatelessWidget {
+  const _ShowcaseWelcome();
+  static const _package = 'onboarding_reference';
+
+  static const _pressLogos = [
+    'logos/forbes.png',
+    'logos/cointelegraph.png',
+    'logos/exame.png',
+    'logos/infomoney.png',
+    'logos/valor.png',
+    'logos/istoe.png',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const SizedBox(height: 8),
+        // QINV wordmark logo
+        SvgPicture.asset(
+          'assets/qinv_wordmark.svg',
+          package: _package,
+          width: 160,
+          colorFilter: const ColorFilter.mode(
+            Colors.white,
+            BlendMode.srcIn,
+          ),
+        ),
+        const SizedBox(height: 32),
+        // Press logos — infinite auto-scroll marquee
+        SizedBox(
+          height: 24,
+          child: _InfiniteMarquee(
+            velocity: 30,
+            itemCount: _pressLogos.length,
+            separatorWidth: 40,
+            itemBuilder: (index) => Opacity(
+              opacity: 0.5,
+              child: SizedBox(
+                height: 16,
+                child: Image.asset(
+                  'assets/${_pressLogos[index]}',
+                  package: _package,
+                  height: 16,
+                  fit: BoxFit.contain,
+                  color: QInvWeb3Tokens.textMuted,
+                  colorBlendMode: BlendMode.srcIn,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ── Showcase: App Mockup ─────────────────────────────────────────
+
+class _ShowcaseMockup extends StatelessWidget {
+  final String assetPath;
+  static const _package = 'onboarding_reference';
+
+  const _ShowcaseMockup({required this.assetPath});
+
+  @override
+  Widget build(BuildContext context) {
+    return ShaderMask(
+      shaderCallback: (Rect bounds) {
+        return const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Colors.white, Colors.white, Colors.transparent],
+          stops: [0.0, 0.55, 1.0],
+        ).createShader(bounds);
+      },
+      blendMode: BlendMode.dstIn,
+      child: ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(36),
+          topRight: Radius.circular(36),
+        ),
+        child: Image.asset(
+          assetPath,
+          package: _package,
+          fit: BoxFit.cover,
+          alignment: Alignment.topCenter,
+          width: double.infinity,
+          height: double.infinity,
+        ),
+      ),
+    )
+        .animate()
+        .slideY(begin: 0.08, end: 0, duration: 620.ms, curve: Curves.easeOutCubic)
+        .fadeIn(duration: 500.ms);
+  }
+}
+
+// ── Showcase: Reviews ────────────────────────────────────────────
+
+class _ReviewData {
+  final String author;
+  final String title;
+  final String body;
+  final int stars;
+
+  const _ReviewData({
+    required this.author,
+    required this.title,
+    required this.body,
+    // ignore: unused_element_parameter
+    this.stars = 5,
+  });
+}
+
+class _ShowcaseReviews extends StatelessWidget {
+  const _ShowcaseReviews();
+
+  static const _reviews = [
+    _ReviewData(
+      author: 'IanCastro',
+      title: 'Smart portfolios really work!',
+      body:
+          "I've tried many brokers, but QINV stood out with its AI. It optimizes my investments strategically and transparently.",
+    ),
+    _ReviewData(
+      author: 'Ana B.',
+      title: 'Super intuitive!',
+      body:
+          'I was a crypto beginner and afraid of making mistakes. QINV guided me clearly from my very first investment.',
+    ),
+    _ReviewData(
+      author: 'Cla_RR',
+      title: 'Easy and practical',
+      body:
+          "First time investing and couldn't be happier. Easy to invest, track returns, and withdrawals are super fast!",
+    ),
+    _ReviewData(
+      author: 'Thiagosdep',
+      title: 'Effortless investing',
+      body:
+          'The app helps me invest in diverse cryptos without prior knowledge. It analyzes the market and diversifies for me.',
+    ),
+    _ReviewData(
+      author: 'manusilvasilv',
+      title: 'Reliable',
+      body:
+          'First time investing in crypto and it was amazing! Instant withdrawals add real credibility.',
+    ),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        // Custom serif title
+        const Text(
+          'Loved by our',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontFamily: QInvWeb3Tokens.fontSerif,
+            fontSize: 38,
+            fontWeight: FontWeight.w500,
+            color: QInvWeb3Tokens.textHeading,
+            height: 1.10,
+            letterSpacing: -0.3,
+          ),
+        ),
+        const SizedBox(height: 2),
+        const Text(
+          'investors',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontFamily: QInvWeb3Tokens.fontSerif,
+            fontStyle: FontStyle.italic,
+            fontWeight: FontWeight.w400,
+            fontSize: 44,
+            color: QInvWeb3Tokens.primaryLight,
+            height: 1.15,
+          ),
+        ),
+        const SizedBox(height: 24),
+        // Review cards — infinite auto-scroll marquee
+        SizedBox(
+          height: 240,
+          child: _InfiniteMarquee(
+            velocity: 22,
+            itemCount: _reviews.length,
+            separatorWidth: 16,
+            itemBuilder: (index) => _ReviewCard(review: _reviews[index]),
+          ),
+        ),
+        const SizedBox(height: 24),
+        // Laurel rating badge
+        const _RatingLaurelBadge(),
+      ],
+    );
+  }
+}
+
+// ── Infinite auto-scroll marquee ─────────────────────────────────
+
+class _InfiniteMarquee extends StatefulWidget {
+  final double velocity; // pixels per second
+  final int itemCount;
+  final double separatorWidth;
+  final Widget Function(int index) itemBuilder;
+
+  const _InfiniteMarquee({
+    required this.velocity,
+    required this.itemCount,
+    required this.separatorWidth,
+    required this.itemBuilder,
+  });
+
+  @override
+  State<_InfiniteMarquee> createState() => _InfiniteMarqueeState();
+}
+
+class _InfiniteMarqueeState extends State<_InfiniteMarquee>
+    with SingleTickerProviderStateMixin {
+  late final ScrollController _scrollController;
+  late final Ticker _ticker;
+  Duration _lastTick = Duration.zero;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+    _ticker = createTicker(_onTick)..start();
+  }
+
+  void _onTick(Duration elapsed) {
+    if (!_scrollController.hasClients) {
+      _lastTick = elapsed;
+      return;
+    }
+
+    final dt = (elapsed - _lastTick).inMicroseconds / 1e6;
+    _lastTick = elapsed;
+
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    if (maxScroll <= 0) return;
+
+    var newOffset = _scrollController.offset + widget.velocity * dt;
+
+    // When we've scrolled past the first "set" of items, jump back seamlessly
+    final halfMax = maxScroll / 2;
+    if (newOffset >= halfMax) {
+      newOffset -= halfMax;
+    }
+
+    _scrollController.jumpTo(newOffset);
+  }
+
+  @override
+  void dispose() {
+    _ticker.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // We render 3x the items so there's always content visible during the loop
+    final totalItems = widget.itemCount * 3;
+    return ShaderMask(
+      shaderCallback: (bounds) => const LinearGradient(
+        colors: [
+          Colors.transparent,
+          Colors.white,
+          Colors.white,
+          Colors.transparent,
+        ],
+        stops: [0.0, 0.05, 0.95, 1.0],
+      ).createShader(bounds),
+      blendMode: BlendMode.dstIn,
+      child: ListView.separated(
+        controller: _scrollController,
+        scrollDirection: Axis.horizontal,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: totalItems,
+        separatorBuilder: (_, __) =>
+            SizedBox(width: widget.separatorWidth),
+        itemBuilder: (_, index) =>
+            widget.itemBuilder(index % widget.itemCount),
+      ),
+    );
+  }
+}
+
+class _ReviewCard extends StatelessWidget {
+  final _ReviewData review;
+  const _ReviewCard({required this.review});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 300,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Stars
+          Row(
+            children: List.generate(
+              review.stars,
+              (_) => const Icon(Icons.star_rounded,
+                  color: Color(0xFFFFC107), size: 16),
+            ),
+          ),
+          const SizedBox(height: 10),
+          // Title
+          Text(
+            review.title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontFamily: QInvWeb3Tokens.fontUI,
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
+              color: QInvWeb3Tokens.textHeading,
+              height: 1.30,
+            ),
+          ),
+          const SizedBox(height: 8),
+          // Body
+          Expanded(
+            child: Text(
+              review.body,
+              maxLines: 5,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontFamily: QInvWeb3Tokens.fontUI,
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: QInvWeb3Tokens.textSecondary,
+                height: 1.45,
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          // Author
+          Text(
+            'by ${review.author}',
+            style: const TextStyle(
+              fontFamily: QInvWeb3Tokens.fontUI,
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              color: QInvWeb3Tokens.textMuted,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ── Laurel rating badge ──────────────────────────────────────────
+
+class _RatingLaurelBadge extends StatelessWidget {
+  const _RatingLaurelBadge();
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const _LaurelBranch(mirrored: false),
+        const SizedBox(width: 12),
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: List.generate(
+                5,
+                (_) => const Icon(Icons.star_rounded,
+                    color: Color(0xFFFFC107), size: 14),
+              ),
+            ),
+            const SizedBox(height: 4),
+            const Text(
+              '4.8',
+              style: TextStyle(
+                fontFamily: QInvWeb3Tokens.fontSerif,
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
+                color: QInvWeb3Tokens.textHeading,
+              ),
+            ),
+            const SizedBox(height: 2),
+            const Text(
+              'APP STORE',
+              style: TextStyle(
+                fontFamily: QInvWeb3Tokens.fontUI,
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                color: QInvWeb3Tokens.textMuted,
+                letterSpacing: 0.8,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(width: 12),
+        const _LaurelBranch(mirrored: true),
+      ],
+    );
+  }
+}
+
+class _LaurelBranch extends StatelessWidget {
+  final bool mirrored;
+  const _LaurelBranch({required this.mirrored});
+
+  @override
+  Widget build(BuildContext context) {
+    const leafColor = Color(0x66B080FF); // primaryLight at ~40% opacity
+
+    Widget leaf(double angleDeg, {double size = 16}) {
+      return Transform.rotate(
+        angle: angleDeg * pi / 180,
+        child: Icon(Icons.eco_rounded, size: size, color: leafColor),
+      );
+    }
+
+    final branch = SizedBox(
+      width: 32,
+      height: 52,
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.center,
+        children: [
+          Positioned(top: 0, left: 6, child: leaf(-45, size: 15)),
+          Positioned(top: 14, left: 3, child: leaf(-25, size: 16)),
+          Positioned(top: 30, left: 5, child: leaf(-10, size: 15)),
+        ],
+      ),
+    );
+
+    return mirrored
+        ? Transform.scale(scaleX: -1, child: branch)
+        : branch;
   }
 }

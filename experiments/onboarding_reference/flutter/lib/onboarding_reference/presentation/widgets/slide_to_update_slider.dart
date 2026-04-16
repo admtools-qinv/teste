@@ -20,7 +20,7 @@ class SlideToUpdateSlider extends StatefulWidget {
   const SlideToUpdateSlider({
     super.key,
     required this.onCompleted,
-    this.label = 'Deslize para atualizar',
+    this.label = 'Slide to update',
   });
 
   @override

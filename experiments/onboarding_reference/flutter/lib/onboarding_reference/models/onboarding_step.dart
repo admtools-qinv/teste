@@ -1,4 +1,5 @@
 enum OnboardingStepType {
+  showcase,
   intro,
   singleChoice,
   textInput,

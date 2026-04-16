@@ -67,32 +67,36 @@ class _PinInputWidgetState extends State<PinInputWidget> {
         const SizedBox(height: 8),
         // TextField invisível que aciona o teclado nativo
         SizedBox(
-          width: 0,
-          height: 0,
-          child: TextField(
-            controller: _controller,
-            focusNode: _focusNode,
-            keyboardType: TextInputType.number,
-            keyboardAppearance: Brightness.dark,
-            enableIMEPersonalizedLearning: false,
-            autocorrect: false,
-            enableSuggestions: false,
-            obscureText: true,
-            enabled: widget.enabled,
-            maxLength: 6,
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-              LengthLimitingTextInputFormatter(6),
-            ],
-            decoration: const InputDecoration(
-              counterText: '',
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.zero,
-            ),
-            style: const TextStyle(
-              color: Colors.transparent,
-              fontSize: 1,
-              height: 0.01,
+          width: 1,
+          height: 1,
+          child: Opacity(
+            opacity: 0,
+            child: TextField(
+              controller: _controller,
+              focusNode: _focusNode,
+              keyboardType: TextInputType.number,
+              keyboardAppearance: Brightness.dark,
+              enableIMEPersonalizedLearning: false,
+              autocorrect: false,
+              enableSuggestions: false,
+              obscureText: true,
+              enabled: widget.enabled,
+              maxLength: 6,
+              cursorWidth: 0,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+                LengthLimitingTextInputFormatter(6),
+              ],
+              decoration: const InputDecoration(
+                counterText: '',
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.zero,
+              ),
+              style: const TextStyle(
+                color: Colors.transparent,
+                fontSize: 1,
+                height: 0.01,
+              ),
             ),
           ),
         ),

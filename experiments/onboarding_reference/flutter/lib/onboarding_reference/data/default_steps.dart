@@ -15,6 +15,51 @@ List<OnboardingStep> onboardingStepsFor(AuthMethod method) {
 }
 
 const defaultOnboardingSteps = <OnboardingStep>[
+  // ── Showcase (pre-sign-up overview) ────────────────────────────
+
+  OnboardingStep(
+    id: 'showcaseWelcome',
+    type: OnboardingStepType.showcase,
+    title: 'Welcome to',
+    caption: '',
+    voiceText: "Hey! I'm Neo, your investment copilot. Let me show you around.",
+    primaryCtaLabel: 'Continue',
+    required: false,
+  ),
+  OnboardingStep(
+    id: 'showcaseAnalysis',
+    type: OnboardingStepType.showcase,
+    title: 'AI-powered',
+    titleItalic: 'analysis',
+    caption: 'Real-time trends and recommendations',
+    voiceText:
+        'I analyze the market in real time so you can make smarter decisions.',
+    primaryCtaLabel: 'Continue',
+    required: false,
+  ),
+  OnboardingStep(
+    id: 'showcaseAI',
+    type: OnboardingStepType.showcase,
+    title: 'Your investment',
+    titleItalic: 'copilot',
+    caption: 'Ask anything about the market',
+    voiceText:
+        'With smart portfolios, your money works for you — automatically rebalanced by our AI.',
+    primaryCtaLabel: 'Continue',
+    required: false,
+  ),
+  OnboardingStep(
+    id: 'showcaseReviews',
+    type: OnboardingStepType.showcase,
+    title: 'Loved by our',
+    titleItalic: 'investors',
+    caption: '',
+    voiceText:
+        "Don't just take my word for it — see what our investors are saying.",
+    primaryCtaLabel: 'Get started',
+    required: false,
+  ),
+
   // ── Investment profile ─────────────────────────────────────────
 
   OnboardingStep(
@@ -166,7 +211,7 @@ const defaultOnboardingSteps = <OnboardingStep>[
     id: 'pin',
     type: OnboardingStepType.pinInput,
     title: 'Create your',
-    titleItalic: '6-digit PIN.',
+    titleItalic: 'password.',
     caption: 'Used to authorize transactions.',
     voiceText: "We are almost there. Let's create your password!",
     reviewLabel: 'PIN',
@@ -176,8 +221,8 @@ const defaultOnboardingSteps = <OnboardingStep>[
     id: 'confirmPin',
     type: OnboardingStepType.pinInput,
     title: 'Confirm your',
-    titleItalic: 'PIN.',
-    caption: 'Enter the same PIN again.',
+    titleItalic: 'password.',
+    caption: 'Enter the same password again.',
     voiceText: "Okay! Let's confirm your password.",
     reviewLabel: 'PIN confirmed',
     sensitive: true,

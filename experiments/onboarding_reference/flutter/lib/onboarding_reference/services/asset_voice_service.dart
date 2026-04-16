@@ -14,6 +14,10 @@ class AssetVoiceService implements VoiceService {
   static const _package = 'onboarding_reference';
 
   static const _assets = <String, String>{
+    'showcaseWelcome': 'audio/voice_showcase_01_welcome.mp3',
+    'showcaseAnalysis': 'audio/voice_showcase_02_analysis.mp3',
+    'showcaseAI': 'audio/voice_showcase_03_ai.mp3',
+    'showcaseReviews': 'audio/voice_showcase_04_reviews.mp3',
     'welcome': 'audio/voice_01_welcome.mp3',
     'experience': 'audio/voice_02_experience.mp3',
     'goal': 'audio/voice_03_goal.mp3',

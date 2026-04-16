@@ -40,12 +40,18 @@ class OnboardingFlowController extends ChangeNotifier {
   bool get hasNext => index < steps.length - 1;
   bool get hasPrevious => index > 0;
   bool get isCompleted => _completed;
+  bool get isShowcase => current.type == OnboardingStepType.showcase;
+  int get showcaseCount =>
+      steps.where((s) => s.type == OnboardingStepType.showcase).length;
+  int get showcaseIndex =>
+      steps.sublist(0, index + 1).where((s) => s.type == OnboardingStepType.showcase).length - 1;
 
   List<OnboardingReviewItem> get reviewItems {
     final items = <OnboardingReviewItem>[];
 
     for (final step in steps) {
-      if (step.type == OnboardingStepType.intro ||
+      if (step.type == OnboardingStepType.showcase ||
+          step.type == OnboardingStepType.intro ||
           step.type == OnboardingStepType.completion ||
           step.type == OnboardingStepType.review ||
           step.type == OnboardingStepType.analysing) {
@@ -174,7 +180,10 @@ class OnboardingFlowController extends ChangeNotifier {
         return false;
       }
 
-      if (step.type == OnboardingStepType.singleChoice) {
+      // Showcase steps: no data to save, just advance.
+      if (step.type == OnboardingStepType.showcase) {
+        // skip validation and saving
+      } else if (step.type == OnboardingStepType.singleChoice) {
         final value = selectedOptionId;
         if (value == null || value.isEmpty) {
           if (step.required) {
