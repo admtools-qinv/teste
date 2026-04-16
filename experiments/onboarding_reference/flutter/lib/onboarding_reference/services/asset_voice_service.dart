@@ -28,6 +28,7 @@ class AssetVoiceService implements VoiceService {
     'timeHorizon': 'audio/voice_12_time_horizon.mp3',
     'lossReaction': 'audio/voice_13_loss_reaction.mp3',
     'allocation': 'audio/voice_14_allocation.mp3',
+    'analysing': 'audio/voice_15_analysing.mp3',
   };
 
   AssetVoiceService() {
@@ -48,6 +49,12 @@ class AssetVoiceService implements VoiceService {
         if (_totalDuration.inMilliseconds <= 0) return 0.0;
         return (pos.inMilliseconds / _totalDuration.inMilliseconds)
             .clamp(0.0, 1.0);
+      });
+
+  @override
+  Stream<int> get positionMsStream => _player.positionStream.map((pos) {
+        if (!_isActive) return -1;
+        return pos.inMilliseconds;
       });
 
   @override

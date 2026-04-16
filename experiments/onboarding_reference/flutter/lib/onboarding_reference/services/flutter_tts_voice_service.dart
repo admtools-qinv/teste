@@ -62,4 +62,7 @@ class FlutterTtsVoiceService implements VoiceService {
 
   @override
   Stream<double> get progressStream => const Stream.empty();
+
+  @override
+  Stream<int> get positionMsStream => const Stream.empty();
 }

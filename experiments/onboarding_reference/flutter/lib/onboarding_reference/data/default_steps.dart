@@ -87,7 +87,7 @@ const defaultOnboardingSteps = <OnboardingStep>[
     id: 'lossReaction',
     type: OnboardingStepType.singleChoice,
     title: 'If your portfolio drops',
-    titleItalic: '20%, you would…',
+    titleItalic: '20 percent, you…',
     caption: 'Be honest — there are no wrong answers.',
     voiceText: 'If your portfolio dropped 20 percent, what would you do?',
     reviewLabel: 'Loss reaction',
@@ -101,10 +101,10 @@ const defaultOnboardingSteps = <OnboardingStep>[
   OnboardingStep(
     id: 'allocation',
     type: OnboardingStepType.singleChoice,
-    title: 'What portion of savings',
-    titleItalic: 'is this investment?',
+    title: 'How much savings',
+    titleItalic: 'are you investing?',
     caption: 'Helps us understand your overall exposure.',
-    voiceText: 'What portion of your savings is this investment?',
+    voiceText: 'How much savings are you investing?',
     reviewLabel: 'Portfolio share',
     options: [
       OnboardingOption(id: 'very_low', label: 'Less than 10%', score: 15),
@@ -182,6 +182,18 @@ const defaultOnboardingSteps = <OnboardingStep>[
     reviewLabel: 'PIN confirmed',
     sensitive: true,
     matchesStepId: 'pin',
+  ),
+
+  // ── Analysis ───────────────────────────────────────────────────
+
+  OnboardingStep(
+    id: 'analysing',
+    type: OnboardingStepType.analysing,
+    title: 'Analyzing your',
+    titleItalic: 'investor profile.',
+    caption: 'Just a moment while we crunch the numbers.',
+    voiceText: "Almost there! We're building your investor profile.",
+    required: false,
   ),
 
   // ── Completion ─────────────────────────────────────────────────

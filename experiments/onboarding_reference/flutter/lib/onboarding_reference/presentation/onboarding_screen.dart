@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
+import '../data/voice_timestamps.dart';
 import '../flow/onboarding_flow_controller.dart';
 import '../models/country.dart';
 import '../models/onboarding_step.dart';
@@ -467,6 +468,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ],
         );
 
+      case OnboardingStepType.analysing:
+        return _AnalysingContent(
+          onComplete: () => unawaited(_submitCurrentStep()),
+        );
+
       case OnboardingStepType.completion:
         final result = controller.suitabilityResult;
         final profile = result?.profile;
@@ -606,6 +612,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ? 'Completed'
                 : (step.primaryCtaLabel ?? 'Confirm'));
         enabled = !isBlocked;
+      case OnboardingStepType.analysing:
+        return const SizedBox.shrink();
       case OnboardingStepType.completion:
         label = controller.isCompleted
             ? 'Completed'
@@ -648,10 +656,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
-                child: voiceReady && !_voiceMuted
+                child: voiceReady && !_voiceMuted && voiceTimestamps.containsKey(step.id)
                     ? _KaraokeText(
-                        text: narrationText,
-                        progressStream: widget.voiceService.progressStream,
+                        timings: voiceTimestamps[step.id]!,
+                        positionMsStream: widget.voiceService.positionMsStream,
                       )
                     : Text(
                         narrationText,
@@ -740,7 +748,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 padding: EdgeInsets.zero,
                                 constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
                                 tooltip: 'Voltar',
-                                onPressed: (controller.isBusy || controller.isCompleted)
+                                onPressed: (controller.isBusy || controller.isCompleted || step.type == OnboardingStepType.analysing)
                                     ? null
                                     : () {
                                         HapticFeedback.lightImpact();
@@ -799,7 +807,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                     interactiveContent
                                         .animate(delay: 60.ms)
                                         .slideY(begin: 0.04, end: 0, duration: 360.ms, curve: Curves.easeOutCubic)
-                                  else if (step.type == OnboardingStepType.singleChoice)
+                                  else if (step.type == OnboardingStepType.singleChoice ||
+                                           step.type == OnboardingStepType.analysing)
                                     interactiveContent
                                   else
                                     GlassCard(
@@ -976,43 +985,178 @@ class _OptionCard extends StatelessWidget {
   }
 }
 
+// ── Analysing Content ─────────────────────────────────────────
+
+class _AnalysingContent extends StatefulWidget {
+  final VoidCallback onComplete;
+  const _AnalysingContent({required this.onComplete});
+
+  @override
+  State<_AnalysingContent> createState() => _AnalysingContentState();
+}
+
+class _AnalysingContentState extends State<_AnalysingContent>
+    with SingleTickerProviderStateMixin {
+  static const _messages = [
+    'Analyzing your experience…',
+    'Evaluating your goals…',
+    'Calculating risk tolerance…',
+    'Preparing your investor profile…',
+  ];
+
+  static const _totalDuration = Duration(milliseconds: 4500);
+
+  late final AnimationController _ctrl;
+  late final Animation<double> _progress;
+  int _msgIndex = 0;
+  Timer? _msgTimer;
+  bool _done = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(vsync: this, duration: _totalDuration);
+    _progress = CurvedAnimation(parent: _ctrl, curve: Curves.easeInOutCubic);
+
+    _msgTimer = Timer.periodic(const Duration(milliseconds: 1100), (_) {
+      if (!mounted) return;
+      setState(() => _msgIndex = (_msgIndex + 1) % _messages.length);
+    });
+
+    _ctrl.addStatusListener((status) {
+      if (status == AnimationStatus.completed && !_done) {
+        _done = true;
+        _msgTimer?.cancel();
+        Future.delayed(const Duration(milliseconds: 400), () {
+          if (mounted) widget.onComplete();
+        });
+      }
+    });
+
+    _ctrl.forward();
+  }
+
+  @override
+  void dispose() {
+    _msgTimer?.cancel();
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _progress,
+      builder: (context, _) {
+        final pct = (_progress.value * 100).round();
+        return Column(
+          children: [
+            const SizedBox(height: 32),
+            SizedBox(
+              width: 120,
+              height: 120,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  SizedBox(
+                    width: 120,
+                    height: 120,
+                    child: CircularProgressIndicator(
+                      value: _progress.value,
+                      strokeWidth: 4.0,
+                      backgroundColor:
+                          QInvWeb3Tokens.primary.withValues(alpha: 0.15),
+                      valueColor: const AlwaysStoppedAnimation<Color>(
+                        QInvWeb3Tokens.primaryLight,
+                      ),
+                      strokeCap: StrokeCap.round,
+                    ),
+                  ),
+                  Text(
+                    '$pct%',
+                    style: const TextStyle(
+                      fontFamily: QInvWeb3Tokens.fontUI,
+                      fontSize: 28,
+                      fontWeight: FontWeight.w700,
+                      color: QInvWeb3Tokens.textHeading,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 32),
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 400),
+              transitionBuilder: (child, animation) => FadeTransition(
+                opacity: animation,
+                child: SlideTransition(
+                  position: Tween<Offset>(
+                    begin: const Offset(0, 0.15),
+                    end: Offset.zero,
+                  ).animate(CurvedAnimation(
+                    parent: animation,
+                    curve: Curves.easeOutCubic,
+                  )),
+                  child: child,
+                ),
+              ),
+              child: Text(
+                _messages[_msgIndex],
+                key: ValueKey<int>(_msgIndex),
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontFamily: QInvWeb3Tokens.fontUI,
+                  fontSize: QInvWeb3Tokens.fontSizeSubtitle,
+                  fontWeight: FontWeight.w500,
+                  color: QInvWeb3Tokens.textMuted,
+                  height: 1.55,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
 // ── Karaoke Text ───────────────────────────────────────────────
 
 class _KaraokeText extends StatelessWidget {
-  final String text;
-  final Stream<double> progressStream;
+  final List<WordTiming> timings;
+  final Stream<int> positionMsStream;
 
   const _KaraokeText({
-    required this.text,
-    required this.progressStream,
+    required this.timings,
+    required this.positionMsStream,
   });
 
   @override
   Widget build(BuildContext context) {
-    final words = text.split(' ');
-    // Weight each word by character length for more natural timing.
-    final lengths = words.map((w) => w.length).toList();
-    final totalChars = lengths.fold<int>(0, (a, b) => a + b);
-
-    return StreamBuilder<double>(
-      stream: progressStream,
-      initialData: 0.0,
+    return StreamBuilder<int>(
+      stream: positionMsStream,
+      initialData: -1,
       builder: (context, snapshot) {
-        final progress = snapshot.data ?? 0.0;
+        final posMs = snapshot.data ?? -1;
 
-        // Map progress to cumulative character position.
-        final charPos = (progress * totalChars).floor();
-        int accumulated = 0;
+        // Find the active word based on current playback position.
         int activeIndex = -1;
-        for (int i = 0; i < words.length; i++) {
-          accumulated += lengths[i];
-          if (charPos < accumulated) {
-            activeIndex = i;
-            break;
+        if (posMs >= 0) {
+          for (int i = 0; i < timings.length; i++) {
+            if (posMs >= timings[i].startMs && posMs < timings[i].endMs) {
+              activeIndex = i;
+              break;
+            }
+            // Between words (gap): keep previous word highlighted.
+            if (i < timings.length - 1 &&
+                posMs >= timings[i].endMs &&
+                posMs < timings[i + 1].startMs) {
+              activeIndex = i;
+              break;
+            }
           }
         }
-        // If progress >= 1.0, no word is highlighted (finished).
-        if (progress >= 0.99) activeIndex = -1;
 
         return RichText(
           maxLines: 2,
@@ -1026,10 +1170,10 @@ class _KaraokeText extends StatelessWidget {
               height: 1.50,
             ),
             children: [
-              for (int i = 0; i < words.length; i++) ...[
+              for (int i = 0; i < timings.length; i++) ...[
                 if (i > 0) const TextSpan(text: ' '),
                 TextSpan(
-                  text: words[i],
+                  text: timings[i].word,
                   style: i == activeIndex
                       ? TextStyle(
                           color: QInvWeb3Tokens.textHeading,

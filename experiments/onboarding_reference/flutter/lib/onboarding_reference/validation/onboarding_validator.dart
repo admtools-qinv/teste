@@ -24,6 +24,7 @@ class DefaultOnboardingValidator implements OnboardingValidator {
       case OnboardingStepType.intro:
       case OnboardingStepType.completion:
       case OnboardingStepType.review:
+      case OnboardingStepType.analysing:
         return null;
 
       case OnboardingStepType.singleChoice:

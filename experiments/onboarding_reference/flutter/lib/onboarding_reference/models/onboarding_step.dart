@@ -6,6 +6,7 @@ enum OnboardingStepType {
   verificationCode,
   pinInput,
   review,
+  analysing,
   completion,
 }
 

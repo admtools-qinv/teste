@@ -6,6 +6,9 @@ abstract class VoiceService {
 
   /// Playback progress from 0.0 to 1.0. Empty stream if unsupported.
   Stream<double> get progressStream;
+
+  /// Current playback position in milliseconds. Used for word-level karaoke sync.
+  Stream<int> get positionMsStream;
 }
 
 class NullVoiceService implements VoiceService {
@@ -23,4 +26,7 @@ class NullVoiceService implements VoiceService {
 
   @override
   Stream<double> get progressStream => const Stream.empty();
+
+  @override
+  Stream<int> get positionMsStream => const Stream.empty();
 }

@@ -47,7 +47,8 @@ class OnboardingFlowController extends ChangeNotifier {
     for (final step in steps) {
       if (step.type == OnboardingStepType.intro ||
           step.type == OnboardingStepType.completion ||
-          step.type == OnboardingStepType.review) {
+          step.type == OnboardingStepType.review ||
+          step.type == OnboardingStepType.analysing) {
         continue;
       }
 
@@ -213,7 +214,7 @@ class OnboardingFlowController extends ChangeNotifier {
       }
 
       if (!hasNext) {
-        _suitabilityResult = SuitabilityScorer.compute(steps, session.answers);
+        _suitabilityResult ??= SuitabilityScorer.compute(steps, session.answers);
         await backend.submitAll(
           sessionId: _sessionId,
           answers: {
@@ -237,6 +238,12 @@ class OnboardingFlowController extends ChangeNotifier {
         'stepId': current.id,
         'stepType': current.type.name,
       }));
+
+      // Pre-compute suitability score before showing the completion step
+      if (steps[index + 1].type == OnboardingStepType.completion ||
+          steps[index + 1].type == OnboardingStepType.analysing) {
+        _suitabilityResult = SuitabilityScorer.compute(steps, session.answers);
+      }
 
       index += 1;
       validationError = null;
