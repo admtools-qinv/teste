@@ -80,6 +80,8 @@ Widget _buildScreen({
   Future<void> Function(AuthResult, String)? onLoginSuccess,
 }) {
   return MaterialApp(
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
     theme: QInvWeb3Theme.dark(),
     home: EmailPasswordScreen(
       authService: authService,
@@ -90,14 +92,14 @@ Widget _buildScreen({
 }
 
 Finder _emailField() => find.byWidgetPredicate(
-      (w) => w is TextField && (w.decoration?.labelText == 'E-mail'),
+      (w) => w is TextField && (w.decoration?.labelText == 'Email'),
     );
 
 Finder _passwordField() => find.byWidgetPredicate(
-      (w) => w is TextField && (w.decoration?.labelText == 'Senha'),
+      (w) => w is TextField && (w.decoration?.labelText == 'Password'),
     );
 
-Finder _submitButton() => find.widgetWithText(ElevatedButton, 'Entrar');
+Finder _submitButton() => find.widgetWithText(ElevatedButton, 'Sign in');
 
 /// Pumps enough frames to allow immediately-resolving async operations to
 /// complete, without using pumpAndSettle (which never returns on screens
@@ -148,7 +150,7 @@ void main() {
     testWidgets('shows header title', (tester) async {
       await tester.pumpWidget(_buildScreen(authService: _SuccessAuthService()));
       await tester.pump();
-      expect(find.text('Bem-vindo de volta'), findsOneWidget);
+      expect(find.text('Welcome back'), findsOneWidget);
     });
   });
 
@@ -306,7 +308,7 @@ void main() {
   group('error states', () {
     testWidgets('shows AuthException message in error banner', (tester) async {
       await tester.pumpWidget(_buildScreen(
-        authService: const _FailingAuthService('E-mail ou senha incorretos.'),
+        authService: const _FailingAuthService('Incorrect email or password.'),
       ));
       await tester.pump();
 
@@ -316,7 +318,7 @@ void main() {
       await tester.tap(_submitButton());
       await _settle(tester);
 
-      expect(find.text('E-mail ou senha incorretos.'), findsOneWidget);
+      expect(find.text('Incorrect email or password.'), findsOneWidget);
     });
 
     testWidgets('shows generic message for non-AuthException errors',
@@ -332,7 +334,7 @@ void main() {
       await tester.tap(_submitButton());
       await _settle(tester);
 
-      expect(find.text('Erro de conexão. Tente novamente.'), findsOneWidget);
+      expect(find.text('Connection error. Try again.'), findsOneWidget);
     });
 
     testWidgets('error banner disappears when user starts typing', (tester) async {

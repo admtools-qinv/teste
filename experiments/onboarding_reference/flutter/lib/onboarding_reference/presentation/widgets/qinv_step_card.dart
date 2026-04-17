@@ -19,7 +19,7 @@ class QInvStepCard extends StatelessWidget {
       padding: padding,
       fillColor: QInvWeb3Tokens.cardBgDropdown.withValues(alpha: 0.38),
       borderColor: Colors.white.withValues(alpha: 0.10),
-      blurSigma: 28,
+      blurSigma: QInvWeb3Tokens.blurCard,
       child: child,
     );
   }

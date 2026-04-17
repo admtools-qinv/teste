@@ -120,7 +120,7 @@ class _PinInputWidgetState extends State<PinInputWidget> {
       children: List.generate(6, (i) {
         final filled = i < _digits.length;
         return AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
+          duration: QInvWeb3Tokens.transitionFast,
           margin: const EdgeInsets.symmetric(horizontal: 10),
           width: 14,
           height: 14,

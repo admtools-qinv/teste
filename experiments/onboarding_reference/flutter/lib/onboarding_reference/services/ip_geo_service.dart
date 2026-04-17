@@ -13,6 +13,8 @@ class IpGeoService {
         if (country != null) return country;
       }
     }
-    return null;
+    // Fallback to Brazil when platform locale has no country code
+    // (common on Linux desktop during development).
+    return countryByCode('BR');
   }
 }

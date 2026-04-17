@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:onboarding_reference/l10n/app_localizations_en.dart';
 import 'package:onboarding_reference/onboarding_reference.dart';
 
 class _FailingBackend implements OnboardingBackendService {
@@ -135,6 +136,8 @@ void main() {
       steps: steps,
       backend: _FailingBackend(),
       analytics: _NoopAnalytics(),
+      validator: DefaultOnboardingValidator(AppLocalizationsEn()),
+      l10n: AppLocalizationsEn(),
     );
 
     final initialized = await controller.initialize();
@@ -149,6 +152,8 @@ void main() {
         steps: const [],
         backend: _NoopBackend(),
         analytics: _NoopAnalytics(),
+        validator: DefaultOnboardingValidator(AppLocalizationsEn()),
+        l10n: AppLocalizationsEn(),
       ),
       throwsA(isA<AssertionError>()),
     );
@@ -177,6 +182,8 @@ void main() {
       steps: steps,
       backend: _NoopBackend(),
       analytics: _NoopAnalytics(),
+      validator: DefaultOnboardingValidator(AppLocalizationsEn()),
+      l10n: AppLocalizationsEn(),
     );
 
     await controller.initialize();
@@ -214,6 +221,8 @@ void main() {
       steps: steps,
       backend: backend,
       analytics: _NoopAnalytics(),
+      validator: DefaultOnboardingValidator(AppLocalizationsEn()),
+      l10n: AppLocalizationsEn(),
     );
 
     await controller.initialize();
@@ -252,6 +261,8 @@ void main() {
       steps: steps,
       backend: _NoopBackend(),
       analytics: _NoopAnalytics(),
+      validator: DefaultOnboardingValidator(AppLocalizationsEn()),
+      l10n: AppLocalizationsEn(),
     );
 
     await controller.initialize();

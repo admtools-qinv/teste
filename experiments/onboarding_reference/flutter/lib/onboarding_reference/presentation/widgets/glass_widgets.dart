@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../theme/qinvweb3_tokens.dart';
+import 'interactive_grid_pattern.dart';
 
 @immutable
 class GlassOrb {
@@ -58,12 +59,16 @@ class GlassBackground extends StatefulWidget {
   final Widget child;
   final List<GlassOrb> orbs;
   final Color baseColor;
+  final bool showOrbs;
+  final bool showGrid;
 
   const GlassBackground({
     super.key,
     required this.child,
     this.orbs = kDefaultOrbs,
     this.baseColor = QInvWeb3Tokens.background,
+    this.showOrbs = true,
+    this.showGrid = false,
   });
 
   @override
@@ -102,28 +107,35 @@ class _GlassBackgroundState extends State<GlassBackground>
               end: Alignment.bottomRight,
               colors: [
                 widget.baseColor,
-                const Color(0xFF121827),
+                const Color(0xFF121314),
                 widget.baseColor.withValues(alpha: 0.97),
               ],
             ),
           ),
         ),
-        Positioned.fill(
-          child: IgnorePointer(
-            child: AnimatedBuilder(
-              animation: _controller,
-              builder: (context, _) {
-                final t = _controller.value * 2 * pi;
-                return Stack(
-                  children: [
-                    for (int i = 0; i < widget.orbs.length; i++)
-                      _AnimatedOrb(orb: widget.orbs[i], t: t, index: i),
-                  ],
-                );
-              },
+        if (widget.showOrbs)
+          Positioned.fill(
+            child: IgnorePointer(
+              child: AnimatedBuilder(
+                animation: _controller,
+                builder: (context, _) {
+                  final t = _controller.value * 2 * pi;
+                  return Stack(
+                    children: [
+                      for (int i = 0; i < widget.orbs.length; i++)
+                        _AnimatedOrb(orb: widget.orbs[i], t: t, index: i),
+                    ],
+                  );
+                },
+              ),
             ),
           ),
-        ),
+        if (widget.showGrid)
+          const Positioned.fill(
+            child: IgnorePointer(
+              child: InteractiveGridPattern(),
+            ),
+          ),
         Positioned.fill(child: widget.child),
       ],
     );
@@ -194,7 +206,7 @@ class GlassCard extends StatelessWidget {
     required this.child,
     this.padding = const EdgeInsets.all(24),
     this.borderRadius = const BorderRadius.all(Radius.circular(QInvWeb3Tokens.radiusCard)),
-    this.blurSigma = 24,
+    this.blurSigma = QInvWeb3Tokens.blurModal,
     this.fillColor = const Color.fromRGBO(17, 18, 24, 0.28),
     this.borderColor = const Color.fromRGBO(255, 255, 255, 0.12),
   });
@@ -213,7 +225,7 @@ class GlassCard extends StatelessWidget {
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.18),
-                blurRadius: 28,
+                blurRadius: QInvWeb3Tokens.blurCard,
                 offset: const Offset(0, 12),
               ),
             ],

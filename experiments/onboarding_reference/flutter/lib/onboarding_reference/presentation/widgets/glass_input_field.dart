@@ -68,14 +68,14 @@ class _GlassInputFieldState extends State<GlassInputField> {
         : Colors.white.withValues(alpha: 0.10);
 
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
+      duration: QInvWeb3Tokens.transitionFast,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(QInvWeb3Tokens.radiusInput),
         boxShadow: _hasFocus
             ? [
                 BoxShadow(
                   color: QInvWeb3Tokens.primary.withValues(alpha: 0.20),
-                  blurRadius: 20,
+                  blurRadius: QInvWeb3Tokens.blurGlass,
                   offset: const Offset(0, 4),
                 ),
               ]

@@ -7,6 +7,8 @@ Widget _buildScreen({
   VoidCallback? onSkipped,
 }) {
   return MaterialApp(
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
     theme: QInvWeb3Theme.dark(),
     home: BiometricPromptScreen(
       onEnabled: onEnabled ?? () {},
@@ -22,7 +24,7 @@ void main() {
     testWidgets('shows the title', (tester) async {
       await tester.pumpWidget(_buildScreen());
       await tester.pump();
-      expect(find.text('Login com biometria?'), findsOneWidget);
+      expect(find.text('Biometric login?'), findsOneWidget);
     });
 
     testWidgets('shows fingerprint icon', (tester) async {
@@ -35,11 +37,11 @@ void main() {
       await tester.pumpWidget(_buildScreen());
       await tester.pump();
       expect(
-        find.widgetWithText(ElevatedButton, 'Sim, usar biometria'),
+        find.widgetWithText(ElevatedButton, 'Yes, use biometrics'),
         findsOneWidget,
       );
       expect(
-        find.widgetWithText(OutlinedButton, 'Não, obrigado'),
+        find.widgetWithText(OutlinedButton, 'No, thanks'),
         findsOneWidget,
       );
     });
@@ -48,7 +50,7 @@ void main() {
       await tester.pumpWidget(_buildScreen());
       await tester.pump();
       expect(
-        find.textContaining('digital ou reconhecimento facial'),
+        find.textContaining('fingerprint or face recognition'),
         findsOneWidget,
       );
     });
@@ -57,46 +59,46 @@ void main() {
   // ── Callbacks ─────────────────────────────────────────────────
 
   group('callbacks', () {
-    testWidgets('"Sim, usar biometria" calls onEnabled exactly once',
+    testWidgets('"Yes, use biometrics" calls onEnabled exactly once',
         (tester) async {
       int count = 0;
       await tester.pumpWidget(_buildScreen(onEnabled: () => count++));
       await tester.pump();
       await tester.tap(
-        find.widgetWithText(ElevatedButton, 'Sim, usar biometria'),
+        find.widgetWithText(ElevatedButton, 'Yes, use biometrics'),
       );
       await tester.pump();
       expect(count, equals(1));
     });
 
-    testWidgets('"Não, obrigado" calls onSkipped exactly once', (tester) async {
+    testWidgets('"No, thanks" calls onSkipped exactly once', (tester) async {
       int count = 0;
       await tester.pumpWidget(_buildScreen(onSkipped: () => count++));
       await tester.pump();
-      await tester.tap(find.widgetWithText(OutlinedButton, 'Não, obrigado'));
+      await tester.tap(find.widgetWithText(OutlinedButton, 'No, thanks'));
       await tester.pump();
       expect(count, equals(1));
     });
 
-    testWidgets('tapping "Não" does NOT call onEnabled', (tester) async {
+    testWidgets('tapping "No, thanks" does NOT call onEnabled', (tester) async {
       bool enabledCalled = false;
       await tester.pumpWidget(
         _buildScreen(onEnabled: () => enabledCalled = true),
       );
       await tester.pump();
-      await tester.tap(find.widgetWithText(OutlinedButton, 'Não, obrigado'));
+      await tester.tap(find.widgetWithText(OutlinedButton, 'No, thanks'));
       await tester.pump();
       expect(enabledCalled, isFalse);
     });
 
-    testWidgets('tapping "Sim" does NOT call onSkipped', (tester) async {
+    testWidgets('tapping "Yes" does NOT call onSkipped', (tester) async {
       bool skippedCalled = false;
       await tester.pumpWidget(
         _buildScreen(onSkipped: () => skippedCalled = true),
       );
       await tester.pump();
       await tester.tap(
-        find.widgetWithText(ElevatedButton, 'Sim, usar biometria'),
+        find.widgetWithText(ElevatedButton, 'Yes, use biometrics'),
       );
       await tester.pump();
       expect(skippedCalled, isFalse);

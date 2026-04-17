@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../l10n/l10n.dart';
 import '../theme/qinvweb3_tokens.dart';
 import 'widgets/glass_widgets.dart';
 import 'widgets/qinv_button.dart';
@@ -24,7 +25,7 @@ class BiometricPromptScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
-    final hPad = size.width < 360 ? 20.0 : 24.0;
+    final hPad = QInvWeb3Tokens.responsiveHPad(size.width);
 
     return Scaffold(
       backgroundColor: QInvWeb3Tokens.background,
@@ -36,7 +37,7 @@ class BiometricPromptScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const Spacer(flex: 3),
-                _buildContent(),
+                _buildContent(context),
                 const Spacer(flex: 2),
                 _buildActions(context),
                 const SizedBox(height: 32),
@@ -48,7 +49,7 @@ class BiometricPromptScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildContent() {
+  Widget _buildContent(BuildContext context) {
     return Column(
       children: [
         // Icon
@@ -72,10 +73,10 @@ class BiometricPromptScreen extends StatelessWidget {
 
         const SizedBox(height: 28),
 
-        const Text(
-          'Login com biometria?',
+        Text(
+          context.l10n.biometricLoginTitle,
           textAlign: TextAlign.center,
-          style: TextStyle(
+          style: const TextStyle(
             fontFamily: QInvWeb3Tokens.fontSans,
             fontSize: QInvWeb3Tokens.fontSizeHeadlineM,
             fontWeight: FontWeight.w500,
@@ -87,10 +88,10 @@ class BiometricPromptScreen extends StatelessWidget {
 
         const SizedBox(height: 12),
 
-        const Text(
-          'Use sua digital ou reconhecimento facial para entrar rapidamente nos próximos acessos.',
+        Text(
+          context.l10n.biometricLoginDescription,
           textAlign: TextAlign.center,
-          style: TextStyle(
+          style: const TextStyle(
             fontFamily: QInvWeb3Tokens.fontSans,
             fontSize: QInvWeb3Tokens.fontSizeBody,
             fontWeight: FontWeight.w400,
@@ -107,7 +108,7 @@ class BiometricPromptScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         QInvButton(
-          label: 'Sim, usar biometria',
+          label: context.l10n.biometricEnable,
           onPressed: () {
             HapticFeedback.mediumImpact();
             onEnabled();
@@ -115,7 +116,7 @@ class BiometricPromptScreen extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         QInvButton(
-          label: 'Não, obrigado',
+          label: context.l10n.biometricSkip,
           outline: true,
           onPressed: () {
             HapticFeedback.lightImpact();

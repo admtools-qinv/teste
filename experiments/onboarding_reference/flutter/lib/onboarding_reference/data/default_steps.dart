@@ -1,3 +1,6 @@
+import '../../l10n/l10n.dart';
+
+import '../models/country.dart';
 import '../models/onboarding_step.dart';
 
 /// Método de autenticação usado no cadastro.
@@ -6,57 +9,72 @@ enum AuthMethod { emailPassword, google }
 /// IDs dos steps pulados no fluxo Google (email/verificação/PIN já resolvidos).
 const _googleSkipIds = {'email', 'emailCode', 'pin', 'confirmPin'};
 
-/// Retorna os steps de onboarding filtrados por método de autenticação.
-List<OnboardingStep> onboardingStepsFor(AuthMethod method) {
-  if (method == AuthMethod.emailPassword) return defaultOnboardingSteps;
-  return defaultOnboardingSteps
-      .where((s) => !_googleSkipIds.contains(s.id))
-      .toList();
+/// IDs dos steps exclusivos para usuários no Brasil.
+const _brazilOnlyIds = {'accountType', 'pep', 'cep'};
+
+/// Retorna os steps de onboarding filtrados por método de autenticação e país.
+/// Showcase steps são sempre excluídos — são exibidos antes da tela de login.
+/// O step [accountType] só aparece quando [country] é BR.
+List<OnboardingStep> onboardingStepsFor(
+  AppLocalizations l10n,
+  AuthMethod method, {
+  Country? country,
+}) {
+  final isBrazil = country?.code == 'BR';
+  var steps = buildOnboardingSteps(l10n)
+      .where((s) => s.type != OnboardingStepType.showcase);
+  if (!isBrazil) {
+    steps = steps.where((s) => !_brazilOnlyIds.contains(s.id));
+  }
+  if (method == AuthMethod.google) {
+    return steps.where((s) => !_googleSkipIds.contains(s.id)).toList();
+  }
+  return steps.toList();
 }
 
-const defaultOnboardingSteps = <OnboardingStep>[
+/// Steps de showcase (tour/overview pré-login).
+List<OnboardingStep> showcaseSteps(AppLocalizations l10n) =>
+    buildOnboardingSteps(l10n)
+        .where((s) => s.type == OnboardingStepType.showcase)
+        .toList();
+
+List<OnboardingStep> buildOnboardingSteps(AppLocalizations l10n) => [
   // ── Showcase (pre-sign-up overview) ────────────────────────────
 
   OnboardingStep(
     id: 'showcaseWelcome',
     type: OnboardingStepType.showcase,
-    title: 'Welcome to',
-    caption: '',
-    voiceText: "Hey! I'm Neo, your investment copilot. Let me show you around.",
-    primaryCtaLabel: 'Continue',
+    title: l10n.stepShowcaseWelcomeTitle,
+    caption: l10n.stepShowcaseWelcomeCaption,
+    voiceText: l10n.stepShowcaseWelcomeVoice,
+    primaryCtaLabel: l10n.stepShowcaseWelcomeCta,
     required: false,
   ),
   OnboardingStep(
     id: 'showcaseAnalysis',
     type: OnboardingStepType.showcase,
-    title: 'AI-powered',
-    titleItalic: 'analysis',
-    caption: 'Real-time trends and recommendations',
-    voiceText:
-        'I analyze the market in real time so you can make smarter decisions.',
-    primaryCtaLabel: 'Continue',
+    title: l10n.stepShowcaseAnalysisTitle,
+    caption: '',
+    voiceText: l10n.stepShowcaseAnalysisVoice,
+    primaryCtaLabel: l10n.stepShowcaseAnalysisCta,
     required: false,
   ),
   OnboardingStep(
     id: 'showcaseAI',
     type: OnboardingStepType.showcase,
-    title: 'Your investment',
-    titleItalic: 'copilot',
-    caption: 'Ask anything about the market',
-    voiceText:
-        'With smart portfolios, your money works for you — automatically rebalanced by our AI.',
-    primaryCtaLabel: 'Continue',
+    title: l10n.stepShowcaseAITitle,
+    caption: '',
+    voiceText: l10n.stepShowcaseAIVoice,
+    primaryCtaLabel: l10n.stepShowcaseAICta,
     required: false,
   ),
   OnboardingStep(
     id: 'showcaseReviews',
     type: OnboardingStepType.showcase,
-    title: 'Loved by our',
-    titleItalic: 'investors',
+    title: l10n.stepShowcaseReviewsTitle,
     caption: '',
-    voiceText:
-        "Don't just take my word for it — see what our investors are saying.",
-    primaryCtaLabel: 'Get started',
+    voiceText: l10n.stepShowcaseReviewsVoice,
+    primaryCtaLabel: l10n.stepShowcaseReviewsCta,
     required: false,
   ),
 
@@ -65,97 +83,134 @@ const defaultOnboardingSteps = <OnboardingStep>[
   OnboardingStep(
     id: 'welcome',
     type: OnboardingStepType.intro,
-    title: "Let's get you",
-    titleItalic: 'started.',
-    caption: 'Ready in just a few steps.',
-    voiceText: "Hey! Welcome. Let's get you started!",
-    primaryCtaLabel: 'Get started',
+    title: l10n.stepWelcomeTitle,
+    titleItalic: l10n.stepWelcomeTitleItalic,
+    caption: l10n.stepWelcomeCaption,
+    voiceText: l10n.stepWelcomeVoice,
+    primaryCtaLabel: l10n.stepWelcomeCta,
+  ),
+  OnboardingStep(
+    id: 'accountType',
+    type: OnboardingStepType.singleChoice,
+    title: l10n.stepAccountTypeTitle,
+    titleItalic: l10n.stepAccountTypeTitleItalic,
+    caption: l10n.stepAccountTypeCaption,
+    voiceText: l10n.stepAccountTypeVoice,
+    reviewLabel: l10n.stepAccountTypeReview,
+    options: [
+      OnboardingOption(id: 'national', label: l10n.stepAccountTypeOptNational, assetPath: 'assets/account_national.svg'),
+      OnboardingOption(id: 'global', label: l10n.stepAccountTypeOptGlobal, assetPath: 'assets/account_global.svg'),
+    ],
+  ),
+  OnboardingStep(
+    id: 'pep',
+    type: OnboardingStepType.singleChoice,
+    title: l10n.stepPepTitle,
+    titleItalic: l10n.stepPepTitleItalic,
+    caption: l10n.stepPepCaption,
+    voiceText: l10n.stepPepVoice,
+    reviewLabel: l10n.stepPepReview,
+    options: [
+      OnboardingOption(id: 'no', label: l10n.stepPepOptNo),
+      OnboardingOption(id: 'yes', label: l10n.stepPepOptYes),
+    ],
+  ),
+  OnboardingStep(
+    id: 'cep',
+    type: OnboardingStepType.textInput,
+    title: l10n.stepCepTitle,
+    titleItalic: l10n.stepCepTitleItalic,
+    caption: l10n.stepCepCaption,
+    voiceText: l10n.stepCepVoice,
+    placeholder: l10n.stepCepPlaceholder,
+    inputKind: OnboardingInputKind.cep,
+    reviewLabel: l10n.stepCepReview,
   ),
   OnboardingStep(
     id: 'experience',
     type: OnboardingStepType.singleChoice,
-    title: 'How long have you',
-    titleItalic: 'been investing?',
-    caption: "We'll tailor your experience.",
-    voiceText: 'How long have you been investing?',
+    title: l10n.stepExperienceTitle,
+    titleItalic: l10n.stepExperienceTitleItalic,
+    caption: l10n.stepExperienceCaption,
+    voiceText: l10n.stepExperienceVoice,
     options: [
-      OnboardingOption(id: 'none', label: 'No experience yet', score: 0),
-      OnboardingOption(id: 'basic', label: "I've dabbled a little", score: 5),
-      OnboardingOption(id: 'intermediate', label: 'A few years of experience', score: 10),
-      OnboardingOption(id: 'advanced', label: 'I know my way around', score: 15),
+      OnboardingOption(id: 'none', label: l10n.stepExperienceOptNone, score: 0),
+      OnboardingOption(id: 'basic', label: l10n.stepExperienceOptBasic, score: 5),
+      OnboardingOption(id: 'intermediate', label: l10n.stepExperienceOptIntermediate, score: 10),
+      OnboardingOption(id: 'advanced', label: l10n.stepExperienceOptAdvanced, score: 15),
     ],
   ),
   OnboardingStep(
     id: 'goal',
     type: OnboardingStepType.singleChoice,
-    title: "What's your",
-    titleItalic: 'financial goal?',
-    caption: 'Pick what matters most to you.',
-    voiceText: "What's your financial goal?",
+    title: l10n.stepGoalTitle,
+    titleItalic: l10n.stepGoalTitleItalic,
+    caption: l10n.stepGoalCaption,
+    voiceText: l10n.stepGoalVoice,
     options: [
-      OnboardingOption(id: 'preserve', label: 'Protect what I already have', score: 0),
-      OnboardingOption(id: 'income', label: 'Generate passive income', score: 8),
-      OnboardingOption(id: 'grow', label: 'Grow my wealth over time', score: 15),
-      OnboardingOption(id: 'aggressive', label: 'Maximize returns at higher risk', score: 20),
+      OnboardingOption(id: 'preserve', label: l10n.stepGoalOptPreserve, score: 0),
+      OnboardingOption(id: 'income', label: l10n.stepGoalOptIncome, score: 8),
+      OnboardingOption(id: 'grow', label: l10n.stepGoalOptGrow, score: 15),
+      OnboardingOption(id: 'aggressive', label: l10n.stepGoalOptAggressive, score: 20),
     ],
   ),
   OnboardingStep(
     id: 'timeHorizon',
     type: OnboardingStepType.singleChoice,
-    title: 'When might you need',
-    titleItalic: 'this money back?',
-    caption: 'Longer horizons can handle more volatility.',
-    voiceText: 'When might you need this money back?',
-    reviewLabel: 'Time horizon',
+    title: l10n.stepTimeHorizonTitle,
+    titleItalic: l10n.stepTimeHorizonTitleItalic,
+    caption: l10n.stepTimeHorizonCaption,
+    voiceText: l10n.stepTimeHorizonVoice,
+    reviewLabel: l10n.stepTimeHorizonReview,
     options: [
-      OnboardingOption(id: 'short', label: 'Within 1 year', score: 0),
-      OnboardingOption(id: 'mid', label: '1 to 3 years', score: 5),
-      OnboardingOption(id: 'long', label: '3 to 7 years', score: 10),
-      OnboardingOption(id: 'very_long', label: 'More than 7 years', score: 15),
+      OnboardingOption(id: 'short', label: l10n.stepTimeHorizonOptShort, score: 0),
+      OnboardingOption(id: 'mid', label: l10n.stepTimeHorizonOptMid, score: 5),
+      OnboardingOption(id: 'long', label: l10n.stepTimeHorizonOptLong, score: 10),
+      OnboardingOption(id: 'very_long', label: l10n.stepTimeHorizonOptVeryLong, score: 15),
     ],
   ),
   OnboardingStep(
     id: 'comfort',
     type: OnboardingStepType.singleChoice,
-    title: 'How do you handle',
-    titleItalic: 'market swings?',
-    caption: 'No wrong answers here.',
-    voiceText: 'How do you handle market swings?',
+    title: l10n.stepComfortTitle,
+    titleItalic: l10n.stepComfortTitleItalic,
+    caption: l10n.stepComfortCaption,
+    voiceText: l10n.stepComfortVoice,
     options: [
-      OnboardingOption(id: 'low', label: 'I prefer stability above all', score: 0),
-      OnboardingOption(id: 'medium_low', label: 'I can accept small fluctuations', score: 5),
-      OnboardingOption(id: 'medium', label: 'A balanced approach works for me', score: 10),
-      OnboardingOption(id: 'high', label: 'I can handle the ups and downs', score: 15),
+      OnboardingOption(id: 'low', label: l10n.stepComfortOptLow, score: 0),
+      OnboardingOption(id: 'medium_low', label: l10n.stepComfortOptMediumLow, score: 5),
+      OnboardingOption(id: 'medium', label: l10n.stepComfortOptMedium, score: 10),
+      OnboardingOption(id: 'high', label: l10n.stepComfortOptHigh, score: 15),
     ],
   ),
   OnboardingStep(
     id: 'lossReaction',
     type: OnboardingStepType.singleChoice,
-    title: 'If your portfolio drops',
-    titleItalic: '20 percent, you…',
-    caption: 'Be honest — there are no wrong answers.',
-    voiceText: 'If your portfolio dropped 20 percent, what would you do?',
-    reviewLabel: 'Loss reaction',
+    title: l10n.stepLossReactionTitle,
+    titleItalic: l10n.stepLossReactionTitleItalic,
+    caption: l10n.stepLossReactionCaption,
+    voiceText: l10n.stepLossReactionVoice,
+    reviewLabel: l10n.stepLossReactionReview,
     options: [
-      OnboardingOption(id: 'panic', label: 'Sell everything immediately', score: 0),
-      OnboardingOption(id: 'reduce', label: 'Sell some to reduce exposure', score: 8),
-      OnboardingOption(id: 'hold', label: 'Hold and wait for recovery', score: 15),
-      OnboardingOption(id: 'buy', label: 'Buy more at the lower price', score: 20),
+      OnboardingOption(id: 'panic', label: l10n.stepLossReactionOptPanic, score: 0),
+      OnboardingOption(id: 'reduce', label: l10n.stepLossReactionOptReduce, score: 8),
+      OnboardingOption(id: 'hold', label: l10n.stepLossReactionOptHold, score: 15),
+      OnboardingOption(id: 'buy', label: l10n.stepLossReactionOptBuy, score: 20),
     ],
   ),
   OnboardingStep(
     id: 'allocation',
     type: OnboardingStepType.singleChoice,
-    title: 'How much savings',
-    titleItalic: 'are you investing?',
-    caption: 'Helps us understand your overall exposure.',
-    voiceText: 'How much savings are you investing?',
-    reviewLabel: 'Portfolio share',
+    title: l10n.stepAllocationTitle,
+    titleItalic: l10n.stepAllocationTitleItalic,
+    caption: l10n.stepAllocationCaption,
+    voiceText: l10n.stepAllocationVoice,
+    reviewLabel: l10n.stepAllocationReview,
     options: [
-      OnboardingOption(id: 'very_low', label: 'Less than 10%', score: 15),
-      OnboardingOption(id: 'low', label: '10% to 25%', score: 10),
-      OnboardingOption(id: 'medium', label: '25% to 50%', score: 5),
-      OnboardingOption(id: 'high', label: 'More than 50%', score: 0),
+      OnboardingOption(id: 'very_low', label: l10n.stepAllocationOptVeryLow, score: 15),
+      OnboardingOption(id: 'low', label: l10n.stepAllocationOptLow, score: 10),
+      OnboardingOption(id: 'medium', label: l10n.stepAllocationOptMedium, score: 5),
+      OnboardingOption(id: 'high', label: l10n.stepAllocationOptHigh, score: 0),
     ],
   ),
 
@@ -164,67 +219,67 @@ const defaultOnboardingSteps = <OnboardingStep>[
   OnboardingStep(
     id: 'fullName',
     type: OnboardingStepType.textInput,
-    title: "What's your",
-    titleItalic: 'full name?',
-    caption: 'As it appears on your official ID.',
-    voiceText: "What's your full name? Nice to meet you, by the way.",
-    placeholder: 'John Doe',
+    title: l10n.stepFullNameTitle,
+    titleItalic: l10n.stepFullNameTitleItalic,
+    caption: l10n.stepFullNameCaption,
+    voiceText: l10n.stepFullNameVoice,
+    placeholder: l10n.stepFullNamePlaceholder,
     inputKind: OnboardingInputKind.name,
-    reviewLabel: 'Full name',
+    reviewLabel: l10n.stepFullNameReview,
   ),
   OnboardingStep(
     id: 'email',
     type: OnboardingStepType.textInput,
-    title: "What's your",
-    titleItalic: 'email address?',
-    caption: "We'll send a verification code.",
-    voiceText: "What's your email address?",
-    placeholder: 'you@example.com',
+    title: l10n.stepEmailTitle,
+    titleItalic: l10n.stepEmailTitleItalic,
+    caption: l10n.stepEmailCaption,
+    voiceText: l10n.stepEmailVoice,
+    placeholder: l10n.stepEmailPlaceholder,
     inputKind: OnboardingInputKind.email,
-    reviewLabel: 'Email',
+    reviewLabel: l10n.stepEmailReview,
     sensitive: false,
   ),
   OnboardingStep(
     id: 'emailCode',
     type: OnboardingStepType.verificationCode,
-    title: 'Check your',
-    titleItalic: 'email.',
-    caption: 'Enter the 6-digit code we sent you.',
-    voiceText: "Check your email. We've sent you a code.",
-    placeholder: '000000',
-    reviewLabel: 'Email verified',
+    title: l10n.stepEmailCodeTitle,
+    titleItalic: l10n.stepEmailCodeTitleItalic,
+    caption: l10n.stepEmailCodeCaption,
+    voiceText: l10n.stepEmailCodeVoice,
+    placeholder: l10n.stepEmailCodePlaceholder,
+    reviewLabel: l10n.stepEmailCodeReview,
     sensitive: true,
   ),
   OnboardingStep(
     id: 'phone',
     type: OnboardingStepType.phoneInput,
-    title: 'Add your',
-    titleItalic: 'phone number.',
-    caption: 'Used for two-factor authentication only.',
-    voiceText: 'Enter your phone number with country and area code.',
-    placeholder: '+1 555 000 0000',
+    title: l10n.stepPhoneTitle,
+    titleItalic: l10n.stepPhoneTitleItalic,
+    caption: l10n.stepPhoneCaption,
+    voiceText: l10n.stepPhoneVoice,
+    placeholder: l10n.stepPhonePlaceholder,
     inputKind: OnboardingInputKind.phone,
-    reviewLabel: 'Phone',
+    reviewLabel: l10n.stepPhoneReview,
     sensitive: true,
   ),
   OnboardingStep(
     id: 'pin',
     type: OnboardingStepType.pinInput,
-    title: 'Create your',
-    titleItalic: 'password.',
-    caption: 'Used to authorize transactions.',
-    voiceText: "We are almost there. Let's create your password!",
-    reviewLabel: 'PIN',
+    title: l10n.stepPinTitle,
+    titleItalic: l10n.stepPinTitleItalic,
+    caption: l10n.stepPinCaption,
+    voiceText: l10n.stepPinVoice,
+    reviewLabel: l10n.stepPinReview,
     sensitive: true,
   ),
   OnboardingStep(
     id: 'confirmPin',
     type: OnboardingStepType.pinInput,
-    title: 'Confirm your',
-    titleItalic: 'password.',
-    caption: 'Enter the same password again.',
-    voiceText: "Okay! Let's confirm your password.",
-    reviewLabel: 'PIN confirmed',
+    title: l10n.stepConfirmPinTitle,
+    titleItalic: l10n.stepConfirmPinTitleItalic,
+    caption: l10n.stepConfirmPinCaption,
+    voiceText: l10n.stepConfirmPinVoice,
+    reviewLabel: l10n.stepConfirmPinReview,
     sensitive: true,
     matchesStepId: 'pin',
   ),
@@ -234,10 +289,10 @@ const defaultOnboardingSteps = <OnboardingStep>[
   OnboardingStep(
     id: 'analysing',
     type: OnboardingStepType.analysing,
-    title: 'Analyzing your',
-    titleItalic: 'investor profile.',
-    caption: 'Just a moment while we crunch the numbers.',
-    voiceText: "Almost there! We're building your investor profile.",
+    title: l10n.stepAnalysingTitle,
+    titleItalic: l10n.stepAnalysingTitleItalic,
+    caption: l10n.stepAnalysingCaption,
+    voiceText: l10n.stepAnalysingVoice,
     required: false,
   ),
 
@@ -246,10 +301,10 @@ const defaultOnboardingSteps = <OnboardingStep>[
   OnboardingStep(
     id: 'trial',
     type: OnboardingStepType.completion,
-    title: "You're all set.",
-    titleItalic: "Let's get started.",
-    caption: 'Your account is ready. Time to invest.',
-    voiceText: "You're all set. Let's get started!",
-    primaryCtaLabel: 'Start investing',
+    title: l10n.stepTrialTitle,
+    titleItalic: l10n.stepTrialTitleItalic,
+    caption: l10n.stepTrialCaption,
+    voiceText: l10n.stepTrialVoice,
+    primaryCtaLabel: l10n.stepTrialCta,
   ),
 ];

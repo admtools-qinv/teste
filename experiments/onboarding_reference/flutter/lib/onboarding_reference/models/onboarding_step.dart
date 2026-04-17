@@ -15,17 +15,20 @@ enum OnboardingInputKind {
   name,
   email,
   phone,
+  cep,
 }
 
 class OnboardingOption {
   final String id;
   final String label;
   final int score;
+  final String? assetPath;
 
   const OnboardingOption({
     required this.id,
     required this.label,
     this.score = 0,
+    this.assetPath,
   });
 }
 

@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:onboarding_reference/l10n/app_localizations_en.dart';
 import 'package:onboarding_reference/onboarding_reference.dart';
 
 class _FakeBackend implements OnboardingBackendService {
@@ -73,6 +74,8 @@ void main() {
       steps: steps,
       backend: backend,
       analytics: analytics,
+      validator: DefaultOnboardingValidator(AppLocalizationsEn()),
+      l10n: AppLocalizationsEn(),
     );
 
     final initialized = await controller.initialize();

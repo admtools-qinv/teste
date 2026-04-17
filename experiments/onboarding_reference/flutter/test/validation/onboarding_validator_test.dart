@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:onboarding_reference/l10n/app_localizations_en.dart';
 import 'package:onboarding_reference/onboarding_reference.dart';
 
 void main() {
@@ -42,7 +43,7 @@ void main() {
         ],
       );
 
-      final validator = DefaultOnboardingValidator();
+      final validator = DefaultOnboardingValidator(AppLocalizationsEn());
 
       expect(validator.validate(textStep, 'user@example.com'), isNull);
       expect(validator.validate(textStep, 'invalid'), isNotNull);

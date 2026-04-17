@@ -77,7 +77,7 @@ class _QInvTextFieldState extends State<QInvTextField> {
       hint: widget.semanticsHint,
       enabled: widget.enabled,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+        duration: QInvWeb3Tokens.transitionFast,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(QInvWeb3Tokens.radiusInput),
           boxShadow: _hasFocus

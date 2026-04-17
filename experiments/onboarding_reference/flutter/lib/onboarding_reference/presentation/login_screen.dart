@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../l10n/l10n.dart';
 import '../theme/qinvweb3_tokens.dart';
 import 'widgets/glass_widgets.dart';
 import 'widgets/qinv_button.dart';
@@ -13,9 +14,9 @@ class LoginScreen extends StatelessWidget {
   final VoidCallback? onGoogleAuth;
   final VoidCallback? onSignUp;
   final VoidCallback? onLogin;
-  final String title;
-  final List<String> accentPhrases;
-  final String subtitle;
+  final String? title;
+  final List<String>? accentPhrases;
+  final String? subtitle;
   final bool showBackground;
 
   const LoginScreen({
@@ -24,20 +25,15 @@ class LoginScreen extends StatelessWidget {
     this.onSignUp,
     this.onLogin,
     this.showBackground = true,
-    this.title = 'Your wealth,',
-    this.accentPhrases = const [
-      'always growing.',
-      'on autopilot.',
-      'working for you.',
-      'never sleeping.',
-    ],
-    this.subtitle = 'Start in minutes, grow for years.',
+    this.title,
+    this.accentPhrases,
+    this.subtitle,
   });
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
-    final hPad = size.width < 360 ? 20.0 : 24.0;
+    final hPad = QInvWeb3Tokens.responsiveHPad(size.width);
 
     final content = SafeArea(
       child: Padding(
@@ -46,9 +42,9 @@ class LoginScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const Spacer(flex: 3),
-            _buildHero(),
+            _buildHero(context),
             const Spacer(flex: 2),
-            _buildCtas(),
+            _buildCtas(context),
             const SizedBox(height: 32),
           ],
         ),
@@ -62,13 +58,23 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHero() {
+  Widget _buildHero(BuildContext context) {
+    final l10n = context.l10n;
+    final effectiveTitle = title ?? l10n.loginTitle;
+    final effectivePhrases = accentPhrases ?? [
+      l10n.loginAccent1,
+      l10n.loginAccent2,
+      l10n.loginAccent3,
+      l10n.loginAccent4,
+    ];
+    final effectiveSubtitle = subtitle ?? l10n.loginSubtitle;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         // Static title
         Text(
-          title,
+          effectiveTitle,
           textAlign: TextAlign.center,
           style: const TextStyle(
             fontFamily: QInvWeb3Tokens.fontSans,
@@ -83,13 +89,13 @@ class LoginScreen extends StatelessWidget {
         const SizedBox(height: 2),
 
         // Animated typewriter accent
-        _TypewriterAccent(phrases: accentPhrases),
+        _TypewriterAccent(phrases: effectivePhrases),
 
         const SizedBox(height: 18),
 
         // Subtitle
         Text(
-          subtitle,
+          effectiveSubtitle,
           textAlign: TextAlign.center,
           style: const TextStyle(
             fontFamily: QInvWeb3Tokens.fontSans,
@@ -104,7 +110,7 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCtas() {
+  Widget _buildCtas(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -113,7 +119,7 @@ class LoginScreen extends StatelessWidget {
         const _OrDivider(),
         const SizedBox(height: 16),
         QInvButton(
-          label: 'Sign up',
+          label: context.l10n.signUp,
           onPressed: onSignUp,
         ),
         const SizedBox(height: 28),
@@ -214,7 +220,7 @@ class _TypewriterAccentState extends State<_TypewriterAccent> {
         // Blinking cursor
         AnimatedOpacity(
           opacity: _cursorVisible ? 1.0 : 0.0,
-          duration: const Duration(milliseconds: 80),
+          duration: QInvWeb3Tokens.delayHapticDouble,
           child: Container(
             width: 2.5,
             height: 40,
@@ -225,7 +231,7 @@ class _TypewriterAccentState extends State<_TypewriterAccent> {
               boxShadow: [
                 BoxShadow(
                   color: QInvWeb3Tokens.primaryLight.withValues(alpha: 0.60),
-                  blurRadius: 8,
+                  blurRadius: QInvWeb3Tokens.blurGlow,
                 ),
               ],
             ),
@@ -250,7 +256,7 @@ class _GoogleButton extends StatelessWidget {
 
     return Semantics(
       button: true,
-      label: 'Continue with Google',
+      label: context.l10n.continueWithGoogle,
       enabled: enabled,
       child: AnimatedOpacity(
         duration: QInvWeb3Tokens.transitionAll,
@@ -289,9 +295,9 @@ class _GoogleButton extends StatelessWidget {
                         height: 20,
                       ),
                       const SizedBox(width: 10),
-                      const Text(
-                        'Continue with Google',
-                        style: TextStyle(
+                      Text(
+                        context.l10n.continueWithGoogle,
+                        style: const TextStyle(
                           fontFamily: QInvWeb3Tokens.fontUI,
                           fontSize: QInvWeb3Tokens.fontSizeLabel,
                           fontWeight: FontWeight.w600,
@@ -326,11 +332,11 @@ class _OrDivider extends StatelessWidget {
             color: Colors.white.withValues(alpha: 0.10),
           ),
         ),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Text(
-            'or',
-            style: TextStyle(
+            context.l10n.orDivider,
+            style: const TextStyle(
               fontFamily: QInvWeb3Tokens.fontUI,
               fontSize: 13,
               fontWeight: FontWeight.w400,
@@ -361,7 +367,7 @@ class _LoginLink extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       button: true,
-      label: 'Already have an account? Sign in',
+      label: '${context.l10n.alreadyHaveAccount}${context.l10n.signIn}',
       child: GestureDetector(
         onTap: onLogin != null
             ? () {
@@ -369,11 +375,11 @@ class _LoginLink extends StatelessWidget {
                 onLogin!();
               }
             : null,
-        child: const Padding(
-          padding: EdgeInsets.symmetric(vertical: 8),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
           child: Text.rich(
             TextSpan(
-              style: TextStyle(
+              style: const TextStyle(
                 fontFamily: QInvWeb3Tokens.fontUI,
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
@@ -381,10 +387,10 @@ class _LoginLink extends StatelessWidget {
                 height: 1.5,
               ),
               children: [
-                TextSpan(text: 'Already have an account? '),
+                TextSpan(text: context.l10n.alreadyHaveAccount),
                 TextSpan(
-                  text: 'Sign in',
-                  style: TextStyle(
+                  text: context.l10n.signIn,
+                  style: const TextStyle(
                     color: QInvWeb3Tokens.primaryLight,
                     fontWeight: FontWeight.w600,
                   ),

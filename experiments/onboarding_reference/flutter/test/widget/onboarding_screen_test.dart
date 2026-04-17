@@ -51,21 +51,31 @@ Future<void> _pumpAnimations(WidgetTester tester) async {
 
 void main() {
   testWidgets('shows first step content', (tester) async {
+    // Use filtered steps (no showcase) so the intro/welcome step is first.
+    // Steps need l10n, so we build them inside a Builder that has context.
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         theme: QInvWeb3Theme.dark(),
-        home: OnboardingScreen(
-          steps: defaultOnboardingSteps,
-          voiceService: NullVoiceService(),
-          backend: _TestBackend(),
-          analytics: _TestAnalytics(),
+        home: Builder(
+          builder: (context) {
+            final l10n = AppLocalizations.of(context)!;
+            return OnboardingScreen(
+              steps: onboardingStepsFor(l10n, AuthMethod.emailPassword, country: IpGeoService.detectCountry()),
+              voiceService: NullVoiceService(),
+              backend: _TestBackend(),
+              analytics: _TestAnalytics(),
+            );
+          },
         ),
       ),
     );
 
     await _pumpAnimations(tester);
 
-    expect(find.text("Let's get you"), findsOneWidget);
+    // The welcome step concatenates title + titleItalic ("Let's get you\nstarted.")
+    expect(find.textContaining("Let's get you"), findsOneWidget);
     expect(find.text('Ready in just a few steps.'), findsOneWidget);
     expect(find.text('Get started'), findsOneWidget);
     expect(find.byType(QInvButton), findsWidgets);
@@ -95,6 +105,8 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         theme: QInvWeb3Theme.dark(),
         home: OnboardingScreen(
           steps: steps,
@@ -147,6 +159,8 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         theme: QInvWeb3Theme.dark(),
         home: OnboardingScreen(
           steps: steps,
@@ -215,6 +229,8 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         theme: QInvWeb3Theme.dark(),
         home: OnboardingScreen(
           steps: steps,

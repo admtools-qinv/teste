@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class QInvWeb3Tokens {
-  static const background = Color(0xFF1F1F1F);
+  static const background = Color(0xFF121314);
   static const foreground = Color(0xFFFFFFFF);
 
   static const primary = Color(0xFF7D39EB);
@@ -44,6 +44,32 @@ class QInvWeb3Tokens {
 
   static const transitionAll = Duration(milliseconds: 300);
   static const transitionStep = Duration(milliseconds: 450);
+  static const transitionFast = Duration(milliseconds: 200);
+  static const transitionMedium = Duration(milliseconds: 400);
+  static const transitionSlow = Duration(milliseconds: 500);
+  static const transitionSnap = Duration(milliseconds: 380);
+  static const transitionModal = Duration(milliseconds: 350);
+  static const delayInputFocus = Duration(milliseconds: 500);
+  static const delayHapticDouble = Duration(milliseconds: 80);
+
+  // Layout
+  static const double breakpointCompact = 360.0;
+  static const double paddingPageCompact = 20.0;
+  static const double paddingPage = 24.0;
+  static const double phoneWidthRatio = 0.72;
+
+  // Slider
+  static const double sliderThreshold = 0.88;
+
+  // Blur
+  static const double blurGlow = 8.0;
+  static const double blurGlass = 20.0;
+  static const double blurCard = 28.0;
+  static const double blurModal = 24.0;
+
+  /// Returns the horizontal page padding based on screen width.
+  static double responsiveHPad(double screenWidth) =>
+      screenWidth < breakpointCompact ? paddingPageCompact : paddingPage;
 
   // Font families (package-prefixed so they resolve from the library bundle)
   static const String fontSerif = 'packages/onboarding_reference/PlayfairDisplay';

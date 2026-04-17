@@ -79,6 +79,8 @@ Widget _buildScreen({
   VoidCallback? onFallback,
 }) {
   return MaterialApp(
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
     theme: QInvWeb3Theme.dark(),
     home: BiometricLoginScreen(
       email: email,
@@ -113,11 +115,11 @@ void main() {
       expect(find.text('fabricio@qinv.com'), findsOneWidget);
     });
 
-    testWidgets('shows "Usar senha" link', (tester) async {
+    testWidgets('shows "Use password instead" link', (tester) async {
       final svc = _FakeBiometric();
       await tester.pumpWidget(_buildScreen(biometricService: svc));
       await tester.pump(); // one frame — auth hasn't settled yet
-      expect(find.text('Usar senha em vez disso'), findsOneWidget);
+      expect(find.text('Use password instead'), findsOneWidget);
     });
   });
 
@@ -167,7 +169,7 @@ void main() {
       await tester.pumpWidget(_buildScreen(biometricService: svc));
       await _settle(tester);
 
-      expect(find.textContaining('cancelada'), findsOneWidget);
+      expect(find.textContaining('cancelled'), findsOneWidget);
     });
 
     testWidgets('does NOT call onSuccess', (tester) async {
@@ -186,12 +188,12 @@ void main() {
   // ── Unavailable ───────────────────────────────────────────────
 
   group('biometric not available', () {
-    testWidgets('shows "não disponível" message', (tester) async {
+    testWidgets('shows "not available" message', (tester) async {
       final svc = _FakeBiometric(availableResult: false);
       await tester.pumpWidget(_buildScreen(biometricService: svc));
       await _settle(tester);
 
-      expect(find.textContaining('não disponível'), findsOneWidget);
+      expect(find.textContaining('not available'), findsOneWidget);
     });
 
     testWidgets('does NOT call onSuccess', (tester) async {
@@ -222,22 +224,22 @@ void main() {
     }
 
     testWidgets('notAvailable', (tester) async =>
-        _assertMessage(tester, BiometricFailureReason.notAvailable, 'não disponível'));
+        _assertMessage(tester, BiometricFailureReason.notAvailable, 'not available'));
 
     testWidgets('notEnrolled', (tester) async =>
-        _assertMessage(tester, BiometricFailureReason.notEnrolled, 'cadastrada'));
+        _assertMessage(tester, BiometricFailureReason.notEnrolled, 'enrolled'));
 
     testWidgets('lockedOut', (tester) async =>
-        _assertMessage(tester, BiometricFailureReason.lockedOut, 'tentativas'));
+        _assertMessage(tester, BiometricFailureReason.lockedOut, 'attempts'));
 
     testWidgets('permanentlyLockedOut', (tester) async =>
-        _assertMessage(tester, BiometricFailureReason.permanentlyLockedOut, 'bloqueada'));
+        _assertMessage(tester, BiometricFailureReason.permanentlyLockedOut, 'locked'));
 
     testWidgets('passcodeNotSet', (tester) async =>
-        _assertMessage(tester, BiometricFailureReason.passcodeNotSet, 'PIN ou senha'));
+        _assertMessage(tester, BiometricFailureReason.passcodeNotSet, 'PIN or passcode'));
 
     testWidgets('unknown', (tester) async =>
-        _assertMessage(tester, BiometricFailureReason.unknown, 'Erro na autenticação'));
+        _assertMessage(tester, BiometricFailureReason.unknown, 'Authentication error'));
   });
 
   // ── Retry ─────────────────────────────────────────────────────
@@ -262,7 +264,7 @@ void main() {
       await _settle(tester);
 
       // Error is visible.
-      expect(find.textContaining('Erro na autenticação'), findsOneWidget);
+      expect(find.textContaining('Authentication error'), findsOneWidget);
 
       // Tap fingerprint icon to retry.
       await tester.tap(find.byIcon(Icons.fingerprint_rounded));
@@ -279,14 +281,14 @@ void main() {
       await _settle(tester);
 
       // First cancellation message visible.
-      expect(find.textContaining('cancelada'), findsOneWidget);
+      expect(find.textContaining('cancelled'), findsOneWidget);
 
       // Tap to retry — second authenticate() call is now blocked on the Completer.
       await tester.tap(find.byIcon(Icons.fingerprint_rounded));
       await tester.pump(); // advances to _busy=true, _errorMessage=null
 
       // Error must be gone while the retry is in-flight.
-      expect(find.textContaining('cancelada'), findsNothing);
+      expect(find.textContaining('cancelled'), findsNothing);
 
       // Resolve the paused call so the widget can finish and the test tears down cleanly.
       svc.resume(false);
@@ -297,7 +299,7 @@ void main() {
   // ── Fallback to password ──────────────────────────────────────
 
   group('fallback to password', () {
-    testWidgets('"Usar senha" link calls onFallbackToPassword', (tester) async {
+    testWidgets('"Use password instead" link calls onFallbackToPassword', (tester) async {
       bool called = false;
       final svc = _FakeBiometric();
 
@@ -306,13 +308,13 @@ void main() {
       );
       await tester.pump(); // render only — don't wait for auth
 
-      await tester.tap(find.text('Usar senha em vez disso'));
+      await tester.tap(find.text('Use password instead'));
       await tester.pump();
 
       expect(called, isTrue);
     });
 
-    testWidgets('"Usar senha" does NOT call onSuccess', (tester) async {
+    testWidgets('"Use password instead" does NOT call onSuccess', (tester) async {
       bool successCalled = false;
       // Make auth cancel so we can test the fallback independently.
       final svc = _FakeBiometric(authenticateResult: false);
@@ -325,7 +327,7 @@ void main() {
       );
       await tester.pump();
 
-      await tester.tap(find.text('Usar senha em vez disso'));
+      await tester.tap(find.text('Use password instead'));
       await tester.pump();
 
       expect(successCalled, isFalse);

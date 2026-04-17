@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../../l10n/l10n.dart';
+import '../../theme/qinvweb3_tokens.dart';
+
 /// A "slide to update" slider widget inspired by OKX's update prompt.
 ///
 /// The user drags a circular thumb from left to right along a pill-shaped
@@ -15,12 +18,12 @@ import 'package:flutter/services.dart';
 /// ```
 class SlideToUpdateSlider extends StatefulWidget {
   final VoidCallback onCompleted;
-  final String label;
+  final String? label;
 
   const SlideToUpdateSlider({
     super.key,
     required this.onCompleted,
-    this.label = 'Slide to update',
+    this.label,
   });
 
   @override
@@ -48,7 +51,7 @@ class _SlideToUpdateSliderState extends State<SlideToUpdateSlider>
     super.initState();
     _snapController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 380),
+      duration: QInvWeb3Tokens.transitionSnap,
     );
   }
 
@@ -77,7 +80,7 @@ class _SlideToUpdateSliderState extends State<SlideToUpdateSlider>
       _dragX = (_dragX + d.delta.dx).clamp(0.0, _maxDragX(trackWidth));
     });
 
-    if (_progress(trackWidth) >= 0.88) {
+    if (_progress(trackWidth) >= QInvWeb3Tokens.sliderThreshold) {
       _complete(trackWidth);
     }
   }
@@ -92,7 +95,7 @@ class _SlideToUpdateSliderState extends State<SlideToUpdateSlider>
     _completed = true;
     HapticFeedback.mediumImpact();
     Future.delayed(
-      const Duration(milliseconds: 80),
+      QInvWeb3Tokens.delayHapticDouble,
       HapticFeedback.heavyImpact,
     );
 
@@ -182,7 +185,7 @@ class _SlideToUpdateSliderState extends State<SlideToUpdateSlider>
                     child: Opacity(
                       opacity: labelOpacity,
                       child: Text(
-                        widget.label,
+                        widget.label ?? context.l10n.slideToUpdate,
                         style: const TextStyle(
                           fontFamily: 'packages/onboarding_reference/PlusJakartaSans',
                           fontSize: 15,

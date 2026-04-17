@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 
+import '../../l10n/l10n.dart';
 import '../models/onboarding_review_item.dart';
 import '../models/onboarding_session.dart';
 import '../models/onboarding_step.dart';
@@ -15,6 +16,7 @@ class OnboardingFlowController extends ChangeNotifier {
   final OnboardingBackendService backend;
   final OnboardingAnalyticsService analytics;
   final OnboardingValidator validator;
+  final AppLocalizations l10n;
 
   int index = 0;
   bool isBusy = false;
@@ -32,9 +34,9 @@ class OnboardingFlowController extends ChangeNotifier {
     required this.steps,
     required this.backend,
     required this.analytics,
-    OnboardingValidator? validator,
-  })  : assert(steps.isNotEmpty, 'Onboarding steps must not be empty.'),
-        validator = validator ?? DefaultOnboardingValidator();
+    required this.validator,
+    required this.l10n,
+  })  : assert(steps.isNotEmpty, 'Onboarding steps must not be empty.');
 
   OnboardingStep get current => steps[index];
   bool get hasNext => index < steps.length - 1;
@@ -63,7 +65,7 @@ class OnboardingFlowController extends ChangeNotifier {
 
       final value = step.sensitive
           ? _redactValue()
-          : _reviewValueForStep(step, rawValue.toString());
+          : _reviewValueForStep(step, rawValue);
 
       items.add(
         OnboardingReviewItem(
@@ -77,16 +79,30 @@ class OnboardingFlowController extends ChangeNotifier {
     return items;
   }
 
-  String _reviewValueForStep(OnboardingStep step, String rawValue) {
-    if (step.type != OnboardingStepType.singleChoice) return rawValue;
+  String _reviewValueForStep(OnboardingStep step, Object rawValue) {
+    if (step.id == 'cep' && rawValue is Map) {
+      final cep = rawValue['cep'] ?? '';
+      final bairro = rawValue['bairro'] ?? '';
+      final localidade = rawValue['localidade'] ?? '';
+      final uf = rawValue['uf'] ?? '';
+      final parts = [
+        if (cep.toString().isNotEmpty) cep,
+        if (bairro.toString().isNotEmpty) bairro,
+        if (localidade.toString().isNotEmpty) '$localidade - $uf',
+      ];
+      return parts.join(', ');
+    }
+
+    final value = rawValue.toString();
+    if (step.type != OnboardingStepType.singleChoice) return value;
 
     for (final option in step.options) {
-      if (option.id == rawValue) {
+      if (option.id == value) {
         return option.label;
       }
     }
 
-    return rawValue;
+    return value;
   }
 
   String _redactValue() => '••••';
@@ -132,7 +148,7 @@ class OnboardingFlowController extends ChangeNotifier {
       unawaited(_trackEventSafe('onboarding_started'));
       return true;
     } catch (_) {
-      serviceError = 'Unable to initialize onboarding.';
+      serviceError = l10n.flowInitError;
       return false;
     } finally {
       isBusy = false;
@@ -160,7 +176,7 @@ class OnboardingFlowController extends ChangeNotifier {
       serviceError = null;
       return true;
     } catch (_) {
-      serviceError = 'Unable to save answer.';
+      serviceError = l10n.flowSaveError;
       return false;
     } finally {
       _notify();
@@ -203,7 +219,11 @@ class OnboardingFlowController extends ChangeNotifier {
           step.type == OnboardingStepType.phoneInput ||
           step.type == OnboardingStepType.verificationCode ||
           step.type == OnboardingStepType.pinInput) {
-        final candidate = inputValue?.toString().trim();
+        // CEP step may pass a Map with address data; validate using the CEP string.
+        final isCepMap = inputValue is Map;
+        final candidate = isCepMap
+            ? (inputValue['cep']?.toString().trim() ?? '')
+            : inputValue?.toString().trim();
         if (candidate == null || candidate.isEmpty) {
           if (step.required) {
             if (!await validateCurrentStep(candidate)) return false;
@@ -216,7 +236,7 @@ class OnboardingFlowController extends ChangeNotifier {
           validationError = null;
         } else {
           if (!await validateCurrentStep(candidate)) return false;
-          if (!await _saveAnswer(step.id, candidate)) return false;
+          if (!await _saveAnswer(step.id, isCepMap ? inputValue : candidate)) return false;
         }
       } else {
         if (!await validateCurrentStep()) return false;
@@ -258,7 +278,7 @@ class OnboardingFlowController extends ChangeNotifier {
       validationError = null;
       return true;
     } catch (_) {
-      serviceError = 'Unable to continue onboarding.';
+      serviceError = l10n.flowContinueError;
       return false;
     } finally {
       isBusy = false;

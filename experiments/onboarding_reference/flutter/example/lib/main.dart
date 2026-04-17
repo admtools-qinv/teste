@@ -24,6 +24,9 @@ class ExampleApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: QInvWeb3Theme.dark(),
+      locale: const Locale('pt'),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       home: _AppEntry(store: store),
     );
   }
@@ -66,7 +69,8 @@ class _AppEntry extends StatelessWidget {
       );
     }
 
-    return _LandingWithTransition(
+    return _ShowcaseThenLanding(
+      store: store,
       onGoogleAuth: () => _pushGoogleOnboarding(context),
       onLogin: () => _showSignIn(context),
       onSignUpCompletion: (answers) async {
@@ -95,7 +99,7 @@ class _AppEntry extends StatelessWidget {
     } catch (e) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao conectar com Google: $e')),
+        SnackBar(content: Text('Error connecting to Google: $e')),
       );
       return;
     }
@@ -111,10 +115,11 @@ class _AppEntry extends StatelessWidget {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (ctx) => OnboardingScreen(
-          steps: onboardingStepsFor(AuthMethod.google),
-          voiceService: AssetVoiceService(),
+          steps: onboardingStepsFor(AppLocalizations.of(ctx)!, AuthMethod.google, country: IpGeoService.detectCountry()),
+          voiceService: AssetVoiceService(locale: Localizations.localeOf(ctx).languageCode),
           backend: _ExampleBackend(),
           analytics: _ExampleAnalytics(),
+          viaCepService: ViaCepService(),
           onExit: () {
             googleSignIn.signOut(); // cleanup on cancel
             Navigator.of(ctx).pop();
@@ -122,7 +127,7 @@ class _AppEntry extends StatelessWidget {
           onCompletion: (answers) async {
             final name = answers['fullName']?.toString() ?? googleName;
             await store.saveEmail(googleEmail);
-            await store.saveDisplayName(name.isNotEmpty ? name : 'Usuário');
+            await store.saveDisplayName(name.isNotEmpty ? name : 'User');
             await store.saveToken('google-token-example');
             await store.saveAuthMethod('google');
             if (!ctx.mounted) return;
@@ -195,7 +200,7 @@ class _AppEntry extends StatelessWidget {
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute<void>(
         builder: (routeContext) => _FakeHomeScreen(
-          displayName: store.displayName ?? 'Usuário',
+          displayName: store.displayName ?? 'User',
           onLogout: () async {
             await store.clearAll();
             if (!routeContext.mounted) return;
@@ -209,6 +214,54 @@ class _AppEntry extends StatelessWidget {
         ),
       ),
       (_) => false,
+    );
+  }
+}
+
+// ── Showcase tour → Landing ─────────────────────────────────────
+//
+// Shows the showcase tour (overview) on first launch, then transitions
+// to the login/landing screen. The tour is presented as an OnboardingScreen
+// with only the showcase steps, using the ripple grid background.
+
+class _ShowcaseThenLanding extends StatefulWidget {
+  final LocalCredentialStore store;
+  final VoidCallback onGoogleAuth;
+  final VoidCallback onLogin;
+  final Future<void> Function(Map<String, dynamic> answers)? onSignUpCompletion;
+
+  const _ShowcaseThenLanding({
+    required this.store,
+    required this.onGoogleAuth,
+    required this.onLogin,
+    this.onSignUpCompletion,
+  });
+
+  @override
+  State<_ShowcaseThenLanding> createState() => _ShowcaseThenLandingState();
+}
+
+class _ShowcaseThenLandingState extends State<_ShowcaseThenLanding> {
+  bool _showcaseDone = false;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_showcaseDone) {
+      return OnboardingScreen(
+        steps: showcaseSteps(AppLocalizations.of(context)!),
+        voiceService: AssetVoiceService(locale: Localizations.localeOf(context).languageCode),
+        backend: _ExampleBackend(),
+        analytics: _ExampleAnalytics(),
+        showBackground: true,
+        onExit: () => setState(() => _showcaseDone = true),
+        onCompletion: (_) async => setState(() => _showcaseDone = true),
+      );
+    }
+
+    return _LandingWithTransition(
+      onGoogleAuth: widget.onGoogleAuth,
+      onLogin: widget.onLogin,
+      onSignUpCompletion: widget.onSignUpCompletion,
     );
   }
 }
@@ -271,10 +324,11 @@ class _LandingWithTransitionState extends State<_LandingWithTransition>
             reverseTransitionDuration: const Duration(milliseconds: 500),
             opaque: false,
             pageBuilder: (ctx, _, __) => OnboardingScreen(
-              steps: defaultOnboardingSteps,
-              voiceService: AssetVoiceService(),
+              steps: onboardingStepsFor(AppLocalizations.of(ctx)!, AuthMethod.emailPassword, country: IpGeoService.detectCountry()),
+              voiceService: AssetVoiceService(locale: Localizations.localeOf(ctx).languageCode),
               backend: _ExampleBackend(),
               analytics: _ExampleAnalytics(),
+              viaCepService: ViaCepService(),
               onExit: () => Navigator.of(ctx).pop(),
               onCompletion: widget.onSignUpCompletion != null
                   ? (answers) async {
@@ -458,7 +512,7 @@ class _FakeHomeScreenState extends State<_FakeHomeScreen> {
       context: context,
       onUpdate: () {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Redirecionando para a loja...')),
+          const SnackBar(content: Text('Redirecting to store...')),
         );
       },
     );
@@ -476,7 +530,7 @@ class _FakeHomeScreenState extends State<_FakeHomeScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Olá, ${widget.displayName}',
+                  'Hello, ${widget.displayName}',
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontFamily: QInvWeb3Tokens.fontSerif,
@@ -489,7 +543,7 @@ class _FakeHomeScreenState extends State<_FakeHomeScreen> {
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  'Você está logado.',
+                  'You are signed in.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontFamily: QInvWeb3Tokens.fontUI,
@@ -499,7 +553,7 @@ class _FakeHomeScreenState extends State<_FakeHomeScreen> {
                 ),
                 const SizedBox(height: 40),
                 QInvButton(
-                  label: 'Sair',
+                  label: 'Sign out',
                   onPressed: () {
                     HapticFeedback.mediumImpact();
                     widget.onLogout();
@@ -524,7 +578,7 @@ class _ExampleAuthService implements AuthService {
   }) async {
     await Future<void>.delayed(const Duration(milliseconds: 800));
     if (password == 'wrong') {
-      throw const AuthException('E-mail ou senha incorretos.');
+      throw const AuthException('Incorrect email or password.');
     }
     return const AuthResult(token: 'noop-token-example');
   }

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
+import '../../../l10n/l10n.dart';
 import '../../theme/qinvweb3_tokens.dart';
 import 'slide_to_update_slider.dart';
 
@@ -17,19 +18,20 @@ import 'slide_to_update_slider.dart';
 /// ```
 Future<void> showUpdateModal({
   required BuildContext context,
-  String title = "It's time for an upgrade",
-  String description =
-      "Your QINV app just got better. We've made some improvements "
-      'and resolved some issues for a smoother experience.',
+  String? title,
+  String? description,
   VoidCallback? onUpdate,
   VoidCallback? onDismiss,
 }) {
+  final l10n = AppLocalizations.of(context)!;
+  final effectiveTitle = title ?? l10n.updateTitle;
+  final effectiveDescription = description ?? l10n.updateDescription;
   return showGeneralDialog<void>(
     context: context,
     barrierDismissible: true,
-    barrierLabel: 'Dismiss update',
+    barrierLabel: l10n.updateDismissLabel,
     barrierColor: Colors.black.withValues(alpha: 0.72),
-    transitionDuration: const Duration(milliseconds: 350),
+    transitionDuration: QInvWeb3Tokens.transitionModal,
     transitionBuilder: (context, animation, _, child) {
       final curved = animation.drive(CurveTween(curve: Curves.easeOutCubic));
       return FadeTransition(
@@ -41,8 +43,8 @@ Future<void> showUpdateModal({
       );
     },
     pageBuilder: (context, _, __) => UpdateModal(
-      title: title,
-      description: description,
+      title: effectiveTitle,
+      description: effectiveDescription,
       onUpdate: onUpdate,
       onDismiss: onDismiss,
     ),
@@ -72,7 +74,7 @@ class UpdateModal extends StatelessWidget {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(24),
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+            filter: ImageFilter.blur(sigmaX: QInvWeb3Tokens.blurModal, sigmaY: QInvWeb3Tokens.blurModal),
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.12),

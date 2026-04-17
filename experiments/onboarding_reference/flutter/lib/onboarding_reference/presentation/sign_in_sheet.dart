@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../l10n/l10n.dart';
 import '../services/auth/auth_service.dart';
 import '../theme/qinvweb3_tokens.dart';
 import 'widgets/glass_input_field.dart';
@@ -112,7 +113,7 @@ class _SignInSheetState extends State<SignInSheet> {
       HapticFeedback.vibrate();
       setState(() {
         _busy = false;
-        _error = 'Erro de conexão. Tente novamente.';
+        _error = context.l10n.connectionError;
         _pinKey = UniqueKey();
       });
     }
@@ -225,10 +226,10 @@ class _EmailStepState extends State<_EmailStep> {
 
           const SizedBox(height: 28),
 
-          const Text(
-            'Entrar na sua conta',
+          Text(
+            context.l10n.signInTitle,
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontFamily: QInvWeb3Tokens.fontUI,
               fontWeight: FontWeight.w400,
               fontSize: 22,
@@ -242,8 +243,8 @@ class _EmailStepState extends State<_EmailStep> {
           GlassInputField(
             controller: _ctrl,
             focusNode: _focus,
-            label: 'E-mail',
-            hint: 'seu@email.com',
+            label: context.l10n.emailLabel,
+            hint: context.l10n.emailHint,
             keyboardType: TextInputType.emailAddress,
             autocorrect: false,
             onSubmitted: (_) => _submit(),
@@ -253,7 +254,7 @@ class _EmailStepState extends State<_EmailStep> {
           const SizedBox(height: 20),
 
           QInvButton(
-            label: 'Continuar',
+            label: context.l10n.ctaContinue,
             onPressed: _canContinue ? _submit : null,
           ),
 
@@ -317,10 +318,10 @@ class _PinStep extends StatelessWidget {
 
           const SizedBox(height: 20),
 
-          const Text(
-            'Insira sua senha',
+          Text(
+            context.l10n.returnEnterPassword,
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontFamily: QInvWeb3Tokens.fontUI,
               fontWeight: FontWeight.w400,
               fontSize: 22,
@@ -406,12 +407,12 @@ class _PinStep extends StatelessWidget {
                 HapticFeedback.lightImpact();
                 onForgotPassword!();
               },
-              child: const Padding(
-                padding: EdgeInsets.symmetric(vertical: 6),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6),
                 child: Text(
-                  'Esqueci minha senha',
+                  context.l10n.forgotPassword,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontFamily: QInvWeb3Tokens.fontUI,
                     fontSize: QInvWeb3Tokens.fontSizeSubtitle,
                     fontWeight: FontWeight.w400,

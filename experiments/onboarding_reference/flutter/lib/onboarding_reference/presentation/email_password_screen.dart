@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../l10n/l10n.dart';
 import '../services/auth/auth_service.dart';
 import '../theme/qinvweb3_tokens.dart';
 import 'widgets/glass_input_field.dart';
@@ -100,7 +101,7 @@ class _EmailPasswordScreenState extends State<EmailPasswordScreen> {
     } catch (_) {
       if (!mounted) return;
       HapticFeedback.vibrate();
-      setState(() => _errorMessage = 'Erro de conexão. Tente novamente.');
+      setState(() => _errorMessage = context.l10n.connectionError);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -109,7 +110,7 @@ class _EmailPasswordScreenState extends State<EmailPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
-    final hPad = size.width < 360 ? 20.0 : 24.0;
+    final hPad = QInvWeb3Tokens.responsiveHPad(size.width);
 
     return Scaffold(
       backgroundColor: QInvWeb3Tokens.background,
@@ -128,7 +129,7 @@ class _EmailPasswordScreenState extends State<EmailPasswordScreen> {
                 _buildForm(),
                 const Spacer(flex: 3),
                 QInvButton(
-                  label: 'Entrar',
+                  label: context.l10n.signIn,
                   busy: _busy,
                   onPressed: _canSubmit ? _submit : null,
                 ),
@@ -142,13 +143,13 @@ class _EmailPasswordScreenState extends State<EmailPasswordScreen> {
   }
 
   Widget _buildHeader() {
-    return const Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          'Bem-vindo de volta',
+          context.l10n.welcomeBack,
           textAlign: TextAlign.center,
-          style: TextStyle(
+          style: const TextStyle(
             fontFamily: QInvWeb3Tokens.fontSans,
             fontSize: QInvWeb3Tokens.fontSizeHeadlineL,
             fontWeight: FontWeight.w500,
@@ -157,11 +158,11 @@ class _EmailPasswordScreenState extends State<EmailPasswordScreen> {
             letterSpacing: -0.2,
           ),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         Text(
-          'Entre com seu e-mail e senha',
+          context.l10n.welcomeBackSubtitle,
           textAlign: TextAlign.center,
-          style: TextStyle(
+          style: const TextStyle(
             fontFamily: QInvWeb3Tokens.fontSans,
             fontSize: QInvWeb3Tokens.fontSizeBody,
             fontWeight: FontWeight.w400,
@@ -180,8 +181,8 @@ class _EmailPasswordScreenState extends State<EmailPasswordScreen> {
         GlassInputField(
           controller: _emailCtrl,
           focusNode: _emailFocus,
-          label: 'E-mail',
-          hint: 'seu@email.com',
+          label: context.l10n.emailLabel,
+          hint: context.l10n.emailHint,
           keyboardType: TextInputType.emailAddress,
           textInputAction: TextInputAction.next,
           enabled: !_busy,
@@ -192,7 +193,7 @@ class _EmailPasswordScreenState extends State<EmailPasswordScreen> {
         GlassInputField(
           controller: _passwordCtrl,
           focusNode: _passwordFocus,
-          label: 'Senha',
+          label: context.l10n.passwordLabel,
           hint: '••••••••',
           obscureText: _obscurePassword,
           textInputAction: TextInputAction.done,
@@ -235,7 +236,7 @@ class _BackButton extends StatelessWidget {
       alignment: Alignment.centerLeft,
       child: Semantics(
         button: true,
-        label: 'Voltar',
+        label: context.l10n.tooltipBack,
         child: GestureDetector(
           onTap: () {
             HapticFeedback.lightImpact();

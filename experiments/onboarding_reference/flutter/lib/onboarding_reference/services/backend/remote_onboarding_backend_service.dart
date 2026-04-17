@@ -10,7 +10,7 @@ import 'onboarding_backend_service.dart';
 /// ```dart
 /// // Wiring example in your app:
 /// OnboardingScreen(
-///   steps: defaultOnboardingSteps,
+///   steps: buildOnboardingSteps(l10n),
 ///   backend: RemoteOnboardingBackendService(
 ///     baseUrl: 'https://api.yourapp.com/v1',
 ///     headers: {'Authorization': 'Bearer $token'},

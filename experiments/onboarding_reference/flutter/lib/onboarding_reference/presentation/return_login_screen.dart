@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../l10n/l10n.dart';
 import '../services/auth/biometric_auth_service.dart';
 import '../theme/qinvweb3_tokens.dart';
 import 'widgets/glass_input_field.dart';
@@ -78,7 +79,7 @@ class _ReturnLoginScreenState extends State<ReturnLoginScreen> {
       }
 
       final ok = await widget.biometricService!.authenticate(
-        localizedReason: 'Use sua biometria para entrar na Qinv',
+        localizedReason: context.l10n.biometricReason,
       );
 
       if (!mounted) return;
@@ -234,10 +235,10 @@ class _BiometricWaitView extends StatelessWidget {
             // Texto de estado
             Text(
               busy
-                  ? 'Verificando...'
+                  ? context.l10n.biometricVerifying
                   : failed
-                      ? 'Não foi possível verificar'
-                      : 'Toque para tentar novamente',
+                      ? context.l10n.returnCouldNotVerify
+                      : context.l10n.returnTapToRetry,
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontFamily: QInvWeb3Tokens.fontUI,
@@ -256,7 +257,7 @@ class _BiometricWaitView extends StatelessWidget {
                 opacity: failed ? 1.0 : 0.0,
                 child: IgnorePointer(
                   ignoring: !failed,
-                  child: _TextLink(label: 'Usar senha', onTap: onUsePin!),
+                  child: _TextLink(label: context.l10n.returnUsePassword, onTap: onUsePin!),
                 ),
               ),
 
@@ -264,7 +265,7 @@ class _BiometricWaitView extends StatelessWidget {
 
             if (onSwitchAccount != null)
               _TextLink(
-                label: 'Não é você?',
+                label: context.l10n.returnNotYou,
                 onTap: onSwitchAccount!,
                 muted: true,
               ),
@@ -315,7 +316,7 @@ class _BottomPanel extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                'Olá, $displayName',
+                context.l10n.returnGreeting(displayName),
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontFamily: QInvWeb3Tokens.fontSerif,
@@ -343,7 +344,7 @@ class _BottomPanel extends StatelessWidget {
               const SizedBox(height: 28),
 
               QInvButton(
-                label: 'Acessar conta',
+                label: context.l10n.returnAccessAccount,
                 onPressed: onAccessTap,
               ),
 
@@ -351,7 +352,7 @@ class _BottomPanel extends StatelessWidget {
 
               if (onSwitchAccount != null)
                 _TextLink(
-                  label: 'Não é você?',
+                  label: context.l10n.returnNotYou,
                   onTap: onSwitchAccount!,
                   muted: true,
                 ),
@@ -405,7 +406,7 @@ class _PinSheetState extends State<_PinSheet> {
         HapticFeedback.vibrate();
         setState(() {
           _busy = false;
-          _error = 'Senha incorreta. Tente novamente.';
+          _error = context.l10n.returnIncorrectPassword;
           _pinKey = UniqueKey(); // reseta os dots
         });
       }
@@ -414,7 +415,7 @@ class _PinSheetState extends State<_PinSheet> {
       HapticFeedback.vibrate();
       setState(() {
         _busy = false;
-        _error = 'Erro de conexão. Tente novamente.';
+        _error = context.l10n.connectionError;
         _pinKey = UniqueKey();
       });
     }
@@ -448,10 +449,10 @@ class _PinSheetState extends State<_PinSheet> {
               const SizedBox(height: 28),
 
               // Título
-              const Text(
-                'Insira sua senha',
+              Text(
+                context.l10n.returnEnterPassword,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: QInvWeb3Tokens.fontUI,
                   fontWeight: FontWeight.w400,
                   fontSize: 22,
@@ -501,7 +502,7 @@ class _PinSheetState extends State<_PinSheet> {
               // Link "Esqueci minha senha"
               if (widget.onForgotPassword != null)
                 _TextLink(
-                  label: 'Esqueci minha senha',
+                  label: context.l10n.forgotPassword,
                   onTap: widget.onForgotPassword!,
                 ),
             ],

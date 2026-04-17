@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../l10n/l10n.dart';
 import '../services/auth/biometric_auth_service.dart';
 import '../theme/qinvweb3_tokens.dart';
 import 'widgets/glass_widgets.dart';
@@ -66,7 +67,7 @@ class _BiometricLoginScreenState extends State<BiometricLoginScreen> {
       }
 
       final authenticated = await widget.biometricService.authenticate(
-        localizedReason: 'Use sua biometria para entrar na Qinv',
+        localizedReason: context.l10n.biometricReason,
       );
       if (!mounted) return;
 
@@ -74,14 +75,14 @@ class _BiometricLoginScreenState extends State<BiometricLoginScreen> {
         HapticFeedback.mediumImpact();
         widget.onSuccess();
       } else {
-        setState(() => _errorMessage = 'Autenticação cancelada. Tente novamente.');
+        setState(() => _errorMessage = context.l10n.biometricCancelled);
       }
     } on BiometricException catch (e) {
       if (!mounted) return;
       setState(() => _errorMessage = _messageFor(e.reason));
     } catch (_) {
       if (!mounted) return;
-      setState(() => _errorMessage = 'Erro inesperado. Tente novamente.');
+      setState(() => _errorMessage = context.l10n.biometricUnexpectedError);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -90,24 +91,24 @@ class _BiometricLoginScreenState extends State<BiometricLoginScreen> {
   String _messageFor(BiometricFailureReason reason) {
     switch (reason) {
       case BiometricFailureReason.notAvailable:
-        return 'Biometria não disponível neste dispositivo.';
+        return context.l10n.biometricNotAvailable;
       case BiometricFailureReason.notEnrolled:
-        return 'Nenhuma biometria cadastrada. Configure nas Configurações do dispositivo.';
+        return context.l10n.biometricNotEnrolled;
       case BiometricFailureReason.lockedOut:
-        return 'Muitas tentativas. Aguarde um momento e tente novamente.';
+        return context.l10n.biometricLockedOut;
       case BiometricFailureReason.permanentlyLockedOut:
-        return 'Biometria bloqueada. Use sua senha do dispositivo para desbloquear.';
+        return context.l10n.biometricPermanentlyLocked;
       case BiometricFailureReason.passcodeNotSet:
-        return 'Defina um PIN ou senha no dispositivo para usar biometria.';
+        return context.l10n.biometricPasscodeNotSet;
       case BiometricFailureReason.unknown:
-        return 'Erro na autenticação. Tente novamente ou use sua senha.';
+        return context.l10n.biometricUnknownError;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
-    final hPad = size.width < 360 ? 20.0 : 24.0;
+    final hPad = QInvWeb3Tokens.responsiveHPad(size.width);
 
     return Scaffold(
       backgroundColor: QInvWeb3Tokens.background,
@@ -169,7 +170,7 @@ class _BiometricLoginScreenState extends State<BiometricLoginScreen> {
         // Biometric button
         Semantics(
           button: true,
-          label: 'Autenticar com biometria',
+          label: context.l10n.biometricAuthLabel,
           child: GestureDetector(
             onTap: _busy ? null : _authenticate,
             child: AnimatedContainer(
@@ -221,7 +222,7 @@ class _BiometricLoginScreenState extends State<BiometricLoginScreen> {
         const SizedBox(height: 24),
 
         Text(
-          _busy ? 'Verificando...' : 'Toque para entrar',
+          _busy ? context.l10n.biometricVerifying : context.l10n.biometricTapToSignIn,
           textAlign: TextAlign.center,
           style: const TextStyle(
             fontFamily: QInvWeb3Tokens.fontSans,
@@ -260,18 +261,18 @@ class _BiometricLoginScreenState extends State<BiometricLoginScreen> {
   Widget _buildPasswordLink() {
     return Semantics(
       button: true,
-      label: 'Usar senha em vez da biometria',
+      label: context.l10n.biometricUsePasswordLabel,
       child: GestureDetector(
         onTap: () {
           HapticFeedback.lightImpact();
           widget.onFallbackToPassword();
         },
-        child: const Padding(
-          padding: EdgeInsets.symmetric(vertical: 8),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
           child: Text(
-            'Usar senha em vez disso',
+            context.l10n.biometricUsePassword,
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontFamily: QInvWeb3Tokens.fontUI,
               fontSize: QInvWeb3Tokens.fontSizeSubtitle,
               fontWeight: FontWeight.w400,
