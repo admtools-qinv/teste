@@ -835,9 +835,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Widget _buildShowcaseReviewsZone() {
-    return const Expanded(
-      child: ShowcaseReviews(),
-    );
+    return const ShowcaseReviews();
   }
 
   BoxDecoration _tintedCardDecoration(Color tint) => BoxDecoration(
@@ -1083,18 +1081,32 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       const SizedBox(height: 32),
 
                       // Zone B + C — Content area
-                      if (_isShowcaseMockupStep(step)) ...[
-                        _buildShowcaseMockupTitle(step),
-                        const SizedBox(height: 32),
-                        _buildShowcaseMockupZone(context, step, hPad),
-                      ] else if (step.id == 'showcaseReviews') ...[
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: hPad),
-                          child: _buildShowcaseMockupTitle(step),
-                        ),
-                        const SizedBox(height: 32),
-                        _buildShowcaseReviewsZone(),
-                      ] else
+                      if (_isShowcaseMockupStep(step))
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              _buildShowcaseMockupTitle(step),
+                              const SizedBox(height: 32),
+                              _buildShowcaseMockupZone(context, step, hPad),
+                            ],
+                          ),
+                        )
+                      else if (step.id == 'showcaseReviews')
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: hPad),
+                                child: _buildShowcaseMockupTitle(step),
+                              ),
+                              const SizedBox(height: 32),
+                              _buildShowcaseReviewsZone(),
+                            ],
+                          ),
+                        )
+                      else
                         Expanded(
                           child: AnimatedSwitcher(
                             duration: const Duration(milliseconds: 400),

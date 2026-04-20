@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../../l10n/l10n.dart';
 import '../../theme/qinvweb3_tokens.dart';
 
 class QInvButton extends StatelessWidget {
@@ -146,7 +147,7 @@ class QInvButton extends StatelessWidget {
       enabled: enabled,
       selected: selected,
       label: label,
-      value: busy ? 'Loading' : (selected ? 'Selected' : null),
+      value: busy ? context.l10n.semanticsLoading : (selected ? context.l10n.semanticsSelected : null),
       child: button,
     );
   }

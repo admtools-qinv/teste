@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../l10n/l10n.dart';
 import '../../theme/qinvweb3_tokens.dart';
 
 class QInvCaptionBar extends StatelessWidget {
@@ -14,7 +15,7 @@ class QInvCaptionBar extends StatelessWidget {
 
     return Semantics(
       container: true,
-      label: 'Narration caption',
+      label: context.l10n.semanticsNarrationCaption,
       value: text,
       child: Container(
         width: double.infinity,
@@ -58,7 +59,7 @@ class QInvCaptionBar extends StatelessWidget {
                         icon: const Icon(Icons.replay_rounded, size: 18),
                         color: QInvWeb3Tokens.primaryLight,
                         onPressed: onReplay,
-                        tooltip: 'Replay narration',
+                        tooltip: context.l10n.tooltipReplayNarration,
                       ),
                     ),
                   ],
@@ -77,7 +78,7 @@ class QInvCaptionBar extends StatelessWidget {
                     icon: const Icon(Icons.replay_rounded, size: 18),
                     color: QInvWeb3Tokens.primaryLight,
                     onPressed: onReplay,
-                    tooltip: 'Replay narration',
+                    tooltip: context.l10n.tooltipReplayNarration,
                   ),
                 ],
               ],

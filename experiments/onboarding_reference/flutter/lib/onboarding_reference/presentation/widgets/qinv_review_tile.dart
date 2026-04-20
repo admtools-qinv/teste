@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../../l10n/l10n.dart';
+
 class QInvReviewTile extends StatelessWidget {
   final String label;
   final String value;
@@ -79,7 +81,7 @@ class QInvReviewTile extends StatelessWidget {
                               onEdit!();
                             },
                       icon: const Icon(Icons.edit, size: 16),
-                      label: const Text('Edit'),
+                      label: Text(context.l10n.actionEdit),
                     ),
                   ),
                 ],

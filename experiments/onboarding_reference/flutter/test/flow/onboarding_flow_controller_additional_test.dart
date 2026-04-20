@@ -1,124 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:onboarding_reference/l10n/app_localizations_en.dart';
 import 'package:onboarding_reference/onboarding_reference.dart';
 
-class _FailingBackend implements OnboardingBackendService {
-  @override
-  Future<void> clearAnswer({required String sessionId, required String stepId}) async {}
-
-  @override
-  Future<void> saveAnswer({
-    required String sessionId,
-    required String stepId,
-    required dynamic value,
-  }) async {}
-
-  @override
-  Future<OnboardingSessionDto> startSession() async {
-    throw Exception('boom');
-  }
-
-  @override
-  Future<SubmitResultDto> submitAll({
-    required String sessionId,
-    required Map<String, dynamic> answers,
-  }) async {
-    return const SubmitResultDto(success: true);
-  }
-}
-
-class _NoopAnalytics implements OnboardingAnalyticsService {
-  @override
-  Future<void> trackEvent(String name, {Map<String, dynamic>? properties}) async {}
-}
-
-class _NoopBackend implements OnboardingBackendService {
-  @override
-  Future<void> clearAnswer({required String sessionId, required String stepId}) async {}
-
-  @override
-  Future<void> saveAnswer({
-    required String sessionId,
-    required String stepId,
-    required dynamic value,
-  }) async {}
-
-  @override
-  Future<OnboardingSessionDto> startSession() async {
-    return const OnboardingSessionDto(sessionId: 'test-session');
-  }
-
-  @override
-  Future<SubmitResultDto> submitAll({
-    required String sessionId,
-    required Map<String, dynamic> answers,
-  }) async {
-    return const SubmitResultDto(success: true);
-  }
-}
-
-class _TrackingBackend implements OnboardingBackendService {
-  final List<String> cleared = [];
-
-  @override
-  Future<void> clearAnswer({required String sessionId, required String stepId}) async {
-    cleared.add(stepId);
-  }
-
-  @override
-  Future<void> saveAnswer({
-    required String sessionId,
-    required String stepId,
-    required dynamic value,
-  }) async {}
-
-  @override
-  Future<OnboardingSessionDto> startSession() async {
-    return const OnboardingSessionDto(sessionId: 'test-session');
-  }
-
-  @override
-  Future<SubmitResultDto> submitAll({
-    required String sessionId,
-    required Map<String, dynamic> answers,
-  }) async {
-    return const SubmitResultDto(success: true);
-  }
-}
-
-class _FlakySaveBackend implements OnboardingBackendService {
-  bool failNextSave = true;
-  int saveCalls = 0;
-
-  @override
-  Future<void> clearAnswer({required String sessionId, required String stepId}) async {}
-
-  @override
-  Future<void> saveAnswer({
-    required String sessionId,
-    required String stepId,
-    required dynamic value,
-  }) async {
-    saveCalls += 1;
-    if (failNextSave) {
-      failNextSave = false;
-      throw Exception('save failed');
-    }
-  }
-
-  @override
-  Future<OnboardingSessionDto> startSession() async {
-    return const OnboardingSessionDto(sessionId: 'test-session');
-  }
-
-  @override
-  Future<SubmitResultDto> submitAll({
-    required String sessionId,
-    required Map<String, dynamic> answers,
-  }) async {
-    return const SubmitResultDto(success: true);
-  }
-}
+import '../helpers/fake_services.dart';
 
 void main() {
   test('initialize clears busy state on failure', () async {
@@ -132,12 +15,9 @@ void main() {
       ),
     ];
 
-    final controller = OnboardingFlowController(
+    final controller = makeTestController(
       steps: steps,
-      backend: _FailingBackend(),
-      analytics: _NoopAnalytics(),
-      validator: DefaultOnboardingValidator(AppLocalizationsEn()),
-      l10n: AppLocalizationsEn(),
+      backend: FakeOnboardingBackendService(startSessionError: Exception('boom')),
     );
 
     final initialized = await controller.initialize();
@@ -148,13 +28,7 @@ void main() {
 
   test('empty steps are rejected by assertion', () {
     expect(
-      () => OnboardingFlowController(
-        steps: const [],
-        backend: _NoopBackend(),
-        analytics: _NoopAnalytics(),
-        validator: DefaultOnboardingValidator(AppLocalizationsEn()),
-        l10n: AppLocalizationsEn(),
-      ),
+      () => makeTestController(steps: const []),
       throwsA(isA<AssertionError>()),
     );
   });
@@ -178,13 +52,7 @@ void main() {
       ),
     ];
 
-    final controller = OnboardingFlowController(
-      steps: steps,
-      backend: _NoopBackend(),
-      analytics: _NoopAnalytics(),
-      validator: DefaultOnboardingValidator(AppLocalizationsEn()),
-      l10n: AppLocalizationsEn(),
-    );
+    final controller = makeTestController(steps: steps);
 
     await controller.initialize();
     final first = await controller.advanceCurrentStep(inputValue: 'Nick');
@@ -216,14 +84,8 @@ void main() {
       ),
     ];
 
-    final backend = _TrackingBackend();
-    final controller = OnboardingFlowController(
-      steps: steps,
-      backend: backend,
-      analytics: _NoopAnalytics(),
-      validator: DefaultOnboardingValidator(AppLocalizationsEn()),
-      l10n: AppLocalizationsEn(),
-    );
+    final backend = FakeOnboardingBackendService();
+    final controller = makeTestController(steps: steps, backend: backend);
 
     await controller.initialize();
     await controller.advanceCurrentStep(inputValue: 'Nick');
@@ -257,13 +119,7 @@ void main() {
       ),
     ];
 
-    final controller = OnboardingFlowController(
-      steps: steps,
-      backend: _NoopBackend(),
-      analytics: _NoopAnalytics(),
-      validator: DefaultOnboardingValidator(AppLocalizationsEn()),
-      l10n: AppLocalizationsEn(),
-    );
+    final controller = makeTestController(steps: steps);
 
     await controller.initialize();
 

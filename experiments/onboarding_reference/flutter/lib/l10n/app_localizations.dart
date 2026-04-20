@@ -110,6 +110,42 @@ abstract class AppLocalizations {
   /// **'Loading…'**
   String get ctaLoading;
 
+  /// No description provided for @actionEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get actionEdit;
+
+  /// No description provided for @tooltipReplayNarration.
+  ///
+  /// In en, this message translates to:
+  /// **'Replay narration'**
+  String get tooltipReplayNarration;
+
+  /// No description provided for @semanticsNarrationCaption.
+  ///
+  /// In en, this message translates to:
+  /// **'Narration caption'**
+  String get semanticsNarrationCaption;
+
+  /// No description provided for @semanticsError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get semanticsError;
+
+  /// No description provided for @semanticsLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading'**
+  String get semanticsLoading;
+
+  /// No description provided for @semanticsSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected'**
+  String get semanticsSelected;
+
   /// No description provided for @ctaSaving.
   ///
   /// In en, this message translates to:
@@ -593,7 +629,7 @@ abstract class AppLocalizations {
   /// No description provided for @stepShowcaseAnalysisVoice.
   ///
   /// In en, this message translates to:
-  /// **'I monitor the market in real time and adapt your strategy as things change. Cool, right?'**
+  /// **'Pick any crypto and instantly see if it\'s bullish or bearish.'**
   String get stepShowcaseAnalysisVoice;
 
   /// No description provided for @stepShowcaseAnalysisCta.
@@ -611,7 +647,7 @@ abstract class AppLocalizations {
   /// No description provided for @stepShowcaseAIVoice.
   ///
   /// In en, this message translates to:
-  /// **'Pick any crypto and instantly see if it\'s bullish or bearish.'**
+  /// **'I monitor the market in real time and adapt your strategy as things change. Cool, right?'**
   String get stepShowcaseAIVoice;
 
   /// No description provided for @stepShowcaseAICta.
@@ -637,6 +673,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Get started'**
   String get stepShowcaseReviewsCta;
+
+  /// No description provided for @reviewTitle1.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart portfolios really work!'**
+  String get reviewTitle1;
+
+  /// No description provided for @reviewBody1.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'ve tried many brokers, but QINV stood out with its AI. It optimizes my investments strategically and transparently.'**
+  String get reviewBody1;
+
+  /// No description provided for @reviewAuthor1.
+  ///
+  /// In en, this message translates to:
+  /// **'IanCastro'**
+  String get reviewAuthor1;
+
+  /// No description provided for @reviewTitle2.
+  ///
+  /// In en, this message translates to:
+  /// **'Super intuitive!'**
+  String get reviewTitle2;
+
+  /// No description provided for @reviewBody2.
+  ///
+  /// In en, this message translates to:
+  /// **'I was a crypto beginner and afraid of making mistakes. QINV guided me clearly from my very first investment.'**
+  String get reviewBody2;
+
+  /// No description provided for @reviewAuthor2.
+  ///
+  /// In en, this message translates to:
+  /// **'Ana B.'**
+  String get reviewAuthor2;
+
+  /// No description provided for @reviewTitle3.
+  ///
+  /// In en, this message translates to:
+  /// **'Easy and practical'**
+  String get reviewTitle3;
+
+  /// No description provided for @reviewBody3.
+  ///
+  /// In en, this message translates to:
+  /// **'First time investing and couldn\'t be happier. Easy to invest, track returns, and withdrawals are super fast!'**
+  String get reviewBody3;
+
+  /// No description provided for @reviewAuthor3.
+  ///
+  /// In en, this message translates to:
+  /// **'Cla_RR'**
+  String get reviewAuthor3;
+
+  /// No description provided for @reviewTitle4.
+  ///
+  /// In en, this message translates to:
+  /// **'Effortless investing'**
+  String get reviewTitle4;
+
+  /// No description provided for @reviewBody4.
+  ///
+  /// In en, this message translates to:
+  /// **'The app helps me invest in diverse cryptos without prior knowledge. It analyzes the market and diversifies for me.'**
+  String get reviewBody4;
+
+  /// No description provided for @reviewAuthor4.
+  ///
+  /// In en, this message translates to:
+  /// **'Thiagosdep'**
+  String get reviewAuthor4;
+
+  /// No description provided for @reviewTitle5.
+  ///
+  /// In en, this message translates to:
+  /// **'Reliable'**
+  String get reviewTitle5;
+
+  /// No description provided for @reviewBody5.
+  ///
+  /// In en, this message translates to:
+  /// **'First time investing in crypto and it was amazing! Instant withdrawals add real credibility.'**
+  String get reviewBody5;
+
+  /// No description provided for @reviewAuthor5.
+  ///
+  /// In en, this message translates to:
+  /// **'manusilvasilv'**
+  String get reviewAuthor5;
+
+  /// No description provided for @reviewTitle6.
+  ///
+  /// In en, this message translates to:
+  /// **'Best crypto app'**
+  String get reviewTitle6;
+
+  /// No description provided for @reviewBody6.
+  ///
+  /// In en, this message translates to:
+  /// **'Simple interface, great AI suggestions. I feel confident investing now. Highly recommended!'**
+  String get reviewBody6;
+
+  /// No description provided for @reviewAuthor6.
+  ///
+  /// In en, this message translates to:
+  /// **'Pedro_LF'**
+  String get reviewAuthor6;
 
   /// No description provided for @stepWelcomeTitle.
   ///

@@ -1,70 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
+import '../../../l10n/l10n.dart';
 import '../../theme/qinvweb3_tokens.dart';
 
 class ReviewData {
   final String author;
   final String title;
   final String body;
-  final int stars;
 
   const ReviewData({
     required this.author,
     required this.title,
     required this.body,
-    // ignore: unused_element_parameter
-    this.stars = 5,
   });
 }
 
 class ShowcaseReviews extends StatelessWidget {
   const ShowcaseReviews({super.key});
 
-  static const _row1 = [
-    ReviewData(
-      author: 'IanCastro',
-      title: 'Smart portfolios really work!',
-      body:
-          "I've tried many brokers, but QINV stood out with its AI. It optimizes my investments strategically and transparently.",
-    ),
-    ReviewData(
-      author: 'Ana B.',
-      title: 'Super intuitive!',
-      body:
-          'I was a crypto beginner and afraid of making mistakes. QINV guided me clearly from my very first investment.',
-    ),
-    ReviewData(
-      author: 'Cla_RR',
-      title: 'Easy and practical',
-      body:
-          "First time investing and couldn't be happier. Easy to invest, track returns, and withdrawals are super fast!",
-    ),
-  ];
+  static List<ReviewData> _row1(BuildContext context) {
+    final l10n = context.l10n;
+    return [
+      ReviewData(author: l10n.reviewAuthor1, title: l10n.reviewTitle1, body: l10n.reviewBody1),
+      ReviewData(author: l10n.reviewAuthor2, title: l10n.reviewTitle2, body: l10n.reviewBody2),
+      ReviewData(author: l10n.reviewAuthor3, title: l10n.reviewTitle3, body: l10n.reviewBody3),
+    ];
+  }
 
-  static const _row2 = [
-    ReviewData(
-      author: 'Thiagosdep',
-      title: 'Effortless investing',
-      body:
-          'The app helps me invest in diverse cryptos without prior knowledge. It analyzes the market and diversifies for me.',
-    ),
-    ReviewData(
-      author: 'manusilvasilv',
-      title: 'Reliable',
-      body:
-          'First time investing in crypto and it was amazing! Instant withdrawals add real credibility.',
-    ),
-    ReviewData(
-      author: 'Pedro_LF',
-      title: 'Best crypto app',
-      body:
-          'Simple interface, great AI suggestions. I feel confident investing now. Highly recommended!',
-    ),
-  ];
+  static List<ReviewData> _row2(BuildContext context) {
+    final l10n = context.l10n;
+    return [
+      ReviewData(author: l10n.reviewAuthor4, title: l10n.reviewTitle4, body: l10n.reviewBody4),
+      ReviewData(author: l10n.reviewAuthor5, title: l10n.reviewTitle5, body: l10n.reviewBody5),
+      ReviewData(author: l10n.reviewAuthor6, title: l10n.reviewTitle6, body: l10n.reviewBody6),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
+    final row1 = _row1(context);
+    final row2 = _row2(context);
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -72,9 +48,9 @@ class ShowcaseReviews extends StatelessWidget {
           height: 174,
           child: InfiniteMarquee(
             velocity: 22,
-            itemCount: _row1.length,
+            itemCount: row1.length,
             separatorWidth: 12,
-            itemBuilder: (index) => ReviewCard(review: _row1[index]),
+            itemBuilder: (index) => ReviewCard(review: row1[index]),
           ),
         ),
         const SizedBox(height: 10),
@@ -83,9 +59,9 @@ class ShowcaseReviews extends StatelessWidget {
           child: InfiniteMarquee(
             velocity: 22,
             reverse: true,
-            itemCount: _row2.length,
+            itemCount: row2.length,
             separatorWidth: 12,
-            itemBuilder: (index) => ReviewCard(review: _row2[index]),
+            itemBuilder: (index) => ReviewCard(review: row2[index]),
           ),
         ),
       ],

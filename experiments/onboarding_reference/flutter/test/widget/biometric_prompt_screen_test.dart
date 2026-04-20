@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:onboarding_reference/onboarding_reference.dart';
 
+import '../helpers/test_app.dart';
+
 Widget _buildScreen({
   VoidCallback? onEnabled,
   VoidCallback? onSkipped,
 }) {
-  return MaterialApp(
-    localizationsDelegates: AppLocalizations.localizationsDelegates,
-    supportedLocales: AppLocalizations.supportedLocales,
-    theme: QInvWeb3Theme.dark(),
+  return buildTestApp(
     home: BiometricPromptScreen(
       onEnabled: onEnabled ?? () {},
       onSkipped: onSkipped ?? () {},

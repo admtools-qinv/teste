@@ -1,36 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:onboarding_reference/onboarding_reference.dart';
 
-// ── Fakes ─────────────────────────────────────────────────────────
-
-/// Controlled fake for [BiometricAuthService].
-///
-/// Used by other test files to test widgets that depend on this service.
-class FakeBiometricService implements BiometricAuthService {
-  bool availableResult;
-  bool authenticateResult;
-  BiometricException? errorToThrow;
-  int authenticateCalls = 0;
-
-  FakeBiometricService({
-    this.availableResult = true,
-    this.authenticateResult = true,
-    this.errorToThrow,
-  });
-
-  @override
-  Future<bool> isAvailable() async => availableResult;
-
-  @override
-  Future<bool> authenticate({required String localizedReason}) async {
-    authenticateCalls++;
-    if (errorToThrow != null) throw errorToThrow!;
-    return authenticateResult;
-  }
-}
+import '../helpers/fake_services.dart';
 
 void main() {
-  // ── BiometricFailureReason ────────────────────────────────────
+  // ── BiometricFailureReason ───────────────────���────────────────
 
   group('BiometricFailureReason', () {
     test('has all expected values', () {
@@ -45,7 +19,7 @@ void main() {
     });
   });
 
-  // ── BiometricException ────────────────────────────────────────
+  // ── BiometricException ──────────────��─────────────────────────
 
   group('BiometricException', () {
     test('carries the reason', () {
@@ -75,23 +49,23 @@ void main() {
     });
   });
 
-  // ── FakeBiometricService ──────────────────────────────────────
+  // ── FakeBiometricAuthService ─────────────────────���───────────
   // Tests for the fake itself — ensures it behaves as expected
   // before it is used in widget tests.
 
-  group('FakeBiometricService', () {
+  group('FakeBiometricAuthService', () {
     test('isAvailable returns the configured value (true)', () async {
-      final svc = FakeBiometricService(availableResult: true);
+      final svc = FakeBiometricAuthService(availableResult: true);
       expect(await svc.isAvailable(), isTrue);
     });
 
     test('isAvailable returns the configured value (false)', () async {
-      final svc = FakeBiometricService(availableResult: false);
+      final svc = FakeBiometricAuthService(availableResult: false);
       expect(await svc.isAvailable(), isFalse);
     });
 
     test('authenticate returns the configured result', () async {
-      final svc = FakeBiometricService(authenticateResult: false);
+      final svc = FakeBiometricAuthService(authenticateResult: false);
       expect(
         await svc.authenticate(localizedReason: 'test'),
         isFalse,
@@ -100,7 +74,7 @@ void main() {
 
     test('authenticate throws the configured exception', () async {
       const ex = BiometricException(BiometricFailureReason.lockedOut);
-      final svc = FakeBiometricService(errorToThrow: ex);
+      final svc = FakeBiometricAuthService(errorToThrow: ex);
       await expectLater(
         () => svc.authenticate(localizedReason: 'test'),
         throwsA(isA<BiometricException>()),
@@ -108,7 +82,7 @@ void main() {
     });
 
     test('authenticateCalls tracks invocation count', () async {
-      final svc = FakeBiometricService();
+      final svc = FakeBiometricAuthService();
       await svc.authenticate(localizedReason: 'r1');
       await svc.authenticate(localizedReason: 'r2');
       expect(svc.authenticateCalls, equals(2));

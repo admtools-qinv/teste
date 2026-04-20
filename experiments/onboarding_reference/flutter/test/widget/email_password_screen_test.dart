@@ -4,73 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:onboarding_reference/onboarding_reference.dart';
 
-// ── Fakes ─────────────────────────────────────────────────────────
-
-class _SuccessAuthService implements AuthService {
-  int loginCalls = 0;
-  String? lastEmail;
-  String? lastPassword;
-
-  @override
-  Future<AuthResult> login({
-    required String email,
-    required String password,
-  }) async {
-    loginCalls++;
-    lastEmail = email;
-    lastPassword = password;
-    return const AuthResult(token: 'test-token');
-  }
-
-  @override
-  Future<void> logout({required String token}) async {}
-}
-
-class _FailingAuthService implements AuthService {
-  final String message;
-
-  const _FailingAuthService(this.message);
-
-  @override
-  Future<AuthResult> login({
-    required String email,
-    required String password,
-  }) async {
-    throw AuthException(message);
-  }
-
-  @override
-  Future<void> logout({required String token}) async {}
-}
-
-class _ThrowingAuthService implements AuthService {
-  @override
-  Future<AuthResult> login({
-    required String email,
-    required String password,
-  }) async {
-    throw Exception('network error');
-  }
-
-  @override
-  Future<void> logout({required String token}) async {}
-}
-
-/// Allows precise control over when login completes.
-class _ControlledAuthService implements AuthService {
-  final Completer<AuthResult> _completer;
-
-  _ControlledAuthService(this._completer);
-
-  @override
-  Future<AuthResult> login({
-    required String email,
-    required String password,
-  }) => _completer.future;
-
-  @override
-  Future<void> logout({required String token}) async {}
-}
+import '../helpers/fake_services.dart';
+import '../helpers/pump_helpers.dart';
+import '../helpers/test_app.dart';
 
 // ── Helpers ───────────────────────────────────────────────────────
 
@@ -79,10 +15,7 @@ Widget _buildScreen({
   String? initialEmail,
   Future<void> Function(AuthResult, String)? onLoginSuccess,
 }) {
-  return MaterialApp(
-    localizationsDelegates: AppLocalizations.localizationsDelegates,
-    supportedLocales: AppLocalizations.supportedLocales,
-    theme: QInvWeb3Theme.dark(),
+  return buildTestApp(
     home: EmailPasswordScreen(
       authService: authService,
       initialEmail: initialEmail,
@@ -101,15 +34,6 @@ Finder _passwordField() => find.byWidgetPredicate(
 
 Finder _submitButton() => find.widgetWithText(ElevatedButton, 'Sign in');
 
-/// Pumps enough frames to allow immediately-resolving async operations to
-/// complete, without using pumpAndSettle (which never returns on screens
-/// that have infinite animations like GlassBackground).
-Future<void> _settle(WidgetTester tester) async {
-  await tester.pump();
-  await tester.pump(const Duration(milliseconds: 50));
-  await tester.pump(const Duration(milliseconds: 50));
-}
-
 // ── Tests ─────────────────────────────────────────────────────────
 
 void main() {
@@ -117,7 +41,7 @@ void main() {
 
   group('initial render', () {
     testWidgets('shows email and password fields', (tester) async {
-      await tester.pumpWidget(_buildScreen(authService: _SuccessAuthService()));
+      await tester.pumpWidget(_buildScreen(authService: FakeAuthService()));
       await tester.pump();
       expect(_emailField(), findsOneWidget);
       expect(_passwordField(), findsOneWidget);
@@ -125,7 +49,7 @@ void main() {
 
     testWidgets('shows disabled submit button when fields are empty',
         (tester) async {
-      await tester.pumpWidget(_buildScreen(authService: _SuccessAuthService()));
+      await tester.pumpWidget(_buildScreen(authService: FakeAuthService()));
       await tester.pump();
       final btn = tester.widget<ElevatedButton>(_submitButton());
       expect(btn.onPressed, isNull);
@@ -133,7 +57,7 @@ void main() {
 
     testWidgets('pre-fills email when initialEmail is provided', (tester) async {
       await tester.pumpWidget(_buildScreen(
-        authService: _SuccessAuthService(),
+        authService: FakeAuthService(),
         initialEmail: 'prefilled@qinv.com',
       ));
       await tester.pump();
@@ -142,13 +66,13 @@ void main() {
     });
 
     testWidgets('shows back button', (tester) async {
-      await tester.pumpWidget(_buildScreen(authService: _SuccessAuthService()));
+      await tester.pumpWidget(_buildScreen(authService: FakeAuthService()));
       await tester.pump();
       expect(find.byIcon(Icons.arrow_back_rounded), findsOneWidget);
     });
 
     testWidgets('shows header title', (tester) async {
-      await tester.pumpWidget(_buildScreen(authService: _SuccessAuthService()));
+      await tester.pumpWidget(_buildScreen(authService: FakeAuthService()));
       await tester.pump();
       expect(find.text('Welcome back'), findsOneWidget);
     });
@@ -159,7 +83,7 @@ void main() {
   group('form validation', () {
     testWidgets('button enables when both email and password are filled',
         (tester) async {
-      await tester.pumpWidget(_buildScreen(authService: _SuccessAuthService()));
+      await tester.pumpWidget(_buildScreen(authService: FakeAuthService()));
       await tester.pump();
       await tester.enterText(_emailField(), 'user@qinv.com');
       await tester.enterText(_passwordField(), 'secret');
@@ -170,7 +94,7 @@ void main() {
     });
 
     testWidgets('button stays disabled with only email filled', (tester) async {
-      await tester.pumpWidget(_buildScreen(authService: _SuccessAuthService()));
+      await tester.pumpWidget(_buildScreen(authService: FakeAuthService()));
       await tester.pump();
       await tester.enterText(_emailField(), 'user@qinv.com');
       await tester.pump();
@@ -180,7 +104,7 @@ void main() {
     });
 
     testWidgets('button stays disabled with only password filled', (tester) async {
-      await tester.pumpWidget(_buildScreen(authService: _SuccessAuthService()));
+      await tester.pumpWidget(_buildScreen(authService: FakeAuthService()));
       await tester.pump();
       await tester.enterText(_passwordField(), 'secret');
       await tester.pump();
@@ -190,7 +114,7 @@ void main() {
     });
 
     testWidgets('whitespace-only email keeps button disabled', (tester) async {
-      await tester.pumpWidget(_buildScreen(authService: _SuccessAuthService()));
+      await tester.pumpWidget(_buildScreen(authService: FakeAuthService()));
       await tester.pump();
       await tester.enterText(_emailField(), '   ');
       await tester.enterText(_passwordField(), 'pass');
@@ -209,7 +133,7 @@ void main() {
       AuthResult? capturedResult;
       String? capturedEmail;
 
-      final svc = _SuccessAuthService();
+      final svc = FakeAuthService();
       await tester.pumpWidget(_buildScreen(
         authService: svc,
         onLoginSuccess: (result, email) async {
@@ -223,14 +147,14 @@ void main() {
       await tester.enterText(_passwordField(), 'pass');
       await tester.pump();
       await tester.tap(_submitButton());
-      await _settle(tester);
+      await settle(tester);
 
       expect(capturedResult?.token, equals('test-token'));
       expect(capturedEmail, equals('user@qinv.com')); // trimmed
     });
 
     testWidgets('sends raw (untrimmed) password to the service', (tester) async {
-      final svc = _SuccessAuthService();
+      final svc = FakeAuthService();
       await tester.pumpWidget(_buildScreen(authService: svc));
       await tester.pump();
 
@@ -238,7 +162,7 @@ void main() {
       await tester.enterText(_passwordField(), ' mypass ');
       await tester.pump();
       await tester.tap(_submitButton());
-      await _settle(tester);
+      await settle(tester);
 
       // Password must NOT be trimmed — some passwords contain spaces.
       expect(svc.lastPassword, equals(' mypass '));
@@ -251,7 +175,7 @@ void main() {
     testWidgets('shows spinner while login is pending', (tester) async {
       final completer = Completer<AuthResult>();
       await tester.pumpWidget(
-        _buildScreen(authService: _ControlledAuthService(completer)),
+        _buildScreen(authService: FakeAuthService(loginCompleter: completer)),
       );
       await tester.pump();
 
@@ -265,13 +189,13 @@ void main() {
 
       // Resolve so the test can tear down cleanly.
       completer.complete(const AuthResult(token: 'x'));
-      await _settle(tester);
+      await settle(tester);
     });
 
     testWidgets('button is disabled while loading', (tester) async {
       final completer = Completer<AuthResult>();
       await tester.pumpWidget(
-        _buildScreen(authService: _ControlledAuthService(completer)),
+        _buildScreen(authService: FakeAuthService(loginCompleter: completer)),
       );
       await tester.pump();
 
@@ -285,11 +209,11 @@ void main() {
       expect(btn.onPressed, isNull);
 
       completer.complete(const AuthResult(token: 'x'));
-      await _settle(tester);
+      await settle(tester);
     });
 
     testWidgets('spinner disappears after successful login', (tester) async {
-      final svc = _SuccessAuthService();
+      final svc = FakeAuthService();
       await tester.pumpWidget(_buildScreen(authService: svc));
       await tester.pump();
 
@@ -297,7 +221,7 @@ void main() {
       await tester.enterText(_passwordField(), 'pass');
       await tester.pump();
       await tester.tap(_submitButton());
-      await _settle(tester);
+      await settle(tester);
 
       expect(find.byType(CircularProgressIndicator), findsNothing);
     });
@@ -308,7 +232,9 @@ void main() {
   group('error states', () {
     testWidgets('shows AuthException message in error banner', (tester) async {
       await tester.pumpWidget(_buildScreen(
-        authService: const _FailingAuthService('Incorrect email or password.'),
+        authService: FakeAuthService(
+          loginException: const AuthException('Incorrect email or password.'),
+        ),
       ));
       await tester.pump();
 
@@ -316,7 +242,7 @@ void main() {
       await tester.enterText(_passwordField(), 'wrong');
       await tester.pump();
       await tester.tap(_submitButton());
-      await _settle(tester);
+      await settle(tester);
 
       expect(find.text('Incorrect email or password.'), findsOneWidget);
     });
@@ -324,7 +250,7 @@ void main() {
     testWidgets('shows generic message for non-AuthException errors',
         (tester) async {
       await tester.pumpWidget(
-        _buildScreen(authService: _ThrowingAuthService()),
+        _buildScreen(authService: FakeAuthService(loginException: Exception('network error'))),
       );
       await tester.pump();
 
@@ -332,14 +258,14 @@ void main() {
       await tester.enterText(_passwordField(), 'pass');
       await tester.pump();
       await tester.tap(_submitButton());
-      await _settle(tester);
+      await settle(tester);
 
       expect(find.text('Connection error. Try again.'), findsOneWidget);
     });
 
     testWidgets('error banner disappears when user starts typing', (tester) async {
       await tester.pumpWidget(_buildScreen(
-        authService: const _FailingAuthService('Falhou'),
+        authService: FakeAuthService(loginException: const AuthException('Falhou')),
       ));
       await tester.pump();
 
@@ -347,7 +273,7 @@ void main() {
       await tester.enterText(_passwordField(), 'bad');
       await tester.pump();
       await tester.tap(_submitButton());
-      await _settle(tester);
+      await settle(tester);
 
       expect(find.text('Falhou'), findsOneWidget);
 
@@ -360,7 +286,7 @@ void main() {
 
     testWidgets('spinner is cleared after an error', (tester) async {
       await tester.pumpWidget(_buildScreen(
-        authService: const _FailingAuthService('err'),
+        authService: FakeAuthService(loginException: const AuthException('err')),
       ));
       await tester.pump();
 
@@ -368,14 +294,14 @@ void main() {
       await tester.enterText(_passwordField(), 'p');
       await tester.pump();
       await tester.tap(_submitButton());
-      await _settle(tester);
+      await settle(tester);
 
       expect(find.byType(CircularProgressIndicator), findsNothing);
     });
 
     testWidgets('button re-enables after an error', (tester) async {
       await tester.pumpWidget(_buildScreen(
-        authService: const _FailingAuthService('err'),
+        authService: FakeAuthService(loginException: const AuthException('err')),
       ));
       await tester.pump();
 
@@ -383,7 +309,7 @@ void main() {
       await tester.enterText(_passwordField(), 'p');
       await tester.pump();
       await tester.tap(_submitButton());
-      await _settle(tester);
+      await settle(tester);
 
       final btn = tester.widget<ElevatedButton>(_submitButton());
       expect(btn.onPressed, isNotNull);
@@ -394,14 +320,14 @@ void main() {
 
   group('show/hide password toggle', () {
     testWidgets('password is initially obscured', (tester) async {
-      await tester.pumpWidget(_buildScreen(authService: _SuccessAuthService()));
+      await tester.pumpWidget(_buildScreen(authService: FakeAuthService()));
       await tester.pump();
       final tf = tester.widget<TextField>(_passwordField());
       expect(tf.obscureText, isTrue);
     });
 
     testWidgets('tapping eye icon reveals the password', (tester) async {
-      await tester.pumpWidget(_buildScreen(authService: _SuccessAuthService()));
+      await tester.pumpWidget(_buildScreen(authService: FakeAuthService()));
       await tester.pump();
 
       await tester.tap(find.byIcon(Icons.visibility_outlined));
@@ -411,7 +337,7 @@ void main() {
     });
 
     testWidgets('tapping eye icon again re-hides the password', (tester) async {
-      await tester.pumpWidget(_buildScreen(authService: _SuccessAuthService()));
+      await tester.pumpWidget(_buildScreen(authService: FakeAuthService()));
       await tester.pump();
 
       await tester.tap(find.byIcon(Icons.visibility_outlined));

@@ -15,6 +15,24 @@ class AppLocalizationsPt extends AppLocalizations {
   String get ctaLoading => 'Carregando…';
 
   @override
+  String get actionEdit => 'Editar';
+
+  @override
+  String get tooltipReplayNarration => 'Repetir narração';
+
+  @override
+  String get semanticsNarrationCaption => 'Legenda da narração';
+
+  @override
+  String get semanticsError => 'Erro';
+
+  @override
+  String get semanticsLoading => 'Carregando';
+
+  @override
+  String get semanticsSelected => 'Selecionado';
+
+  @override
   String get ctaSaving => 'Salvando…';
 
   @override
@@ -275,7 +293,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get stepShowcaseAnalysisVoice =>
-      'Eu analiso o mercado em tempo real pra você tomar decisões mais inteligentes!';
+      'Acesse qualquer criptoativo e receba a recomendação do algoritmo em segundos: Bullish ou Bearish!';
 
   @override
   String get stepShowcaseAnalysisCta => 'Continuar';
@@ -285,7 +303,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get stepShowcaseAIVoice =>
-      'Acesse qualquer criptoativo e receba a recomendação do algoritmo em segundos: Bullish ou Bearish!';
+      'Eu analiso o mercado em tempo real pra você tomar decisões mais inteligentes!';
 
   @override
   String get stepShowcaseAICta => 'Continuar';
@@ -300,6 +318,66 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get stepShowcaseReviewsCta => 'Começar';
+
+  @override
+  String get reviewTitle1 => 'Portfólios inteligentes funcionam!';
+
+  @override
+  String get reviewBody1 =>
+      'Já testei várias corretoras, mas a QINV se destacou com a IA. Otimiza meus investimentos de forma estratégica e transparente.';
+
+  @override
+  String get reviewAuthor1 => 'IanCastro';
+
+  @override
+  String get reviewTitle2 => 'Super intuitivo!';
+
+  @override
+  String get reviewBody2 =>
+      'Eu era iniciante em cripto e tinha medo de errar. A QINV me guiou com clareza desde o primeiro investimento.';
+
+  @override
+  String get reviewAuthor2 => 'Ana B.';
+
+  @override
+  String get reviewTitle3 => 'Fácil e prático';
+
+  @override
+  String get reviewBody3 =>
+      'Primeira vez investindo e não podia estar mais feliz. Fácil de investir, acompanhar rendimentos e saques super rápidos!';
+
+  @override
+  String get reviewAuthor3 => 'Cla_RR';
+
+  @override
+  String get reviewTitle4 => 'Investir sem esforço';
+
+  @override
+  String get reviewBody4 =>
+      'O app me ajuda a investir em diversas criptos sem conhecimento prévio. Analisa o mercado e diversifica pra mim.';
+
+  @override
+  String get reviewAuthor4 => 'Thiagosdep';
+
+  @override
+  String get reviewTitle5 => 'Confiável';
+
+  @override
+  String get reviewBody5 =>
+      'Primeira vez investindo em cripto e foi incrível! Saques instantâneos passam muita credibilidade.';
+
+  @override
+  String get reviewAuthor5 => 'manusilvasilv';
+
+  @override
+  String get reviewTitle6 => 'Melhor app de cripto';
+
+  @override
+  String get reviewBody6 =>
+      'Interface simples, ótimas sugestões da IA. Me sinto seguro investindo agora. Super recomendo!';
+
+  @override
+  String get reviewAuthor6 => 'Pedro_LF';
 
   @override
   String get stepWelcomeTitle => 'Vamos';

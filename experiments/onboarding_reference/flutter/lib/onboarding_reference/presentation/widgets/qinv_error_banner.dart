@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../l10n/l10n.dart';
 import '../../theme/qinvweb3_tokens.dart';
 
 class QInvErrorBanner extends StatelessWidget {
@@ -14,7 +15,7 @@ class QInvErrorBanner extends StatelessWidget {
     return Semantics(
       container: true,
       liveRegion: true,
-      label: 'Error',
+      label: context.l10n.semanticsError,
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),

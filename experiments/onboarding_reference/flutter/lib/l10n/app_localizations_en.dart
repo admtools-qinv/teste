@@ -15,6 +15,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ctaLoading => 'Loading…';
 
   @override
+  String get actionEdit => 'Edit';
+
+  @override
+  String get tooltipReplayNarration => 'Replay narration';
+
+  @override
+  String get semanticsNarrationCaption => 'Narration caption';
+
+  @override
+  String get semanticsError => 'Error';
+
+  @override
+  String get semanticsLoading => 'Loading';
+
+  @override
+  String get semanticsSelected => 'Selected';
+
+  @override
   String get ctaSaving => 'Saving…';
 
   @override
@@ -274,7 +292,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stepShowcaseAnalysisVoice =>
-      'I monitor the market in real time and adapt your strategy as things change. Cool, right?';
+      'Pick any crypto and instantly see if it\'s bullish or bearish.';
 
   @override
   String get stepShowcaseAnalysisCta => 'Continue';
@@ -284,7 +302,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stepShowcaseAIVoice =>
-      'Pick any crypto and instantly see if it\'s bullish or bearish.';
+      'I monitor the market in real time and adapt your strategy as things change. Cool, right?';
 
   @override
   String get stepShowcaseAICta => 'Continue';
@@ -298,6 +316,66 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stepShowcaseReviewsCta => 'Get started';
+
+  @override
+  String get reviewTitle1 => 'Smart portfolios really work!';
+
+  @override
+  String get reviewBody1 =>
+      'I\'ve tried many brokers, but QINV stood out with its AI. It optimizes my investments strategically and transparently.';
+
+  @override
+  String get reviewAuthor1 => 'IanCastro';
+
+  @override
+  String get reviewTitle2 => 'Super intuitive!';
+
+  @override
+  String get reviewBody2 =>
+      'I was a crypto beginner and afraid of making mistakes. QINV guided me clearly from my very first investment.';
+
+  @override
+  String get reviewAuthor2 => 'Ana B.';
+
+  @override
+  String get reviewTitle3 => 'Easy and practical';
+
+  @override
+  String get reviewBody3 =>
+      'First time investing and couldn\'t be happier. Easy to invest, track returns, and withdrawals are super fast!';
+
+  @override
+  String get reviewAuthor3 => 'Cla_RR';
+
+  @override
+  String get reviewTitle4 => 'Effortless investing';
+
+  @override
+  String get reviewBody4 =>
+      'The app helps me invest in diverse cryptos without prior knowledge. It analyzes the market and diversifies for me.';
+
+  @override
+  String get reviewAuthor4 => 'Thiagosdep';
+
+  @override
+  String get reviewTitle5 => 'Reliable';
+
+  @override
+  String get reviewBody5 =>
+      'First time investing in crypto and it was amazing! Instant withdrawals add real credibility.';
+
+  @override
+  String get reviewAuthor5 => 'manusilvasilv';
+
+  @override
+  String get reviewTitle6 => 'Best crypto app';
+
+  @override
+  String get reviewBody6 =>
+      'Simple interface, great AI suggestions. I feel confident investing now. Highly recommended!';
+
+  @override
+  String get reviewAuthor6 => 'Pedro_LF';
 
   @override
   String get stepWelcomeTitle => 'Let\'s get you';
