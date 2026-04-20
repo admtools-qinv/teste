@@ -73,16 +73,19 @@ class LoginScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         // Static title
-        Text(
-          effectiveTitle,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            fontFamily: QInvWeb3Tokens.fontSans,
-            fontSize: 28,
-            fontWeight: FontWeight.w500,
-            color: QInvWeb3Tokens.textHeading,
-            height: 1.2,
-            letterSpacing: -0.2,
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            effectiveTitle,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontFamily: QInvWeb3Tokens.fontSans,
+              fontSize: 28,
+              fontWeight: FontWeight.w500,
+              color: QInvWeb3Tokens.textHeading,
+              height: 1.2,
+              letterSpacing: -0.2,
+            ),
           ),
         ),
 
@@ -201,22 +204,24 @@ class _TypewriterAccentState extends State<_TypewriterAccent> {
     final phrase = widget.phrases[_phraseIndex];
     final visible = phrase.substring(0, _charCount);
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          visible,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            fontFamily: QInvWeb3Tokens.fontSerif,
-            fontStyle: FontStyle.italic,
-            fontWeight: FontWeight.w400,
-            fontSize: 48,
-            color: QInvWeb3Tokens.primaryLight,
-            height: 1.18,
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            visible,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontFamily: QInvWeb3Tokens.fontSerif,
+              fontStyle: FontStyle.italic,
+              fontWeight: FontWeight.w400,
+              fontSize: 48,
+              color: QInvWeb3Tokens.primaryLight,
+              height: 1.18,
+            ),
           ),
-        ),
         // Blinking cursor
         AnimatedOpacity(
           opacity: _cursorVisible ? 1.0 : 0.0,
@@ -237,7 +242,8 @@ class _TypewriterAccentState extends State<_TypewriterAccent> {
             ),
           ),
         ),
-      ],
+        ],
+      ),
     );
   }
 }

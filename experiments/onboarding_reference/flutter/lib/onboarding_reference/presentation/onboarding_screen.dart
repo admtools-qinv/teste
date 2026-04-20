@@ -387,12 +387,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ).createShader(bounds),
                 child: Text(
                   step.titleItalic != null
-                      ? '${step.title}\n${step.titleItalic}'
+                      ? '${step.title} ${step.titleItalic}'
                       : step.title,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontFamily: QInvWeb3Tokens.fontSans,
-                    fontSize: 36,
+                    fontSize: 32,
                     fontWeight: FontWeight.w600,
                     color: Colors.white,
                     height: 1.10,
@@ -431,6 +431,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       padding: const EdgeInsets.only(bottom: 10),
       child: OnboardingOptionCard(
         label: option.label,
+        subtitle: option.subtitle,
         selected: selected,
         enabled: !controller.isBusy,
         assetPath: option.assetPath,
@@ -802,7 +803,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   Widget _buildShowcaseMockupTitle(OnboardingStep step) {
     final text = step.titleItalic != null
-        ? '${step.title}\n${step.titleItalic}'
+        ? '${step.title} ${step.titleItalic}'
         : step.title;
     return ShaderMask(
       blendMode: BlendMode.modulate,

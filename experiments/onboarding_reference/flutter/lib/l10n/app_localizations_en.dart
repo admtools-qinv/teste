@@ -263,7 +263,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stepShowcaseWelcomeVoice =>
-      'Hey! I\'m Neo, your investment copilot. Let me show you around.';
+      'Hey, I\'m Neo, your AI investing copilot. I turn market data into clear actions so you can invest with confidence.';
 
   @override
   String get stepShowcaseWelcomeCta => 'Continue';
@@ -274,7 +274,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stepShowcaseAnalysisVoice =>
-      'I analyze the market in real time so you can make smarter decisions.';
+      'I monitor the market in real time and adapt your strategy as things change. Cool, right?';
 
   @override
   String get stepShowcaseAnalysisCta => 'Continue';
@@ -284,7 +284,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stepShowcaseAIVoice =>
-      'Access any crypto asset and get the algorithm\'s recommendation in seconds: Bullish or Bearish.';
+      'Pick any crypto and instantly see if it\'s bullish or bearish.';
 
   @override
   String get stepShowcaseAICta => 'Continue';
@@ -294,7 +294,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stepShowcaseReviewsVoice =>
-      'Don\'t just take my word for it — see what our investors are saying.';
+      'Don\'t just take my word for it, see what our users are saying.';
 
   @override
   String get stepShowcaseReviewsCta => 'Get started';
@@ -309,7 +309,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get stepWelcomeCaption => 'Ready in just a few steps.';
 
   @override
-  String get stepWelcomeVoice => 'Hey! Welcome. Let\'s get you started!';
+  String get stepWelcomeVoice => 'Okay, let\'s get you set up.';
 
   @override
   String get stepWelcomeCta => 'Get started';
@@ -335,7 +335,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get stepAccountTypeOptNational => 'National account';
 
   @override
+  String get stepAccountTypeOptNationalSub =>
+      'Crypto portfolios · Assets in BRL · Brazilian custody';
+
+  @override
   String get stepAccountTypeOptGlobal => 'Global account';
+
+  @override
+  String get stepAccountTypeOptGlobalSub =>
+      'Crypto portfolios · Assets in USD · Tokenized stocks';
 
   @override
   String get stepPepTitle => 'Are you a politically';
@@ -389,28 +397,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get validationInvalidCep => 'Enter a valid CEP (8 digits).';
 
   @override
-  String get stepExperienceTitle => 'How long have you';
+  String get stepExperienceTitle => 'What\'s your investing';
 
   @override
-  String get stepExperienceTitleItalic => 'been investing?';
+  String get stepExperienceTitleItalic => 'experience?';
 
   @override
   String get stepExperienceCaption => 'We\'ll tailor your experience.';
 
   @override
-  String get stepExperienceVoice => 'How long have you been investing?';
+  String get stepExperienceVoice => 'What\'s your investing experience?';
 
   @override
-  String get stepExperienceOptNone => 'No experience yet';
+  String get stepExperienceOptNone => 'Never invested';
 
   @override
-  String get stepExperienceOptBasic => 'I\'ve dabbled a little';
+  String get stepExperienceOptBasic => 'Little experience';
 
   @override
   String get stepExperienceOptIntermediate => 'A few years of experience';
 
   @override
-  String get stepExperienceOptAdvanced => 'I know my way around';
+  String get stepExperienceOptAdvanced => 'Extensive experience';
 
   @override
   String get stepGoalTitle => 'What\'s your';
@@ -437,17 +445,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get stepGoalOptAggressive => 'Maximize returns at higher risk';
 
   @override
-  String get stepTimeHorizonTitle => 'When might you need';
+  String get stepTimeHorizonTitle => 'What\'s your investment';
 
   @override
-  String get stepTimeHorizonTitleItalic => 'this money back?';
+  String get stepTimeHorizonTitleItalic => 'time horizon?';
 
   @override
   String get stepTimeHorizonCaption =>
       'Longer horizons can handle more volatility.';
 
   @override
-  String get stepTimeHorizonVoice => 'When might you need this money back?';
+  String get stepTimeHorizonVoice => 'What\'s your investment time horizon?';
 
   @override
   String get stepTimeHorizonReview => 'Time horizon';
@@ -489,7 +497,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get stepComfortOptHigh => 'I can handle the ups and downs';
 
   @override
-  String get stepLossReactionTitle => 'If your portfolio drops';
+  String get stepLossReactionTitle => 'If your wealth drops';
 
   @override
   String get stepLossReactionTitleItalic => '20 percent, you…';
@@ -500,7 +508,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stepLossReactionVoice =>
-      'If your portfolio dropped 20 percent, what would you do?';
+      'If your wealth dropped 20 percent, what would you do?';
 
   @override
   String get stepLossReactionReview => 'Loss reaction';
@@ -555,8 +563,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get stepFullNameCaption => 'As it appears on your official ID.';
 
   @override
-  String get stepFullNameVoice =>
-      'What\'s your full name? Nice to meet you, by the way.';
+  String get stepFullNameVoice => 'What\'s your full name?';
 
   @override
   String get stepFullNamePlaceholder => 'John Doe';
@@ -574,7 +581,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get stepEmailCaption => 'We\'ll send a verification code.';
 
   @override
-  String get stepEmailVoice => 'What\'s your email address?';
+  String get stepEmailVoice => 'What\'s your personal email address?';
 
   @override
   String get stepEmailPlaceholder => 'you@example.com';
@@ -662,7 +669,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stepAnalysingVoice =>
-      'Almost there! We\'re building your investor profile.';
+      'Almost there! We\'re creating your investor profile.';
 
   @override
   String get stepTrialTitle => 'You\'re all set.';

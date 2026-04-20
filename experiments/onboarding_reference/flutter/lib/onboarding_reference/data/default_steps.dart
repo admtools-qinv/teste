@@ -98,8 +98,8 @@ List<OnboardingStep> buildOnboardingSteps(AppLocalizations l10n) => [
     voiceText: l10n.stepAccountTypeVoice,
     reviewLabel: l10n.stepAccountTypeReview,
     options: [
-      OnboardingOption(id: 'national', label: l10n.stepAccountTypeOptNational, assetPath: 'assets/account_national.svg'),
-      OnboardingOption(id: 'global', label: l10n.stepAccountTypeOptGlobal, assetPath: 'assets/account_global.svg'),
+      OnboardingOption(id: 'national', label: l10n.stepAccountTypeOptNational, subtitle: l10n.stepAccountTypeOptNationalSub, assetPath: 'assets/account_national.svg'),
+      OnboardingOption(id: 'global', label: l10n.stepAccountTypeOptGlobal, subtitle: l10n.stepAccountTypeOptGlobalSub, assetPath: 'assets/account_global.svg'),
     ],
   ),
   OnboardingStep(

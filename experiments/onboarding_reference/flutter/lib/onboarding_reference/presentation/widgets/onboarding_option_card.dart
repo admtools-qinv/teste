@@ -6,6 +6,7 @@ import '../../theme/qinvweb3_tokens.dart';
 
 class OnboardingOptionCard extends StatelessWidget {
   final String label;
+  final String? subtitle;
   final bool selected;
   final bool enabled;
   final VoidCallback? onTap;
@@ -14,6 +15,7 @@ class OnboardingOptionCard extends StatelessWidget {
   const OnboardingOptionCard({
     super.key,
     required this.label,
+    this.subtitle,
     required this.selected,
     required this.enabled,
     this.onTap,
@@ -69,19 +71,38 @@ class OnboardingOptionCard extends StatelessWidget {
                   const SizedBox(width: 14),
                 ],
                 Expanded(
-                  child: Text(
-                    label,
-                    style: TextStyle(
-                      fontFamily: QInvWeb3Tokens.fontUI,
-                      fontSize: 15.0,
-                      fontWeight:
-                          selected ? FontWeight.w600 : FontWeight.w500,
-                      color: selected
-                          ? Colors.white
-                          : QInvWeb3Tokens.textSecondary,
-                      height: 1.35,
-                      letterSpacing: 0.1,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        label,
+                        style: TextStyle(
+                          fontFamily: QInvWeb3Tokens.fontUI,
+                          fontSize: 15.0,
+                          fontWeight:
+                              selected ? FontWeight.w600 : FontWeight.w500,
+                          color: selected
+                              ? Colors.white
+                              : QInvWeb3Tokens.textSecondary,
+                          height: 1.35,
+                          letterSpacing: 0.1,
+                        ),
+                      ),
+                      if (subtitle != null) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          subtitle!,
+                          style: TextStyle(
+                            fontFamily: QInvWeb3Tokens.fontUI,
+                            fontSize: 12.0,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.white.withValues(alpha: 0.45),
+                            height: 1.3,
+                            letterSpacing: 0.05,
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                 ),
                 const SizedBox(width: 12),

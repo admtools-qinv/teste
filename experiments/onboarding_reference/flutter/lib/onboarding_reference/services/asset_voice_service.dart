@@ -24,6 +24,7 @@ class AssetVoiceService implements VoiceService {
     'showcaseAI': 'voice_showcase_03_ai.mp3',
     'showcaseReviews': 'voice_showcase_04_reviews.mp3',
     'welcome': 'voice_01_welcome.mp3',
+    'accountType': 'voice_01b_account_type.mp3',
     'experience': 'voice_02_experience.mp3',
     'goal': 'voice_03_goal.mp3',
     'comfort': 'voice_04_risk.mp3',

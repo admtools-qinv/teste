@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../l10n/l10n.dart';
 import '../../theme/qinvweb3_tokens.dart';
@@ -107,28 +108,12 @@ class UpdateModal extends StatelessWidget {
                         ),
                       ),
 
-                      // Upgrade icon
-                      Container(
+                      // Qinv logo
+                      SvgPicture.asset(
+                        'assets/qinv_logo.svg',
+                        package: 'onboarding_reference',
                         width: 72,
                         height: 72,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              QInvWeb3Tokens.primary,
-                              QInvWeb3Tokens.primaryLight,
-                            ],
-                          ),
-                        ),
-                        child: const Center(
-                          child: Icon(
-                            Icons.rocket_launch_rounded,
-                            size: 36,
-                            color: Colors.white,
-                          ),
-                        ),
                       ),
 
                       const SizedBox(height: 24),

@@ -12,44 +12,33 @@ class PhoneFrame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Clip the bottom ~20% of the phone so the bezel is never visible,
-    // then fade out with a gradient for a clean edge.
+    // Clip the bottom of the phone so it extends naturally out of view,
+    // like a device resting below the fold — no gradient fade.
     return ClipRect(
       child: Align(
         alignment: Alignment.topCenter,
         heightFactor: 0.80,
-        child: ShaderMask(
-          shaderCallback: (Rect bounds) {
-            return const LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Colors.white, Colors.white, Colors.transparent],
-              stops: [0.0, 0.55, 0.80],
-            ).createShader(bounds);
-          },
-          blendMode: BlendMode.dstIn,
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(_bezelRadius),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.45),
-                  blurRadius: 28,
-                  spreadRadius: -2,
-                  offset: const Offset(0, 8),
-                ),
-              ],
-            ),
-            padding: const EdgeInsets.all(_bezelBorder),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(_screenRadius),
-              child: Image.asset(
-                assetPath,
-                package: _package,
-                fit: BoxFit.fitWidth,
-                alignment: Alignment.topCenter,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(_bezelRadius),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.45),
+                blurRadius: 28,
+                spreadRadius: -2,
+                offset: const Offset(0, 8),
               ),
+            ],
+          ),
+          padding: const EdgeInsets.all(_bezelBorder),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(_screenRadius),
+            child: Image.asset(
+              assetPath,
+              package: _package,
+              fit: BoxFit.fitWidth,
+              alignment: Alignment.topCenter,
             ),
           ),
         ),

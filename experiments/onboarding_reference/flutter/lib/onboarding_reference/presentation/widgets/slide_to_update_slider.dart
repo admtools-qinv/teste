@@ -37,7 +37,7 @@ class _SlideToUpdateSliderState extends State<SlideToUpdateSlider>
   static const double _thumbPadding = 6.0;
 
   static const _trackColor = Color(0xFFF0F0F5);
-  static const _thumbColor = Color(0xFF111111);
+  static const _thumbColor = Color(0xFF7D39EB); // QInvWeb3Tokens.primary
   static const _fillColor = Color(0xFF7D39EB); // QInvWeb3Tokens.primary
 
   double _dragX = 0.0;

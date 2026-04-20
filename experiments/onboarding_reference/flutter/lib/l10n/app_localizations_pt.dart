@@ -224,7 +224,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get loginAccent3 => 'trabalhando pra você.';
 
   @override
-  String get loginAccent4 => 'sem parar.';
+  String get loginAccent4 => 'nunca dorme.';
 
   @override
   String get loginSubtitle => 'Comece em minutos, cresça por anos.';
@@ -337,7 +337,15 @@ class AppLocalizationsPt extends AppLocalizations {
   String get stepAccountTypeOptNational => 'Conta nacional';
 
   @override
+  String get stepAccountTypeOptNationalSub =>
+      'Portfólios cripto · Ativos em BRL · Custódia brasileira';
+
+  @override
   String get stepAccountTypeOptGlobal => 'Conta global';
+
+  @override
+  String get stepAccountTypeOptGlobalSub =>
+      'Portfólios cripto · Ativos em USD · Ações tokenizadas';
 
   @override
   String get stepPepTitle => 'Você é uma pessoa';
@@ -392,28 +400,28 @@ class AppLocalizationsPt extends AppLocalizations {
   String get validationInvalidCep => 'Digite um CEP válido (8 dígitos).';
 
   @override
-  String get stepExperienceTitle => 'Há quanto tempo você';
+  String get stepExperienceTitle => 'Qual sua experiência';
 
   @override
-  String get stepExperienceTitleItalic => 'investe?';
+  String get stepExperienceTitleItalic => 'com investimentos?';
 
   @override
   String get stepExperienceCaption => 'Vamos personalizar sua experiência.';
 
   @override
-  String get stepExperienceVoice => 'Há quanto tempo você investe?';
+  String get stepExperienceVoice => 'Qual sua experiência com investimentos?';
 
   @override
-  String get stepExperienceOptNone => 'Ainda não tenho experiência';
+  String get stepExperienceOptNone => 'Nunca investi';
 
   @override
-  String get stepExperienceOptBasic => 'Já mexi um pouco';
+  String get stepExperienceOptBasic => 'Tenho pouca experiência';
 
   @override
   String get stepExperienceOptIntermediate => 'Alguns anos de experiência';
 
   @override
-  String get stepExperienceOptAdvanced => 'Entendo bem do assunto';
+  String get stepExperienceOptAdvanced => 'Bastante experiência';
 
   @override
   String get stepGoalTitle => 'Qual é o seu';
@@ -440,18 +448,17 @@ class AppLocalizationsPt extends AppLocalizations {
   String get stepGoalOptAggressive => 'Maximizar retornos com mais risco';
 
   @override
-  String get stepTimeHorizonTitle => 'Quando você pode precisar';
+  String get stepTimeHorizonTitle => 'Qual seu prazo';
 
   @override
-  String get stepTimeHorizonTitleItalic => 'desse dinheiro?';
+  String get stepTimeHorizonTitleItalic => 'de investimento?';
 
   @override
   String get stepTimeHorizonCaption =>
       'Horizontes mais longos toleram mais volatilidade.';
 
   @override
-  String get stepTimeHorizonVoice =>
-      'Quando você pode precisar desse dinheiro?';
+  String get stepTimeHorizonVoice => 'Qual seu prazo de investimento?';
 
   @override
   String get stepTimeHorizonReview => 'Horizonte de tempo';
@@ -469,7 +476,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get stepTimeHorizonOptVeryLong => 'Mais de 7 anos';
 
   @override
-  String get stepComfortTitle => 'Como você lida com';
+  String get stepComfortTitle => 'Como lida com';
 
   @override
   String get stepComfortTitleItalic => 'oscilações do mercado?';
@@ -481,20 +488,19 @@ class AppLocalizationsPt extends AppLocalizations {
   String get stepComfortVoice => 'Como você lida com oscilações do mercado?';
 
   @override
-  String get stepComfortOptLow => 'Prefiro estabilidade acima de tudo';
+  String get stepComfortOptLow => 'Só quero ver meu patrimônio crescer';
 
   @override
-  String get stepComfortOptMediumLow => 'Aceito pequenas flutuações';
+  String get stepComfortOptMediumLow => 'Aceito pequenas oscilações';
 
   @override
-  String get stepComfortOptMedium =>
-      'Uma abordagem equilibrada funciona pra mim';
+  String get stepComfortOptMedium => 'Lido bem com altos e baixos';
 
   @override
-  String get stepComfortOptHigh => 'Consigo lidar com altos e baixos';
+  String get stepComfortOptHigh => 'Perder faz parte do jogo';
 
   @override
-  String get stepLossReactionTitle => 'Se seu portfólio cair';
+  String get stepLossReactionTitle => 'Se seu patrimônio cair';
 
   @override
   String get stepLossReactionTitleItalic => '20 por cento, você…';
@@ -505,7 +511,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get stepLossReactionVoice =>
-      'Se seu portfólio caísse 20 por cento, o que você faria?';
+      'Se seu patrimônio caísse 20 por cento, o que você faria?';
 
   @override
   String get stepLossReactionReview => 'Reação a perdas';
@@ -524,18 +530,17 @@ class AppLocalizationsPt extends AppLocalizations {
   String get stepLossReactionOptBuy => 'Compro mais no preço mais baixo';
 
   @override
-  String get stepAllocationTitle => 'Quanto das suas economias';
+  String get stepAllocationTitle => 'Quanto você investe';
 
   @override
-  String get stepAllocationTitleItalic => 'você está investindo?';
+  String get stepAllocationTitleItalic => 'das suas economias?';
 
   @override
   String get stepAllocationCaption =>
       'Nos ajuda a entender sua exposição total.';
 
   @override
-  String get stepAllocationVoice =>
-      'Quanto das suas economias você está investindo?';
+  String get stepAllocationVoice => 'Quanto você investe das suas economias?';
 
   @override
   String get stepAllocationReview => 'Fatia do portfólio';

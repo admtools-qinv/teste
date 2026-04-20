@@ -575,7 +575,7 @@ abstract class AppLocalizations {
   /// No description provided for @stepShowcaseWelcomeVoice.
   ///
   /// In en, this message translates to:
-  /// **'Hey! I\'m Neo, your investment copilot. Let me show you around.'**
+  /// **'Hey, I\'m Neo, your AI investing copilot. I turn market data into clear actions so you can invest with confidence.'**
   String get stepShowcaseWelcomeVoice;
 
   /// No description provided for @stepShowcaseWelcomeCta.
@@ -593,7 +593,7 @@ abstract class AppLocalizations {
   /// No description provided for @stepShowcaseAnalysisVoice.
   ///
   /// In en, this message translates to:
-  /// **'I analyze the market in real time so you can make smarter decisions.'**
+  /// **'I monitor the market in real time and adapt your strategy as things change. Cool, right?'**
   String get stepShowcaseAnalysisVoice;
 
   /// No description provided for @stepShowcaseAnalysisCta.
@@ -611,7 +611,7 @@ abstract class AppLocalizations {
   /// No description provided for @stepShowcaseAIVoice.
   ///
   /// In en, this message translates to:
-  /// **'Access any crypto asset and get the algorithm\'s recommendation in seconds: Bullish or Bearish.'**
+  /// **'Pick any crypto and instantly see if it\'s bullish or bearish.'**
   String get stepShowcaseAIVoice;
 
   /// No description provided for @stepShowcaseAICta.
@@ -629,7 +629,7 @@ abstract class AppLocalizations {
   /// No description provided for @stepShowcaseReviewsVoice.
   ///
   /// In en, this message translates to:
-  /// **'Don\'t just take my word for it — see what our investors are saying.'**
+  /// **'Don\'t just take my word for it, see what our users are saying.'**
   String get stepShowcaseReviewsVoice;
 
   /// No description provided for @stepShowcaseReviewsCta.
@@ -659,7 +659,7 @@ abstract class AppLocalizations {
   /// No description provided for @stepWelcomeVoice.
   ///
   /// In en, this message translates to:
-  /// **'Hey! Welcome. Let\'s get you started!'**
+  /// **'Okay, let\'s get you set up.'**
   String get stepWelcomeVoice;
 
   /// No description provided for @stepWelcomeCta.
@@ -704,11 +704,23 @@ abstract class AppLocalizations {
   /// **'National account'**
   String get stepAccountTypeOptNational;
 
+  /// No description provided for @stepAccountTypeOptNationalSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Crypto portfolios · Assets in BRL · Brazilian custody'**
+  String get stepAccountTypeOptNationalSub;
+
   /// No description provided for @stepAccountTypeOptGlobal.
   ///
   /// In en, this message translates to:
   /// **'Global account'**
   String get stepAccountTypeOptGlobal;
+
+  /// No description provided for @stepAccountTypeOptGlobalSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Crypto portfolios · Assets in USD · Tokenized stocks'**
+  String get stepAccountTypeOptGlobalSub;
 
   /// No description provided for @stepPepTitle.
   ///
@@ -809,13 +821,13 @@ abstract class AppLocalizations {
   /// No description provided for @stepExperienceTitle.
   ///
   /// In en, this message translates to:
-  /// **'How long have you'**
+  /// **'What\'s your investing'**
   String get stepExperienceTitle;
 
   /// No description provided for @stepExperienceTitleItalic.
   ///
   /// In en, this message translates to:
-  /// **'been investing?'**
+  /// **'experience?'**
   String get stepExperienceTitleItalic;
 
   /// No description provided for @stepExperienceCaption.
@@ -827,19 +839,19 @@ abstract class AppLocalizations {
   /// No description provided for @stepExperienceVoice.
   ///
   /// In en, this message translates to:
-  /// **'How long have you been investing?'**
+  /// **'What\'s your investing experience?'**
   String get stepExperienceVoice;
 
   /// No description provided for @stepExperienceOptNone.
   ///
   /// In en, this message translates to:
-  /// **'No experience yet'**
+  /// **'Never invested'**
   String get stepExperienceOptNone;
 
   /// No description provided for @stepExperienceOptBasic.
   ///
   /// In en, this message translates to:
-  /// **'I\'ve dabbled a little'**
+  /// **'Little experience'**
   String get stepExperienceOptBasic;
 
   /// No description provided for @stepExperienceOptIntermediate.
@@ -851,7 +863,7 @@ abstract class AppLocalizations {
   /// No description provided for @stepExperienceOptAdvanced.
   ///
   /// In en, this message translates to:
-  /// **'I know my way around'**
+  /// **'Extensive experience'**
   String get stepExperienceOptAdvanced;
 
   /// No description provided for @stepGoalTitle.
@@ -905,13 +917,13 @@ abstract class AppLocalizations {
   /// No description provided for @stepTimeHorizonTitle.
   ///
   /// In en, this message translates to:
-  /// **'When might you need'**
+  /// **'What\'s your investment'**
   String get stepTimeHorizonTitle;
 
   /// No description provided for @stepTimeHorizonTitleItalic.
   ///
   /// In en, this message translates to:
-  /// **'this money back?'**
+  /// **'time horizon?'**
   String get stepTimeHorizonTitleItalic;
 
   /// No description provided for @stepTimeHorizonCaption.
@@ -923,7 +935,7 @@ abstract class AppLocalizations {
   /// No description provided for @stepTimeHorizonVoice.
   ///
   /// In en, this message translates to:
-  /// **'When might you need this money back?'**
+  /// **'What\'s your investment time horizon?'**
   String get stepTimeHorizonVoice;
 
   /// No description provided for @stepTimeHorizonReview.
@@ -1007,7 +1019,7 @@ abstract class AppLocalizations {
   /// No description provided for @stepLossReactionTitle.
   ///
   /// In en, this message translates to:
-  /// **'If your portfolio drops'**
+  /// **'If your wealth drops'**
   String get stepLossReactionTitle;
 
   /// No description provided for @stepLossReactionTitleItalic.
@@ -1025,7 +1037,7 @@ abstract class AppLocalizations {
   /// No description provided for @stepLossReactionVoice.
   ///
   /// In en, this message translates to:
-  /// **'If your portfolio dropped 20 percent, what would you do?'**
+  /// **'If your wealth dropped 20 percent, what would you do?'**
   String get stepLossReactionVoice;
 
   /// No description provided for @stepLossReactionReview.
@@ -1133,7 +1145,7 @@ abstract class AppLocalizations {
   /// No description provided for @stepFullNameVoice.
   ///
   /// In en, this message translates to:
-  /// **'What\'s your full name? Nice to meet you, by the way.'**
+  /// **'What\'s your full name?'**
   String get stepFullNameVoice;
 
   /// No description provided for @stepFullNamePlaceholder.
@@ -1169,7 +1181,7 @@ abstract class AppLocalizations {
   /// No description provided for @stepEmailVoice.
   ///
   /// In en, this message translates to:
-  /// **'What\'s your email address?'**
+  /// **'What\'s your personal email address?'**
   String get stepEmailVoice;
 
   /// No description provided for @stepEmailPlaceholder.
@@ -1337,7 +1349,7 @@ abstract class AppLocalizations {
   /// No description provided for @stepAnalysingVoice.
   ///
   /// In en, this message translates to:
-  /// **'Almost there! We\'re building your investor profile.'**
+  /// **'Almost there! We\'re creating your investor profile.'**
   String get stepAnalysingVoice;
 
   /// No description provided for @stepTrialTitle.

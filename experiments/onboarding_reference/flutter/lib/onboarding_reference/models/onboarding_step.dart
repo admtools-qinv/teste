@@ -21,12 +21,14 @@ enum OnboardingInputKind {
 class OnboardingOption {
   final String id;
   final String label;
+  final String? subtitle;
   final int score;
   final String? assetPath;
 
   const OnboardingOption({
     required this.id,
     required this.label,
+    this.subtitle,
     this.score = 0,
     this.assetPath,
   });
