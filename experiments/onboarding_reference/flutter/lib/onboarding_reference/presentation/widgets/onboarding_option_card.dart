@@ -68,8 +68,10 @@ class OnboardingOptionCard extends StatelessWidget {
               children: [
                 if (assetPath != null) ...[
                   assetPath!.endsWith('.svg')
-                      ? SvgPicture.asset(assetPath!, height: 40)
-                      : Image.asset(assetPath!, height: 40),
+                      ? SvgPicture.asset(assetPath!,
+                          package: 'onboarding_reference', height: 40)
+                      : Image.asset(assetPath!,
+                          package: 'onboarding_reference', height: 40),
                   const SizedBox(width: 14),
                 ],
                 Expanded(
