@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -385,11 +386,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ],
                   stops: [0.3, 1.0],
                 ).createShader(bounds),
-                child: Text(
+                child: AutoSizeText(
                   step.titleItalic != null
                       ? '${step.title} ${step.titleItalic}'
                       : step.title,
                   textAlign: TextAlign.center,
+                  maxLines: 2,
+                  minFontSize: 20,
                   style: const TextStyle(
                     fontFamily: QInvWeb3Tokens.fontSans,
                     fontSize: 32,
@@ -789,7 +792,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         transitionBuilder: _stepTransitionBuilder,
         child: Align(
           key: ValueKey(step.id),
-          alignment: Alignment.bottomCenter,
+          alignment: Alignment.topCenter,
           child: SizedBox(
             width: phoneWidth,
             child: PhoneFrame(
@@ -831,40 +834,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  Widget _buildShowcaseReviewsZone(OnboardingStep step) {
-    return Expanded(
+  Widget _buildShowcaseReviewsZone() {
+    return const Expanded(
       child: Column(
         children: [
-          const Spacer(),
-          const ShowcaseReviews(),
-          const Spacer(),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: ShaderMask(
-              blendMode: BlendMode.modulate,
-              shaderCallback: (bounds) => const LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Colors.white,
-                  Color(0x66FFFFFF),
-                ],
-                stops: [0.3, 1.0],
-              ).createShader(bounds),
-              child: Text(
-                step.title,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontFamily: QInvWeb3Tokens.fontSans,
-                  fontSize: 24,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white,
-                  height: 1.20,
-                  letterSpacing: -0.3,
-                ),
-              ),
-            ),
-          ),
+          Spacer(),
+          ShowcaseReviews(),
+          Spacer(),
         ],
       ),
     );
@@ -1114,11 +1090,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
                       // Zone B + C — Content area
                       if (_isShowcaseMockupStep(step)) ...[
-                        _buildShowcaseMockupZone(context, step, hPad),
-                        const SizedBox(height: 24),
                         _buildShowcaseMockupTitle(step),
+                        const SizedBox(height: 24),
+                        _buildShowcaseMockupZone(context, step, hPad),
                       ] else if (step.id == 'showcaseReviews') ...[
-                        _buildShowcaseReviewsZone(step),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: hPad),
+                          child: _buildShowcaseMockupTitle(step),
+                        ),
+                        const SizedBox(height: 24),
+                        _buildShowcaseReviewsZone(),
                       ] else
                         Expanded(
                           child: AnimatedSwitcher(
@@ -1178,23 +1159,33 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ],
 
                       // Zone D — CTA button
-                      _buildCTA(step),
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: step.id == 'showcaseReviews' ? hPad : 0,
+                        ),
+                        child: _buildCTA(step),
+                      ),
 
                       // Zone E — Footer (animated show/hide with keyboard)
-                      ClipRect(
-                        child: AnimatedSize(
-                          duration: QInvWeb3Tokens.transitionAll,
-                          curve: Curves.easeOutCubic,
-                          child: bottomInset == 0
-                              ? Column(
-                                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    const SizedBox(height: 16),
-                                    _buildFooter(context, step),
-                                  ],
-                                )
-                              : const SizedBox.shrink(),
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: step.id == 'showcaseReviews' ? hPad : 0,
+                        ),
+                        child: ClipRect(
+                          child: AnimatedSize(
+                            duration: QInvWeb3Tokens.transitionAll,
+                            curve: Curves.easeOutCubic,
+                            child: bottomInset == 0
+                                ? Column(
+                                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const SizedBox(height: 16),
+                                      _buildFooter(context, step),
+                                    ],
+                                  )
+                                : const SizedBox.shrink(),
+                          ),
                         ),
                       ),
                     ],

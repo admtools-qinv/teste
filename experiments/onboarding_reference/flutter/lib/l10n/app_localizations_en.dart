@@ -318,7 +318,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get stepAccountTypeTitle => 'Choose your';
 
   @override
-  String get stepAccountTypeTitleItalic => 'account type.';
+  String get stepAccountTypeTitleItalic => 'account.';
 
   @override
   String get stepAccountTypeCaption =>
@@ -336,14 +336,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stepAccountTypeOptNationalSub =>
-      'Crypto portfolios · Assets in BRL · Brazilian custody';
+      'Crypto asset portfolios · Custody in BRL · Foxbit as custodian';
 
   @override
   String get stepAccountTypeOptGlobal => 'Global account';
 
   @override
   String get stepAccountTypeOptGlobalSub =>
-      'Crypto portfolios · Assets in USD · Tokenized stocks';
+      'Crypto asset & tokenized stock portfolios · Custody in USD · BingX as custodian';
 
   @override
   String get stepPepTitle => 'Are you a politically';
@@ -718,4 +718,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get validationPinMismatch => 'PINs don\'t match. Please try again.';
+
+  @override
+  String get featuredBy => 'Featured by';
 }

@@ -118,15 +118,15 @@
   "stepWelcomeVoice": "Olá! Bem-vindo! Vamos começar?",
   "stepWelcomeCta": "Começar",
 
-  "stepAccountTypeTitle": "Escolha o tipo",
-  "stepAccountTypeTitleItalic": "da sua conta.",
+  "stepAccountTypeTitle": "Escolha",
+  "stepAccountTypeTitleItalic": "sua conta.",
   "stepAccountTypeCaption": "Isso determina onde seus ativos ficam custodiados.",
   "stepAccountTypeVoice": "Primeiro, escolha o tipo da sua conta. Nacional ou global?",
   "stepAccountTypeReview": "Tipo de conta",
   "stepAccountTypeOptNational": "Conta nacional",
-  "stepAccountTypeOptNationalSub": "Portfólios cripto · Ativos em BRL · Custódia brasileira",
+  "stepAccountTypeOptNationalSub": "Portfólios de criptoativos · Custódia em BRL · Foxbit como custodiante",
   "stepAccountTypeOptGlobal": "Conta global",
-  "stepAccountTypeOptGlobalSub": "Portfólios cripto · Ativos em USD · Ações tokenizadas",
+  "stepAccountTypeOptGlobalSub": "Portfólios de criptoativos e ações tokenizadas · Custódia em USD · BingX como custodiante",
 
   "stepPepTitle": "Você é uma pessoa",
   "stepPepTitleItalic": "politicamente exposta?",
@@ -266,5 +266,7 @@
   "validationInvalidCode": "Digite o código de 6 dígitos.",
   "validationEnterPin": "Digite seu PIN.",
   "validationPinLength": "O PIN deve ter exatamente 6 dígitos.",
-  "validationPinMismatch": "Os PINs não coincidem. Tente novamente."
+  "validationPinMismatch": "Os PINs não coincidem. Tente novamente.",
+
+  "featuredBy": "Destaque na mídia"
 }

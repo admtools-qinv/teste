@@ -21,6 +21,7 @@ dependencies:
   shared_preferences: ^2.3.3
   flutter_animate: ^4.5.0
   http: ^1.2.0
+  auto_size_text: ^3.0.0
 
 dev_dependencies:
   flutter_test:
@@ -34,6 +35,8 @@ flutter:
   assets:
     - assets/account_national.svg
     - assets/account_global.svg
+    - assets/account_national.png
+    - assets/account_global.png
     - assets/google_icon.svg
     - assets/qinv_logo.svg
     - assets/qinv_wordmark.svg

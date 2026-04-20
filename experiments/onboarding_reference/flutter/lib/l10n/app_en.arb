@@ -120,14 +120,14 @@
   "stepWelcomeCta": "Get started",
 
   "stepAccountTypeTitle": "Choose your",
-  "stepAccountTypeTitleItalic": "account type.",
+  "stepAccountTypeTitleItalic": "account.",
   "stepAccountTypeCaption": "This determines where your assets are custodied.",
   "stepAccountTypeVoice": "First, choose your account type. National or global?",
   "stepAccountTypeReview": "Account type",
   "stepAccountTypeOptNational": "National account",
-  "stepAccountTypeOptNationalSub": "Crypto portfolios · Assets in BRL · Brazilian custody",
+  "stepAccountTypeOptNationalSub": "Crypto asset portfolios · Custody in BRL · Foxbit as custodian",
   "stepAccountTypeOptGlobal": "Global account",
-  "stepAccountTypeOptGlobalSub": "Crypto portfolios · Assets in USD · Tokenized stocks",
+  "stepAccountTypeOptGlobalSub": "Crypto asset & tokenized stock portfolios · Custody in USD · BingX as custodian",
 
   "stepPepTitle": "Are you a politically",
   "stepPepTitleItalic": "exposed person?",
@@ -270,5 +270,8 @@
   "validationInvalidCode": "Enter the 6-digit code.",
   "validationEnterPin": "Please enter your PIN.",
   "validationPinLength": "PIN must be exactly 6 digits.",
-  "validationPinMismatch": "PINs don't match. Please try again."
+  "validationPinMismatch": "PINs don't match. Please try again.",
+
+  "featuredBy": "Featured by",
+  "@featuredBy": { "description": "Label above press logos section" }
 }

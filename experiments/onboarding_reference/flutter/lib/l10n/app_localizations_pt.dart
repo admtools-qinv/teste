@@ -317,10 +317,10 @@ class AppLocalizationsPt extends AppLocalizations {
   String get stepWelcomeCta => 'Começar';
 
   @override
-  String get stepAccountTypeTitle => 'Escolha o tipo';
+  String get stepAccountTypeTitle => 'Escolha';
 
   @override
-  String get stepAccountTypeTitleItalic => 'da sua conta.';
+  String get stepAccountTypeTitleItalic => 'sua conta.';
 
   @override
   String get stepAccountTypeCaption =>
@@ -338,14 +338,14 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get stepAccountTypeOptNationalSub =>
-      'Portfólios cripto · Ativos em BRL · Custódia brasileira';
+      'Portfólios de criptoativos · Custódia em BRL · Foxbit como custodiante';
 
   @override
   String get stepAccountTypeOptGlobal => 'Conta global';
 
   @override
   String get stepAccountTypeOptGlobalSub =>
-      'Portfólios cripto · Ativos em USD · Ações tokenizadas';
+      'Portfólios de criptoativos e ações tokenizadas · Custódia em USD · BingX como custodiante';
 
   @override
   String get stepPepTitle => 'Você é uma pessoa';
@@ -725,4 +725,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get validationPinMismatch => 'Os PINs não coincidem. Tente novamente.';
+
+  @override
+  String get featuredBy => 'Destaque na mídia';
 }

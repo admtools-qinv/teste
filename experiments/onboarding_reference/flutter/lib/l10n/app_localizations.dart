@@ -677,7 +677,7 @@ abstract class AppLocalizations {
   /// No description provided for @stepAccountTypeTitleItalic.
   ///
   /// In en, this message translates to:
-  /// **'account type.'**
+  /// **'account.'**
   String get stepAccountTypeTitleItalic;
 
   /// No description provided for @stepAccountTypeCaption.
@@ -707,7 +707,7 @@ abstract class AppLocalizations {
   /// No description provided for @stepAccountTypeOptNationalSub.
   ///
   /// In en, this message translates to:
-  /// **'Crypto portfolios · Assets in BRL · Brazilian custody'**
+  /// **'Crypto asset portfolios · Custody in BRL · Foxbit as custodian'**
   String get stepAccountTypeOptNationalSub;
 
   /// No description provided for @stepAccountTypeOptGlobal.
@@ -719,7 +719,7 @@ abstract class AppLocalizations {
   /// No description provided for @stepAccountTypeOptGlobalSub.
   ///
   /// In en, this message translates to:
-  /// **'Crypto portfolios · Assets in USD · Tokenized stocks'**
+  /// **'Crypto asset & tokenized stock portfolios · Custody in USD · BingX as custodian'**
   String get stepAccountTypeOptGlobalSub;
 
   /// No description provided for @stepPepTitle.
@@ -1447,6 +1447,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'PINs don\'t match. Please try again.'**
   String get validationPinMismatch;
+
+  /// Label above press logos section
+  ///
+  /// In en, this message translates to:
+  /// **'Featured by'**
+  String get featuredBy;
 }
 
 class _AppLocalizationsDelegate

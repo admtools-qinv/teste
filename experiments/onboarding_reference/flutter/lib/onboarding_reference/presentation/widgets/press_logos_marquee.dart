@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../l10n/app_localizations.dart';
 import '../../theme/qinvweb3_tokens.dart';
 
 class PressLogosMarquee extends StatelessWidget {
@@ -33,7 +34,7 @@ class PressLogosMarquee extends StatelessWidget {
         Opacity(
           opacity: 0.45,
           child: Text(
-            'Featured by',
+            AppLocalizations.of(context)!.featuredBy,
             style: TextStyle(
               color: QInvWeb3Tokens.textMuted,
               fontSize: 12,

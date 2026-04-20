@@ -12,35 +12,55 @@ class PhoneFrame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Clip the bottom of the phone so it extends naturally out of view,
-    // like a device resting below the fold — no gradient fade.
     return ClipRect(
       child: Align(
         alignment: Alignment.topCenter,
         heightFactor: 0.80,
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.12),
-            borderRadius: BorderRadius.circular(_bezelRadius),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.45),
-                blurRadius: 28,
-                spreadRadius: -2,
-                offset: const Offset(0, 8),
+        child: Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(_bezelRadius),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.45),
+                    blurRadius: 28,
+                    spreadRadius: -2,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
               ),
-            ],
-          ),
-          padding: const EdgeInsets.all(_bezelBorder),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(_screenRadius),
-            child: Image.asset(
-              assetPath,
-              package: _package,
-              fit: BoxFit.fitWidth,
-              alignment: Alignment.topCenter,
+              padding: const EdgeInsets.all(_bezelBorder),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(_screenRadius),
+                child: Image.asset(
+                  assetPath,
+                  package: _package,
+                  fit: BoxFit.fitWidth,
+                  alignment: Alignment.topCenter,
+                ),
+              ),
             ),
-          ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              height: 80,
+              child: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Color(0xFF121314),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     )
