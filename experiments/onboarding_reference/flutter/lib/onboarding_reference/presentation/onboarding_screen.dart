@@ -836,13 +836,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   Widget _buildShowcaseReviewsZone() {
     return const Expanded(
-      child: Column(
-        children: [
-          Spacer(),
-          ShowcaseReviews(),
-          Spacer(),
-        ],
-      ),
+      child: ShowcaseReviews(),
     );
   }
 
@@ -1091,14 +1085,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       // Zone B + C — Content area
                       if (_isShowcaseMockupStep(step)) ...[
                         _buildShowcaseMockupTitle(step),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 32),
                         _buildShowcaseMockupZone(context, step, hPad),
                       ] else if (step.id == 'showcaseReviews') ...[
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: hPad),
                           child: _buildShowcaseMockupTitle(step),
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 32),
                         _buildShowcaseReviewsZone(),
                       ] else
                         Expanded(

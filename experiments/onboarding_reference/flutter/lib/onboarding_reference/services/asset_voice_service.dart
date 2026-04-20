@@ -20,8 +20,8 @@ class AssetVoiceService implements VoiceService {
   /// Step-ID → filename (without locale prefix).
   static const _fileNames = <String, String>{
     'showcaseWelcome': 'voice_showcase_01_welcome.mp3',
-    'showcaseAnalysis': 'voice_showcase_02_analysis.mp3',
-    'showcaseAI': 'voice_showcase_03_ai.mp3',
+    'showcaseAnalysis': 'voice_showcase_03_ai.mp3',
+    'showcaseAI': 'voice_showcase_02_analysis.mp3',
     'showcaseReviews': 'voice_showcase_04_reviews.mp3',
     'welcome': 'voice_01_welcome.mp3',
     'accountType': 'voice_01b_account_type.mp3',
