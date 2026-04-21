@@ -3,7 +3,7 @@ workflows:
     name: iOS TestFlight
     max_build_duration: 60
     instance_type: mac_mini_m2
-    working_directory: experiments/onboarding_reference/flutter
+    working_directory: experiments/onboarding_reference/flutter/example
     integrations:
       app_store_connect: Codemagic API
     environment:
@@ -16,7 +16,7 @@ workflows:
       - name: Build iOS
         script: flutter build ipa --release
     artifacts:
-      - experiments/onboarding_reference/flutter/build/ios/ipa/*.ipa
+      - experiments/onboarding_reference/flutter/example/build/ios/ipa/*.ipa
     publishing:
       app_store_connect:
         auth: integration
