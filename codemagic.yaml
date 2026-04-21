@@ -5,7 +5,7 @@ workflows:
     instance_type: mac_mini_m2
     working_directory: experiments/onboarding_reference/flutter
     integrations:
-      app_store_connect: Codemagic API
+      app_store_connect: Codemagic integration
     environment:
       flutter: stable
       xcode: latest
