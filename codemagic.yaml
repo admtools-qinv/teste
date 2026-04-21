@@ -10,6 +10,8 @@ workflows:
       flutter: stable
       xcode: latest
       cocoapods: default
+      groups:
+        - a
     scripts:
       - name: Get Flutter packages
         script: flutter packages pub get
